@@ -11,7 +11,7 @@ export default class Slide extends Component {
     this.state = {
       isValid: true, // consider finding a better way to do this
       fields: {},
-    }
+    };
     this.registerField = this.registerField.bind(this);
     this.unregisterField = this.unregisterField.bind(this);
     this.setRef = this.setRef.bind(this);
@@ -59,7 +59,7 @@ export default class Slide extends Component {
         ...prevState.fields,
         [name]: validate,
       },
-    }))
+    }));
   }
 
   unregisterField(name) {
@@ -75,9 +75,6 @@ export default class Slide extends Component {
   }
 
   render() {
-    <div ref={ this.setRef }>
-      { this.props.children }
-    </div>
+    <div ref={this.setRef}>{this.props.children}</div>;
   }
-
 }

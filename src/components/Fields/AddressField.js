@@ -45,9 +45,7 @@ export default class AddressField extends Component {
     }
   }
 
-  validate() {
-
-  }
+  validate() {}
 
   register() {
     const { name, register } = this.props;

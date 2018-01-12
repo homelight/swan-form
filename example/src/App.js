@@ -23,12 +23,12 @@ export default class App extends Component {
 
         <AddressField name="address1" />
 
+        <Field type="textarea" name="freeform" label="Please Explain" rows={5} cols={40} />
+
         <Field
-          type="textarea"
-          name="freeform"
-          label="Please Explain"
-          rows={5}
-          cols={40}
+          type="select"
+          name="select"
+          options={['one', { value: 'two', label: 'Test' }, 'three']}
         />
       </div>
     );

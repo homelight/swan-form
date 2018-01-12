@@ -9,27 +9,19 @@ export default class Slider extends Component {
     super(props);
     this.state = {
       current: props.current || 0,
-    }
+    };
   }
 
   moveTo(index) {
-    this.setState(prevState => {
+    this.setState(prevState => ({
       ...prevState,
       current: index,
-    });
+    }));
   }
 
-  maybeFindNextSlide(index) {
-
-  }
+  maybeFindNextSlide(index) {}
 
   render() {
-    return (
-      <div>
-        { this.props.slides.map(slideProps => (
-          <Slide {...slideProps} />
-        ))}
-      </div>
-    )
+    return <div>{this.props.slides.map(slideProps => <Slide {...slideProps} />)}</div>;
   }
 }

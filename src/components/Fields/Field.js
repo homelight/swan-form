@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classes from '../../helpers/classes';
+import isFunction from '../../helpers/isFunction';
+import isObject from '../../helpers/isObject';
 
 import styles from './Field.css';
 
@@ -318,6 +320,41 @@ export default class Field extends Component {
     return this.fieldRef;
   }
 
+  renderSelectField() {
+    const { options } = this.props;
+    const { value } = this.state;
+    return (
+      <select
+        value={value}
+        ref={this.setRef}
+        onChange={this.onChange}
+        onBlur={this.onBlur}
+        onFocus={this.onFocus}
+        {...this.getSpreadProps()}
+      >
+        {this.renderOptions(options)}
+      </select>
+    );
+  }
+
+  renderOptions(options) {
+    if (Array.isArray(options)) {
+      return options.map(
+        option =>
+          typeof option === 'string' ? (
+            <option key={option}>{option}</option>
+          ) : (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ),
+      );
+    } else if (isObject(options)) {
+      Object.keys(options).map(label => <option value={options[label]}>{label}</option>)
+    }
+
+  }
+
   renderInputField() {
     const { name, required, type } = this.props;
     const { value } = this.state;
@@ -356,7 +393,10 @@ export default class Field extends Component {
       return this.maybeWrapInLabel(this.renderInputField());
     }
     if (type === 'textarea') {
-      return this.maybeWrapInLabel(this.renderTextArea())
+      return this.maybeWrapInLabel(this.renderTextArea());
+    }
+    if (type === 'select') {
+      return this.maybeWrapInLabel(this.renderSelectField());
     }
     return <div>Field</div>;
   }
