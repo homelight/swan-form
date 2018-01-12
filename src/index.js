@@ -2,11 +2,13 @@
  * @class ExampleComponent
  */
 
-import Field from './components/Field';
-import Address from './components/Address';
+import Field from './components/Fields/Field';
+import AddressField from './components/Fields/AddressField';
+import DateField from './components/Fields/DateField';
 export default {
   Field,
-  Address,
+  AddressField,
+  DateField,
 };
 
 // import React, { Component } from 'react'

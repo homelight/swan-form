@@ -1,0 +1,8 @@
+.flowform--field--required::after {
+  content: '*';
+  color: red;
+}
+
+.flowform--field--errors {
+  color: red;
+}
