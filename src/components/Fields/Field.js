@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classes from '../../helpers/classes';
+import hasOwnProperty from '../../helpers/hasOwnProperty';
+import isObject from '../../helpers/isObject';
 
 import styles from './Field.css';
 
@@ -122,7 +124,7 @@ export default class Field extends Component {
     this.debounceValidateTimer = null;
 
     // Bind some handlers
-    ['onChange', 'onBlur', 'onFocus', 'setRef'].forEach(func => {
+    ['onChange', 'onBlur', 'onFocus', 'setRef', 'renderOption', 'renderOptions'].forEach(func => {
       this[func] = this[func].bind(this);
     });
   }
@@ -132,7 +134,21 @@ export default class Field extends Component {
       this.register();
     }
     if (this.props.autoFocus) {
-      this.fieldRef.focus();
+      const { fieldRef } = this;
+
+      fieldRef.focus();
+      // We're going to try to position the cursor in the correct position for editing, so, if there
+      // is a value already, we'll get the length and set the cursor to that.
+      const end = this.state.value.length; // @todo, we might have to turn this into a string
+
+      // See if setSelectionRange exists, if so, then use that
+      if (isFunction(fieldRef.setSelectionRange)) {
+        this.fieldRef.setSelectionRange(end, end);
+      } else if (isFunction(fieldRef.createTextRange)) {
+        const range = fieldRef.createTextRange;
+        range.move('character', end);
+        range.select();
+      }
     }
   }
 
@@ -164,7 +180,7 @@ export default class Field extends Component {
 
   getSpreadProps() {
     return COMMON_INPUT_PROPS.reduce((acc, prop) => {
-      if (Object.prototype.hasOwnProperty.call(this.props, prop)) {
+      if (hasOwnProperty(this.props, prop)) {
         acc[prop] = this.props[prop];
       }
       return acc;
@@ -176,10 +192,10 @@ export default class Field extends Component {
     const { value } = this.state;
 
     if (isFunction(formatter)) {
-      return formatter(this.state.value);
+      return formatter(value);
     }
 
-    return this.state.value;
+    return value;
   }
 
   validate() {
@@ -247,7 +263,7 @@ export default class Field extends Component {
 
   onFocus(event) {
     const { onFocus } = this.props;
-    console.log('on focus');
+    console.log(`${this.props.name}:: on focus`);
 
     if (this.state.isTouched === false) {
       this.setState(prevState => ({
@@ -264,7 +280,7 @@ export default class Field extends Component {
 
   onBlur(event) {
     const { onBlur, validate, asyncValidate } = this.props;
-    console.log('on blur');
+    console.log(`${this.props.name}:: on blur`);
 
     if (asyncValidate && validate) {
       this.validate();
@@ -350,14 +366,89 @@ export default class Field extends Component {
     );
   }
 
-  render() {
+  // The way we nest options in a select can be a bit difficult, so we're going to break this into
+  // a few different functions
+  renderSelect() {
+    const { options } = this.props;
+    const { value } = this.state;
+    return (
+      <select
+        value={value}
+        onChange={this.onChange}
+        onBlur={this.onBlur}
+        onFocus={this.onFocus}
+        ref={this.setRef}
+        {...this.getSpreadProps()}
+      >
+        {this.renderOptions(options)}
+      </select>
+    );
+  }
+
+  renderOption(option) {
+    if (typeof option === 'string') {
+      return <option key={option}>{option}</option>;
+    }
+    if (isObject(option)) {
+      if (hasOwnProperty(option, 'label') && hasOwnProperty(option, 'value')) {
+        const { label, value } = option;
+        return (
+          <option key={value} value={value}>
+            {label}
+          </option>
+        );
+      }
+      return Object.keys(option).map(label => (
+        <optgroup key={label} label={label}>
+          {this.renderOptions(option[label])}
+        </optgroup>
+      ));
+    }
+    // Cannot figure out what to do here.
+    return null;
+  }
+
+  renderOptions(options) {
+    if (Array.isArray(options)) {
+      return options.map(this.renderOption);
+    } else if (isObject(options)) {
+      return Object.keys(options).map(option => {
+        if (['string', 'number'].includes(typeof options[option])) {
+          return (
+            <option key={options[option]} value={options[option]}>
+              {option}
+            </option>
+          );
+        }
+        if (isObject(options[option]) || Array.isArray(options[option])) {
+          return (
+            <optgroup key={option} label={option}>
+              {this.renderOptions(options[option])}
+            </optgroup>
+          );
+        }
+        // Cannot figure out what to do here.
+        return null;
+      });
+    }
+  }
+
+  renderField() {
     const { type } = this.props;
+
     if (INPUT_TYPES.includes(type)) {
-      return this.maybeWrapInLabel(this.renderInputField());
+      return this.renderInputField();
     }
     if (type === 'textarea') {
-      return this.maybeWrapInLabel(this.renderTextArea())
+      return this.renderTextArea();
     }
-    return <div>Field</div>;
+    if (type === 'select') {
+      return this.renderSelect();
+    }
+    return <div>Unsupported Field Type</div>;
+  }
+
+  render() {
+    return this.maybeWrapInLabel(this.renderField());
   }
 }

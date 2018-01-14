@@ -2,6 +2,60 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Field from './Field';
 
+const states = {
+  '----': '',
+  Alabama: 'AL',
+  Alaska: 'AK',
+  Arizona: 'AZ',
+  Arkansas: 'AR',
+  California: 'CA',
+  Colorado: 'CO',
+  Connecticut: 'CT',
+  Delaware: 'DE',
+  Florida: 'FL',
+  Georgia: 'GA',
+  Hawaii: 'HI',
+  Idaho: 'ID',
+  Illinois: 'IL',
+  Indiana: 'IN',
+  Iowa: 'IA',
+  Kansas: 'KS',
+  Kentucky: 'KY',
+  Louisiana: 'LA',
+  Maine: 'ME',
+  Maryland: 'MD',
+  Massachusetts: 'MA',
+  Michigan: 'MI',
+  Minnesota: 'MN',
+  Mississippi: 'MS',
+  Missouri: 'MO',
+  Montana: 'MT',
+  Nebraska: 'NE',
+  Nevada: 'NV',
+  'New Hampshire': 'NH',
+  'New Jersey': 'NJ',
+  'New Mexico': 'NM',
+  'New York': 'NY',
+  'North Carolina': 'NC',
+  'North Dakota': 'ND',
+  Ohio: 'OH',
+  Oklahoma: 'OK',
+  Oregon: 'OR',
+  Pennsylvania: 'PA',
+  'Rhode Island': 'RI',
+  'South Carolina': 'SC',
+  'South Dakota': 'SD',
+  Tennessee: 'TN',
+  Texas: 'TX',
+  Utah: 'UT',
+  Vermont: 'VT',
+  Virginia: 'VA',
+  Washington: 'WA',
+  'West Virginia': 'WV',
+  Wisconsin: 'WI',
+  Wyoming: 'WY',
+};
+
 export default class AddressField extends Component {
   constructor(props) {
     super(props);
@@ -34,7 +88,6 @@ export default class AddressField extends Component {
       Object.prototype.hasOwnProperty.call(this.state.value, key) &&
       this.state.value[key] !== value
     ) {
-      console.log('updating address for', key, value);
       this.setState(prevState => ({
         ...prevState,
         value: {
@@ -45,9 +98,18 @@ export default class AddressField extends Component {
     }
   }
 
-  validate() {
-
+  setValue(newValues) {
+    this.setState(prevState => ({
+      ...prevState,
+      line1: newValues.line1,
+      line2: newValues.line2,
+      city: newValues.city,
+      state: newValues.state,
+      zip: newValues.zip,
+    }));
   }
+
+  validate() {}
 
   register() {
     const { name, register } = this.props;
@@ -90,6 +152,7 @@ export default class AddressField extends Component {
           type="text"
           name={`${name}-line1`}
           placeholder="Line 1"
+          autoComplete="address-line1"
           onChange={this.onLine1Change}
           required
         />
@@ -97,16 +160,31 @@ export default class AddressField extends Component {
           type="text"
           name={`${name}-line2`}
           onChange={this.onLine2Change}
+          autoComplete="address-line2"
           placeholder="Line 2"
         />
-        <Field type="text" name={`${name}-city`} onChange={this.onCityChange} placeholder="City" />
         <Field
           type="text"
+          name={`${name}-city`}
+          autoComplete="address-level2"
+          onChange={this.onCityChange}
+          placeholder="City"
+        />
+        <Field
+          type="select"
           name={`${name}-state`}
+          options={states}
           onChange={this.onStateChange}
+          autoComplete="address-level1"
           placeholder="State"
         />
-        <Field type="text" name={`${name}-zipcode`} onChange={this.onZipChange} placeholder="Zip" />
+        <Field
+          type="text"
+          name={`${name}-zipcode`}
+          autoComplete="postal-code"
+          onChange={this.onZipChange}
+          placeholder="Zip"
+        />
       </fieldset>
     );
   }

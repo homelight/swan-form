@@ -21,14 +21,22 @@ export default class App extends Component {
           autoFocus
         />
 
+        <DateField name="date" placeholder="MM/YYYY" />
+
         <AddressField name="address1" />
 
+        <Field type="textarea" name="freeform" label="Please Explain" rows={5} cols={40} required />
+
         <Field
-          type="textarea"
-          name="freeform"
-          label="Please Explain"
-          rows={5}
-          cols={40}
+          name="selectField"
+          type="select"
+          options={[
+            'one',
+            'two',
+            'three',
+            { label: 'four', value: 'four' },
+            { OptGroup: ['abc', 'def', 'hij'] },
+          ]}
         />
       </div>
     );
