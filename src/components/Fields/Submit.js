@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Field from './Field';
-import isFunction from '../../helpers/isFunction';
+import isFunction from 'lodash/isFunction';
 
 export default class Submit extends Component {
   static contextTypes = {

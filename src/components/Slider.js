@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Slide from './Slide';
 import autobind from '../helpers/autobind';
-import clamp from '../helpers/clamp';
-import isFunction from '../helpers/isFunction';
+import clamp from 'lodash/clamp';
+import isFunction from 'lodash/isFunction';
 import Form from './Form';
 import classes from '../helpers/classes';
 
 import './Slider.css';
 
+// this is a real dumb function. find a better way to do this
 function getPosition(slide, index) {
   if (slide === index) {
     return 'current';
@@ -19,12 +20,14 @@ function getPosition(slide, index) {
   return 'after';
 }
 
+// temp function; @todo fix the `Form` component so that it accepts handlers
 const onSubmit = values => console.log(values);
 
 export default class Slider extends Component {
   static propTypes = {
     height: PropTypes.string,
     current: PropTypes.number,
+    onSubmit: PropTypes.func,
   };
 
   static defaultProps = {
@@ -35,6 +38,8 @@ export default class Slider extends Component {
   static childContextTypes = {
     registerSlide: PropTypes.func,
     unregisterSlide: PropTypes.func,
+    // implement a reset method that will push the slider back to 0 and reset
+    // the forms (or call the form context) if a <input type='reset' /> is pressed
   };
 
   constructor(props) {
@@ -72,15 +77,14 @@ export default class Slider extends Component {
   }
 
   registerSlide({ index, isValid }) {
-    console.log('registering a slide', index);
     this.slides = Object.assign({}, this.slides, { [index]: isValid });
     // not quite adequate....
     // this.slides = [...this.slides, ref];
   }
 
-  unregisterSlide(ref) {
-    console.log('unregistering a slide');
-    // this.slides = [...this.slides.filter(slide => slide !== ref)];
+  unregisterSlide(index) {
+    const { [index]: remove, ...remaining } = this.slides;
+    this.slides = remaining;
   }
 
   moveTo(index) {
@@ -167,7 +171,7 @@ export default class Slider extends Component {
         >
           R
         </div>
-        <Form name="slider-form" onSubmit={onSubmit}>
+        <Form name="slider-form" onSubmit={this.props.onSubmit}>
           {this.props.slides.map((slide, index) => (
             <Slide
               key={index}

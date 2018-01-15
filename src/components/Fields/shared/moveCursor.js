@@ -1,4 +1,4 @@
-import isFunction from '../../../helpers/isFunction';
+import isFunction from 'lodash/isFunction';
 
 /**
  * Moves the cursor in an editable area (input, textarea) to pos

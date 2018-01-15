@@ -51,7 +51,6 @@ export default class RegularForm extends Component {
               rows={5}
               cols={40}
               required
-              formatter={value => (typeof value === 'string' ? value.toLowerCase().trim() : '')}
             />
 
             <Field

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import autobind from '../helpers/autobind';
-import isFunction from '../helpers/isFunction';
+import isFunction from 'lodash/isFunction';
 import classes from '../helpers/classes';
 
 import styles from './Slide.css';
@@ -124,7 +124,6 @@ export default class Slide extends Component {
       position === 'current' && 'flowform--slide--current',
       position === 'after' && 'flowform--slide--after',
     ]);
-    console.log(classNames);
     return (
       <div className={classNames} ref={this.setRef}>
         {this.props.children}

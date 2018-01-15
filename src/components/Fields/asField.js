@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import autobind from '../../helpers/autobind';
-import isFunction from '../../helpers/isFunction';
+import isFunction from 'lodash/isFunction';
 import runValidations from './shared/runValidations';
 import noErrors from './shared/noErrors';
 import hasErrors from './shared/hasErrors';

@@ -1,4 +1,4 @@
-import isFunction from '../../../helpers/isFunction';
+import isFunction from 'lodash/isFunction';
 import noErrors from './noErrors';
 
 export default function runValidations(validate, value) {

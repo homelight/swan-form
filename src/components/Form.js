@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import isFunction from '../helpers/isFunction';
+import isFunction from 'lodash/isFunction';
 import hasOwnProperty from '../helpers/hasOwnProperty';
 import autobind from '../helpers/autobind';
 

@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classes from '../../helpers/classes';
-import isFunction from '../../helpers/isFunction';
+import isFunction from 'lodash/isFunction';
 import hasOwnProperty from '../../helpers/hasOwnProperty';
-import isObject from '../../helpers/isObject';
+import isObject from 'lodash/isObject';
 import autobind from '../../helpers/autobind';
 import runValidations from './shared/runValidations';
 import noErrors from './shared/noErrors';
 import hasErrors from './shared/hasErrors';
 import noop from './shared/noop';
 import moveCursor from './shared/moveCursor';
+
+import { ENTER } from './shared/keyCodes';
 
 import styles from './Field.css';
 
@@ -167,6 +169,7 @@ export default class Field extends Component {
       'validate',
       'runValidations',
       'isValid',
+      'preventSubmitOnEnter',
     ]);
   }
 
@@ -222,6 +225,12 @@ export default class Field extends Component {
       setRef(el);
     }
     this.fieldRef = el;
+  }
+
+  preventSubmitOnEnter(event) {
+    if (event.keyCode === ENTER) {
+      event.preventDefault();
+    }
   }
 
   getSpreadProps() {
@@ -343,6 +352,11 @@ export default class Field extends Component {
     const { onFocus } = this.props;
     console.log(`${this.props.name}:: on focus`);
 
+    // On most fields, add in a handler to prevent a form submit on enter
+    if (!['textarea', 'button', 'submit', 'reset'].includes(this.props.type)) {
+      document.addEventListener('keydown', this.preventSubmitOnEnter, false);
+    }
+
     if (this.state.isTouched === false) {
       this.setState(prevState => ({
         ...this.state,
@@ -359,6 +373,11 @@ export default class Field extends Component {
   onBlur(event) {
     const { onBlur, validate, asyncValidate } = this.props;
     console.log(`${this.props.name}:: on blur`);
+
+    if (this.props.type !== 'textarea') {
+      console.log('removing prevent submit for', this.props.name, this.props.type);
+      document.removeEventListener('keydown', this.preventSubmitOnEnter);
+    }
 
     if (asyncValidate && validate) {
       this.validate();
