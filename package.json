@@ -10,7 +10,7 @@
   "scripts": {
     "build": "rollup -c",
     "deploy": "gh-pages -d example/build",
-    "format": "prettier --write src/* src/**/* example/src/* src/**/**/*",
+    "format": "prettier --write src/* src/**/* example/src/* src/**/**/* src/**/**/**/*",
     "precommit": "lint-staged",
     "predeploy": "cd example && npm install && npm run build",
     "prepublish": "npm run build",
