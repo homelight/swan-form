@@ -8,13 +8,14 @@
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",
   "scripts": {
-    "test": "react-scripts test --env=jsdom",
     "build": "rollup -c",
-    "start": "rollup -c -w",
-    "prepublish": "npm run build",
-    "predeploy": "cd example && npm install && npm run build",
     "deploy": "gh-pages -d example/build",
-    "format": "prettier --write src/* src/**/* example/src/* src/**/**/*"
+    "format": "prettier --write src/* src/**/* example/src/* src/**/**/*",
+    "precommit": "lint-staged",
+    "predeploy": "cd example && npm install && npm run build",
+    "prepublish": "npm run build",
+    "start": "rollup -c -w",
+    "test": "react-scripts test --env=jsdom"
   },
   "dependencies": {},
   "peerDependencies": {
@@ -30,6 +31,8 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "gh-pages": "^1.0.0",
+    "husky": "^0.14.3",
+    "lint-staged": "^6.0.0",
     "prettier": "^1.10.2",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
@@ -40,13 +43,14 @@
     "rollup-plugin-node-resolve": "^3.0.0",
     "rollup-plugin-postcss": "^0.5.5"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "prettier": {
     "printWidth": 100,
     "singleQuote": true,
     "trailingComma": "all",
     "arrowParens": "avoid"
+  },
+  "lint-staged": {
+    "*.{js,json,css,md}": ["yarn run format", "git add"]
   }
 }
