@@ -18,7 +18,7 @@ export default {
       format: 'es',
     },
   ],
-  sourcemap: true,
+  // sourcemap: true,
   external: Object.keys(pkg.peerDependencies),
   plugins: [
     postcss({}),

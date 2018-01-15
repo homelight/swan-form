@@ -13,7 +13,7 @@ export default class RegularForm extends Component {
     return (
       <div>
         <div style={{ margin: '5rem', border: '1px solid steelblue', padding: '5rem' }}>
-          <Form onSubmit={onSubmit} name="testform" noValidate={true}>
+          <Form onSubmit={onSubmit} name="testform">
             <Field
               type="text"
               name="minTenField"
@@ -57,7 +57,6 @@ export default class RegularForm extends Component {
             <Field
               name="selectField"
               type="select"
-              multiple
               options={[
                 'one',
                 'two',

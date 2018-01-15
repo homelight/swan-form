@@ -39,6 +39,9 @@ export default class NavBar extends Component {
             <li className={pathname === '/with-react-router' ? 'NavBar--Active' : ''}>
               <Link to="/with-react-router">With React Router</Link>
             </li>
+            <li className={pathname === '/asfield-hoc' ? 'NavBar--Active' : ''}>
+              <Link to="/asfield-hoc">asField HOC</Link>
+            </li>
           </ul>
           <div className="NavBar--toggler" onClick={this.toggle}>
             {this.state.isShowing ? 'Hide' : 'Show'}

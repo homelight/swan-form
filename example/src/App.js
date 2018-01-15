@@ -4,6 +4,7 @@ import { BrowserRouter, Route } from 'react-router-dom';
 import Intro from './Intro';
 import RegularForm from './RegularForm';
 import SliderForm from './SliderForm';
+import asFieldHOC from './asFieldHOC';
 
 import NavBar from './NavBar';
 
@@ -21,6 +22,7 @@ export default class App extends Component {
             <Route path="/styling" component={() => <div>@TODO</div>} />
             <Route path="/with-redux" component={() => <div>@TODO</div>} />
             <Route path="/with-react-router" component={() => <div>@TODO</div>} />
+            <Route path="/asfield-hoc" component={asFieldHOC} />
           </div>
         </div>
       </BrowserRouter>

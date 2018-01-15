@@ -7,6 +7,7 @@ import AddressField from './components/Fields/AddressField';
 import DateField from './components/Fields/DateField';
 import Reset from './components/Fields/Reset';
 import Submit from './components/Fields/Submit';
+import asField from './components/Fields/asField';
 import Form from './components/Form';
 
 export default {
@@ -16,6 +17,7 @@ export default {
   DateField,
   Reset,
   Submit,
+  asField,
 };
 
 // import React, { Component } from 'react'

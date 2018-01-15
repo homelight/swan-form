@@ -117,21 +117,20 @@ export default class Form extends Component {
     const isValid = Object.keys(this.fields).every(field => this.fields[field].validate());
     if (!isValid) {
       console.log('Form is invalid. Field level errors should ensue.');
-    } else {
-      const values = Object.keys(this.fields).reduce(
-        (acc, field) => ({
-          ...acc,
-          [field]: this.fields[field].getValue(),
-        }),
-        {},
-      );
-
-      console.log(values);
-      this.handleBeforeSubmit(values)
-        .then(this.props.onSubmit)
-        .then(this.handleAfterSubmit);
-      console.log('Submitting...');
     }
+    const values = Object.keys(this.fields).reduce(
+      (acc, field) => ({
+        ...acc,
+        [field]: this.fields[field].getValue(),
+      }),
+      {},
+    );
+
+    console.log(values);
+    // this.handleBeforeSubmit(values)
+    //   .then(this.props.onSubmit)
+    //   .then(this.handleAfterSubmit);
+    // console.log('Submitting...');
   }
 
   registerField({ name, getRef, getValue, setValue, validate, reset }) {

@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Field from './Field';
-// import classes from '../../helpers/classes';
+import isFunction from '../../helpers/isFunction';
+import autobind from '../../helpers/autobind';
 
 // const states = {
 //   '----': '',
@@ -112,6 +113,16 @@ const states = [
 ];
 
 export default class AddressField extends Component {
+  static contextTypes = {
+    register: PropTypes.func,
+    unregister: PropTypes.func,
+  };
+
+  static childContextTypes = {
+    register: PropTypes.func,
+    unregister: PropTypes.func,
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -127,6 +138,8 @@ export default class AddressField extends Component {
       isValid: false, // update this in case the initial value is valid
     };
 
+    autobind(this, ['register', 'unregister', 'getValue', 'setValue', 'getRef', 'setRef']);
+
     this.onLine1Change = this.updatePart.bind(this, 'line1');
     this.onLine2Change = this.updatePart.bind(this, 'line2');
     this.onCityChange = this.updatePart.bind(this, 'city');
@@ -134,10 +147,13 @@ export default class AddressField extends Component {
     this.onZipChange = this.updatePart.bind(this, 'zip');
   }
 
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   // We should see about this....
-  //   return this.props !== nextProps;
-  // }
+  getChildContext() {
+    // Overwrite the Form register/unregister functions with these ones
+    return Object.assign({}, this.context, {
+      register: this.register,
+      unregister: this.unregister,
+    });
+  }
 
   updatePart(key, value) {
     if (
@@ -169,31 +185,20 @@ export default class AddressField extends Component {
     }));
   }
 
-  setDirty() {
-    if (this.state.isDirty !== true) {
-      this.setState(prevState => ({
-        ...prevState,
-        isDirty: true,
-      }));
-    }
-  }
-
-  setTouched() {
-    if (this.state.isTouched !== true) {
-      this.setState(prevState => ({
-        ...prevState,
-        isTouched: true,
-      }));
-    }
-  }
-
   validate(updateErrors = false) {}
 
+  getRef() {
+    return this.fieldRef;
+  }
+
+  setRef(el) {
+    this.fieldRef = el;
+  }
+
   register() {
-    const { name, register } = this.props;
-    if (isFunction(register)) {
-      register({
-        name,
+    if (isFunction(this.context.register)) {
+      this.context.register({
+        name: this.props.name,
         validate: this.validate,
         getValue: this.getValue,
         setValue: this.setValue,
@@ -203,8 +208,8 @@ export default class AddressField extends Component {
   }
 
   unregister() {
-    if (isFunction(unregister)) {
-      unregister({ name: this.props.name });
+    if (isFunction(this.context.unregister)) {
+      this.context.unregister(this.props.name);
     }
   }
 
@@ -224,7 +229,7 @@ export default class AddressField extends Component {
   render() {
     const { name, className } = this.props;
     return (
-      <fieldset className={className}>
+      <fieldset className={className} ref={this.setRef}>
         <legend>Address</legend>
         <Field
           type="text"

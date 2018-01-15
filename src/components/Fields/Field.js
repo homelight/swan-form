@@ -129,15 +129,15 @@ export default class Field extends Component {
   constructor(props) {
     super(props);
 
+    this.isMultipleSelect = props.type === 'select' && props.multiple === true;
+
     const state = {
-      value: props.value || (props.type === 'select' && props.multiple === true ? [''] : ''),
+      value: props.value || (this.isMultipleSelect ? [''] : ''),
       errors: [],
       isValid: true, // not sure what to do about this
       isDirty: false,
       isTouched: false,
     };
-
-    this.isMultipleSelect = props.type === 'select' && props.multiple === true;
 
     this.state = Object.assign({}, state);
     this.initialState = Object.assign({}, state);
@@ -186,6 +186,15 @@ export default class Field extends Component {
     }
   }
 
+  // componentWillReceiveProps(nextProps) {
+  //   // In case someone wants to change a select field from single to multiple with props
+  //   if (nextProps.type === 'select' && nextProps.multiple !== this.props.multiple) {
+  //     this.isMultipleSelect = nextProps.type === 'select' && nextProps.multiple === 'true';
+  //     // We will run into the problem that the value will be an array when we expect a string
+  //     // @TODO fix that, but how?
+  //   }
+  // }
+
   shouldComponentUpdate(nextProps, nextState) {
     if (this.props === nextProps && this.state === nextState) {
       return false;
@@ -209,6 +218,9 @@ export default class Field extends Component {
   }
 
   setRef(el) {
+    if (this.props.setRef && isFunction(this.props.setRef)) {
+      this.props.setRef(el);
+    }
     this.fieldRef = el;
   }
 
