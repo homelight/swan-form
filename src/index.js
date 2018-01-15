@@ -7,8 +7,10 @@ import AddressField from './components/Fields/AddressField';
 import DateField from './components/Fields/DateField';
 import Reset from './components/Fields/Reset';
 import Submit from './components/Fields/Submit';
+import Form from './components/Form';
 
 export default {
+  Form,
   Field,
   AddressField,
   DateField,

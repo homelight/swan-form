@@ -99,11 +99,16 @@ export default class Field extends Component {
     validateDebounceTimeout: 200,
   };
 
+  static contextTypes = {
+    register: PropTypes.func,
+    unregister: PropTypes.func,
+  };
+
   static propTypes = {
     name: PropTypes.string.isRequired,
     type: PropTypes.oneOf(FIELD_TYPES).isRequired,
 
-    validate: PropTypes.func,
+    validate: PropTypes.oneOfType([PropTypes.func, PropTypes.arrayOf(PropTypes.func)]),
 
     className: PropTypes.oneOfType([
       PropTypes.string,
@@ -152,13 +157,14 @@ export default class Field extends Component {
       'setValue',
       // In case we need to reset the field
       'reset',
+      'validate',
     ].forEach(func => {
       this[func] = this[func].bind(this);
     });
   }
 
   componentDidMount() {
-    if (isFunction(this.props.register)) {
+    if (isFunction(this.context.register)) {
       this.register();
     }
     if (this.props.autoFocus) {
@@ -197,7 +203,7 @@ export default class Field extends Component {
   }
 
   componentWillUnmount() {
-    if (isFunction(this.props.unregister)) {
+    if (isFunction(this.context.unregister)) {
       this.unregister();
     }
   }
@@ -251,7 +257,10 @@ export default class Field extends Component {
   }
 
   maybeUpdateErrors(msg) {
-    if (msg === false) {
+    if (Array.isArray(msg)) {
+      console.log('array of messages');
+      return true;
+    } else if (msg === false) {
       if (this.state.errors.length !== 0) {
         this.setState(prevState => ({
           ...prevState,
@@ -259,12 +268,16 @@ export default class Field extends Component {
           errors: [],
         }));
       }
+      // This means it is valid
+      return true;
     } else {
       this.setState(prevState => ({
         ...prevState,
         isValid: false,
         errors: Array.isArray(msg) ? msg : [msg],
       }));
+      // This means it is not valid
+      return false;
     }
   }
 
@@ -337,7 +350,9 @@ export default class Field extends Component {
         <label>
           <span className="flowform--field--label">{label}</span>
           <span className={fieldStyle}>{children}</span>
-          <span className="flowform--field--errors">{this.state.errors.join(',')}</span>
+          <span className="flowform--field--errors">
+            {this.state.errors.filter(err => err).join(',')}
+          </span>
         </label>
       );
     }
@@ -345,10 +360,9 @@ export default class Field extends Component {
   }
 
   register() {
-    const { name, register } = this.props;
-    if (isFunction(register)) {
-      register({
-        name,
+    if (isFunction(this.context.register)) {
+      this.context.register({
+        name: this.props.name,
         validate: this.validate,
         getValue: this.getValue,
         setValue: this.setValue,
@@ -359,9 +373,8 @@ export default class Field extends Component {
   }
 
   unregister() {
-    const { name } = this.props;
-    if (isFunction(unregister)) {
-      unregister({ name });
+    if (isFunction(this.context.unregister)) {
+      this.context.unregister(this.props.name);
     }
   }
 
@@ -415,7 +428,7 @@ export default class Field extends Component {
     return (
       <input
         type={type}
-        value={value}
+        value={this.format(value)}
         ref={this.setRef}
         onChange={this.onChange}
         onBlur={this.onBlur}
@@ -431,7 +444,7 @@ export default class Field extends Component {
 
     return (
       <textarea
-        value={value}
+        value={this.format(value)}
         onChange={this.onChange}
         onBlur={this.onBlur}
         onFocus={this.onFocus}
