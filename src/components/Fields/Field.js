@@ -44,7 +44,7 @@ const COMMON_INPUT_PROPS = [
   'disabled',
   'readOnly',
 
-  'autoComplete', // find the list of possible ones
+  // 'autoComplete', // find the list of possible ones
 
   'maxLength',
   'placeholder',
@@ -102,6 +102,7 @@ export default class Field extends Component {
   static contextTypes = {
     register: PropTypes.func,
     unregister: PropTypes.func,
+    autoComplete: PropTypes.oneOf(['on', 'off']),
   };
 
   static propTypes = {
@@ -215,12 +216,29 @@ export default class Field extends Component {
   getSpreadProps() {
     // This might be a bad pattern because it might always return a new object, forcing a
     // rerender. Double-check this and maybe do it a different way
-    return COMMON_INPUT_PROPS.reduce((acc, prop) => {
+    const spreadProps = COMMON_INPUT_PROPS.reduce((acc, prop) => {
       if (hasOwnProperty(this.props, prop)) {
         acc[prop] = this.props[prop];
       }
       return acc;
     }, {});
+    if (this.context.autoComplete === 'off') {
+      spreadProps.autoComplete = 'off';
+    } else if (this.props.autoComplete) {
+      spreadProps.autoComplete = this.props.autoComplete;
+    }
+
+    // Most modern browsers ignore the "off" value when trying to set a form, so we'll attempt a
+    // workaround that may not work so well (applied to Chrome only for now).
+    // See https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion
+    // for an explanation.
+    if (spreadProps.autoComplete === 'off') {
+      if (global && global.navigator && global.navigator.appVersion.includes('Chrome')) {
+        spreadProps.autoComplete = 'new-password';
+      }
+    }
+
+    return spreadProps;
   }
 
   format() {
@@ -257,10 +275,7 @@ export default class Field extends Component {
   }
 
   maybeUpdateErrors(msg) {
-    if (Array.isArray(msg)) {
-      console.log('array of messages');
-      return true;
-    } else if (msg === false) {
+    if (msg === false) {
       if (this.state.errors.length !== 0) {
         this.setState(prevState => ({
           ...prevState,
@@ -271,6 +286,14 @@ export default class Field extends Component {
       // This means it is valid
       return true;
     } else {
+      if (Array.isArray(msg) && msg.every(message => message === false)) {
+        this.setState(prevState => ({
+          ...prevState,
+          isValid: true,
+          errors: [],
+        }));
+        return true;
+      }
       this.setState(prevState => ({
         ...prevState,
         isValid: false,
@@ -347,7 +370,7 @@ export default class Field extends Component {
     const fieldStyle = classes(['flowform--field--field', required && 'flowform--field--required']);
     if (label) {
       return (
-        <label>
+        <label className={classes([!this.state.isValid && 'flowform--field-has-errors'])}>
           <span className="flowform--field--label">{label}</span>
           <span className={fieldStyle}>{children}</span>
           <span className="flowform--field--errors">
@@ -356,7 +379,14 @@ export default class Field extends Component {
         </label>
       );
     }
-    return <span className={fieldStyle}>{children}</span>;
+    return (
+      <span className={classes([!this.state.isValid && 'flowform--field-has-errors'])}>
+        <span className={fieldStyle}>{children}</span>
+        <span className="flowform--field--errors">
+          {this.state.errors.filter(err => err).join(',')}
+        </span>
+      </span>
+    );
   }
 
   register() {

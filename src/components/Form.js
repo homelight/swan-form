@@ -4,16 +4,34 @@ import isFunction from '../helpers/isFunction';
 
 export default class Form extends Component {
   static propTypes = {
+    name: PropTypes.string.isRequired,
     onSubmit: PropTypes.func.isRequired,
+    autoComplete: PropTypes.oneOf(['on', 'off']),
+    noValidate: PropTypes.bool,
+  };
+
+  static defaultProps = {
+    autoComplete: 'on',
+    noValidate: false,
   };
 
   static childContextTypes = {
     register: PropTypes.func,
     unregister: PropTypes.func,
+    autoComplete: PropTypes.oneOf(['on', 'off']),
   };
 
   constructor(props) {
     super(props);
+
+    ['acceptCharset', 'action', 'target'].forEach(prop => {
+      if (props[prop]) {
+        console.error(
+          `FlowForm Error: Do not provide a '${prop}' prop for a form. Instead, handle form submission with an onSubmit handler to submit and do any necessary transforms there.`,
+        );
+      }
+    });
+
     // Fill out with all the things
     this.state = {};
 
@@ -34,6 +52,7 @@ export default class Form extends Component {
     return {
       register: this.registerField,
       unregister: this.unregsiterField,
+      autoComplete: this.props.autoComplete,
     };
   }
 
@@ -42,17 +61,18 @@ export default class Form extends Component {
     event.stopPropagation();
     const isValid = Object.keys(this.fields).every(field => this.fields[field].validate());
     if (!isValid) {
-      console.log('Form is invalid. Field level errors shoudl ensue.');
+      console.log('Form is invalid. Field level errors should ensue.');
+    } else {
+      const values = Object.keys(this.fields).reduce(
+        (acc, field) => ({
+          ...acc,
+          [field]: this.fields[field].getValue(),
+        }),
+        {},
+      );
+      console.log(values);
+      console.log('Submitting...');
     }
-    const values = Object.keys(this.fields).reduce(
-      (acc, field) => ({
-        ...acc,
-        [field]: this.fields[field].getValue(),
-      }),
-      {},
-    );
-    console.log(values);
-    console.log('Submitting...');
   }
 
   registerField({ name, getRef, getValue, setValue, validate, reset }) {

@@ -12,7 +12,7 @@ export default class App extends Component {
   render() {
     return (
       <div style={{ margin: '5rem', border: '1px solid steelblue', padding: '5rem' }}>
-        <Form onSubmit={onSubmit}>
+        <Form onSubmit={onSubmit} name="testform" autoComplete="off">
           <Field
             type="text"
             name="minTenField"
@@ -22,7 +22,6 @@ export default class App extends Component {
             validateWhileTyping
             placeholder="test"
             value="testing"
-            label="field"
             autoFocus
           />
 
