@@ -14,6 +14,14 @@ npm install --save flow-form
 
 The main field to use is the `Field` component.
 
+#### Turning off autoComplete
+
+Setting the a form's autoComplete value to `off` will override all fields and have those set to `off` as well. However, you will see mixed results when trying to set 'autoComplete' to off because most modern browsers will still attmept to autocomplete the field even if the form and the field are set to 'off'.
+
+Currently, for Chrome, if the value of a field's autoComplete is set to off, we instead change it to 'nope', which will keep Chrome from guessing, but it will still remember past values of the same form.
+
+See [this MDN note](https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion) for more information.
+
 #### Formatters
 
 Not implemented yet.

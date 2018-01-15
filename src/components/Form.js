@@ -92,6 +92,11 @@ export default class Form extends Component {
   }
 
   render() {
-    return <form onSubmit={this.handleOnSubmit}>{this.props.children}</form>;
+    const { autoComplete, children } = this.props;
+    return (
+      <form onSubmit={this.handleOnSubmit} autoComplete={autoComplete}>
+        {children}
+      </form>
+    );
   }
 }

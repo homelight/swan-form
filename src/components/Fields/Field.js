@@ -232,9 +232,13 @@ export default class Field extends Component {
     // workaround that may not work so well (applied to Chrome only for now).
     // See https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion
     // for an explanation.
+    //
+    // @TODO consider taking this out and adding in a note in the README saying it won't work.
+    //
+    // If we update this condition to something other than Chrome, then we need to update the README.
     if (spreadProps.autoComplete === 'off') {
       if (global && global.navigator && global.navigator.appVersion.includes('Chrome')) {
-        spreadProps.autoComplete = 'new-password';
+        spreadProps.autoComplete = 'nope';
       }
     }
 
