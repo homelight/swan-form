@@ -2,6 +2,11 @@ import React, { Component } from 'react';
 
 export default class Intro extends Component {
   render() {
-    return <div>This is the introduction to Flow Form. Yay!</div>;
+    return (
+      <div>
+        <h1>Flow Form</h1>
+        <p>This is the introduction to Flow Form. Yay!</p>
+      </div>
+    );
   }
 }
