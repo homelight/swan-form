@@ -413,7 +413,12 @@ export default class Field extends Component {
   }
 
   reset() {
-    this.setValue(this.initialState);
+    // Clobber the state by setting back to the initialState
+    this.setState(this.initialState);
+    // If we were provided a change function, then call it with the initial value
+    if (isFunction(this.props.onChange)) {
+      this.props.onChange(this.initialState.value);
+    }
   }
 
   /**
@@ -438,11 +443,12 @@ export default class Field extends Component {
    *
    * @param {any} value the value to set
    */
-  setValue(value) {
+  setValue(value, resetErrors = false, resetTouched = false) {
     this.setState(prevState => ({
       ...prevState,
+      errors: resetErrors === false ? prevState.errors : [],
       value,
-      isTouched: true,
+      isTouched: resetTouched === true ? false : true,
       isDirty: value !== this.props.value,
     }));
 

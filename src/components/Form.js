@@ -6,6 +6,8 @@ export default class Form extends Component {
   static propTypes = {
     name: PropTypes.string.isRequired,
     onSubmit: PropTypes.func.isRequired,
+    beforeSubmit: PropTypes.func,
+    afterSubmit: PropTypes.func,
     autoComplete: PropTypes.oneOf(['on', 'off']),
     noValidate: PropTypes.bool,
   };
@@ -19,6 +21,8 @@ export default class Form extends Component {
     register: PropTypes.func,
     unregister: PropTypes.func,
     autoComplete: PropTypes.oneOf(['on', 'off']),
+    reset: PropTypes.func,
+    onSubmit: PropTypes.func,
   };
 
   constructor(props) {
@@ -39,9 +43,15 @@ export default class Form extends Component {
     // of all of the fields that get registered with this component.
     this.fields = {};
 
-    ['setRef', 'handleOnSubmit', 'registerField', 'unregsiterField'].forEach(
-      func => (this[func] = this[func].bind(this)),
-    );
+    [
+      'setRef',
+      'handleBeforeSubmit',
+      'handleOnSubmit',
+      'handleAfterSubmit',
+      'registerField',
+      'unregsiterField',
+      'resetForm',
+    ].forEach(func => (this[func] = this[func].bind(this)));
   }
 
   setRef(el) {
@@ -53,7 +63,23 @@ export default class Form extends Component {
       register: this.registerField,
       unregister: this.unregsiterField,
       autoComplete: this.props.autoComplete,
+      reset: this.resetForm,
+      onSubmit: this.handleOnSubmit,
     };
+  }
+
+  handleBeforeSubmit(values) {
+    if (isFunction(this.props.beforeSubmit)) {
+      return this.props.beforeSubmit(values);
+    }
+    return Promise.resolve(values);
+  }
+
+  handleAfterSubmit(values) {
+    if (isFunction(this.props.afterSubmit)) {
+      return this.props.afterSubmit(values);
+    }
+    return Promise.resolve(values);
   }
 
   handleOnSubmit(event) {
@@ -70,7 +96,11 @@ export default class Form extends Component {
         }),
         {},
       );
+
       console.log(values);
+      this.handleBeforeSubmit(values)
+        .then(this.props.onSubmit)
+        .then(this.handleAfterSubmit);
       console.log('Submitting...');
     }
   }
@@ -89,6 +119,10 @@ export default class Form extends Component {
         [field]: fields[field],
       };
     }, {});
+  }
+
+  resetForm() {
+    Object.keys(this.fields).forEach(field => this.fields[field].reset());
   }
 
   render() {

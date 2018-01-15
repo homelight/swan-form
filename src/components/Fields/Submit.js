@@ -4,10 +4,17 @@ import Field from './Field';
 import isFunction from '../../helpers/isFunction';
 
 export default class Submit extends Component {
-  constructor(props) {
+  static contextTypes = {
+    onSubmit: PropTypes.func,
+  };
+
+  constructor(props, context) {
     super(props);
-    if (!isFunction(props.onSubmit)) {
-      console.error('On Submit must be a function.');
+    console.log(context);
+    if (!isFunction(props.onSubmit) && !isFunction(context.onSubmit)) {
+      console.error(
+        'On Submit must be a function passed either as a prop on the `Submit` component or on the `Form` component.',
+      );
     }
     this.submitForm = this.submitForm.bind(this);
     this.beforeSubmit = this.beforeSubmit.bind(this);
