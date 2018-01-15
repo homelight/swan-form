@@ -29,8 +29,7 @@ export default class asFieldHOC extends Component {
     this.change2 = this.onChange.bind(this, 'aWrappedFormInput2');
   }
 
-  onChange(name, event) {
-    const { value } = event.target;
+  onChange(name, value) {
     this.setState(prevState => Object.assign({}, prevState, { [name]: value }));
   }
 

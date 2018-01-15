@@ -138,6 +138,7 @@ function asField(WrappedComponent) {
 
     handleOnChange(event) {
       const { value } = event.target;
+
       if (value !== this.state.value) {
         this.setValue(value);
       }
@@ -159,12 +160,13 @@ function asField(WrappedComponent) {
     }
 
     render() {
+      const { onChange, onBlur, onFocus, ...spreadProps } = this.props;
       return (
         <WrappedComponent
           onChange={this.handleOnChange}
           onBlur={this.handleOnBlur}
           onFocus={this.handleOnFocus}
-          {...this.props}
+          {...spreadProps}
         />
       );
     }

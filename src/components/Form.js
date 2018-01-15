@@ -4,6 +4,10 @@ import isFunction from '../helpers/isFunction';
 import hasOwnProperty from '../helpers/hasOwnProperty';
 import autobind from '../helpers/autobind';
 
+// These are fields that we will automatically pull out of the form as they are just the
+// automatically generated names for the submit and reset buttons
+const fieldToRemove = ['flowform--reset', 'flowform--submit'];
+
 export default class Form extends Component {
   static propTypes = {
     /**
@@ -118,13 +122,15 @@ export default class Form extends Component {
     if (!isValid) {
       console.log('Form is invalid. Field level errors should ensue.');
     }
-    const values = Object.keys(this.fields).reduce(
-      (acc, field) => ({
-        ...acc,
-        [field]: this.fields[field].getValue(),
-      }),
-      {},
-    );
+    const values = Object.keys(this.fields)
+      .filter(field => !fieldToRemove.includes(field))
+      .reduce(
+        (acc, field) => ({
+          ...acc,
+          [field]: this.fields[field].getValue(),
+        }),
+        {},
+      );
 
     console.log(values);
     // this.handleBeforeSubmit(values)
