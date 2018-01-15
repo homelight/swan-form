@@ -40,6 +40,10 @@ export default class Slider extends Component {
     autobind(this, ['registerSlide', 'unregisterSlide', 'prev', 'next']);
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return this.props !== nextProps || this.state !== nextState;
+  }
+
   componentWillUpdate(nextProps) {
     if (nextProps.height !== this.props.height) {
       this.height = { height: nextProps.height };
@@ -80,14 +84,17 @@ export default class Slider extends Component {
   change(val) {
     this.setState(prevState => {
       const newVal = clamp(prevState.current + val, 0, this.props.slides.length - 1);
-      console.log(prevState.current, newVal);
       if (newVal === prevState.current) {
+        console.log('same value');
+        console.log(newVal, prevState.current);
         return prevState;
+      } else {
+        console.log(prevState.current, newVal);
+        return {
+          ...prevState,
+          current: newVal,
+        };
       }
-      return {
-        ...prevState,
-        current: newVal,
-      };
     });
   }
 
