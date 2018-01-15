@@ -1,8 +1,28 @@
 .flowform--slider {
+  border: 1px solid red;
+  height: auto;
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex: 1;
+  overflow: hidden;
 }
 
 .flowform--slider--control {
+  background-color: dodgerblue;
+  border: 1px solid steelblue;
+  cursor: pointer;
+  padding: 0.25rem;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+  z-index: 999;
+}
+
+.flowform--slider--control--left {
+  left: 0;
+}
+
+.flowform--slider--control--right {
+  right: 0;
 }

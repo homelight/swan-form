@@ -1,10 +1,11 @@
 .flowform--slide {
   position: absolute;
-  visibility: hidden;
+  /*visibility: hidden;*/
   will-change: transform;
   transition: transform 0.4s ease-in-out;
   height: 100%;
   width: 100%;
+  padding: 2rem;
 }
 
 .flowform--slide--before {
@@ -13,7 +14,7 @@
 
 .flowform--slide--current {
   transform: translateX(0);
-  visibility: visible;
+  /*visibility: visible;*/
 }
 
 .flowform--slide--after {

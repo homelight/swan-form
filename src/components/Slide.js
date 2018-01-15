@@ -1,11 +1,22 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-
+import autobind from '../helpers/autobind';
 import isFunction from '../helpers/isFunction';
+import classes from '../helpers/classes';
 
 import styles from './Slide.css';
 
+const alwaysTrue = () => true;
+
 export default class Slide extends Component {
+  static propTypes = {
+    shouldShowIf: PropTypes.func,
+  };
+
+  static defaultProps = {
+    shouldShowIf: alwaysTrue,
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -15,6 +26,8 @@ export default class Slide extends Component {
     this.registerField = this.registerField.bind(this);
     this.unregisterField = this.unregisterField.bind(this);
     this.setRef = this.setRef.bind(this);
+
+    autobind(this, ['setRef', 'isValid']);
   }
 
   componentDidMount() {
@@ -75,6 +88,18 @@ export default class Slide extends Component {
   }
 
   render() {
-    <div ref={this.setRef}>{this.props.children}</div>;
+    const { position } = this.props;
+    const classNames = classes([
+      'flowform--slide',
+      position === 'before' && 'flowform--slide--before',
+      position === 'current' && 'flowform--slide--current',
+      position === 'after' && 'flowform--slide--after',
+    ]);
+    console.log(classNames);
+    return (
+      <div className={classNames} ref={this.setRef}>
+        {this.props.children}
+      </div>
+    );
   }
 }
