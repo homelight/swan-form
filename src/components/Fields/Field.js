@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classes from '../../helpers/classes';
+import isFunction from '../../helpers/isFunction';
 import hasOwnProperty from '../../helpers/hasOwnProperty';
 import isObject from '../../helpers/isObject';
 
@@ -83,7 +84,15 @@ const INPUT_NUMBER_PROPS = [];
 
 const FIELD_TYPES = [...INPUT_TYPES, 'select', 'textarea'];
 
-const isFunction = func => typeof func === 'function';
+function isEqual(a, b) {
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length !== b.length) {
+      return false;
+    }
+    return a.every((val, index) => b[index] === val);
+  }
+  return a === b;
+}
 
 export default class Field extends Component {
   static defaultProps = {
@@ -113,18 +122,37 @@ export default class Field extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {
-      value: props.value || '',
+    const state = {
+      value: props.value || (props.type === 'select' && props.multiple === true ? [''] : ''),
       errors: [],
       isValid: true, // not sure what to do about this
       isDirty: false,
       isTouched: false,
     };
 
+    this.isMultipleSelect = props.type === 'select' && props.multiple === true;
+
+    this.state = Object.assign({}, state);
+    this.initialState = Object.assign({}, state);
+
     this.debounceValidateTimer = null;
 
-    // Bind some handlers
-    ['onChange', 'onBlur', 'onFocus', 'setRef', 'renderOption', 'renderOptions'].forEach(func => {
+    // Autobind factory
+    [
+      // Bind some handlers for use with events
+      'onChange',
+      'onBlur',
+      'onFocus',
+      'setRef',
+      // These need to be bound because of how they're called
+      'renderOption',
+      'renderOptions',
+      // Bind these so that parental compenents can use them
+      'getValue',
+      'setValue',
+      // In case we need to reset the field
+      'reset',
+    ].forEach(func => {
       this[func] = this[func].bind(this);
     });
   }
@@ -161,7 +189,7 @@ export default class Field extends Component {
       return true;
     }
 
-    if (this.state.errors !== nextState.errors) {
+    if (!isEqual(this.state.errors, nextState.errors)) {
       return true;
     }
 
@@ -179,6 +207,8 @@ export default class Field extends Component {
   }
 
   getSpreadProps() {
+    // This might be a bad pattern because it might always return a new object, forcing a
+    // rerender. Double-check this and maybe do it a different way
     return COMMON_INPUT_PROPS.reduce((acc, prop) => {
       if (hasOwnProperty(this.props, prop)) {
         acc[prop] = this.props[prop];
@@ -243,21 +273,28 @@ export default class Field extends Component {
     const { validateWhileTyping, validateDebounceTimeout, onChange } = this.props;
 
     if (validateWhileTyping) {
+      // If we are to validate while typing, then we'll debunce it. Basically, just set a timeout,
+      // and, on each change event, clear the timeout and set a new one. The last one will go
+      // through. This should help by not showing errors too early or, if there is a remote call
+      // for the validation, not making too many worthless ajax requests
       window.clearTimeout(this.debounceValidateTimer);
       this.debounceValidateTimer = setTimeout(() => this.validate(), validateDebounceTimeout);
     }
 
-    if (this.state.value !== value) {
-      this.setState(prevState => ({
-        ...prevState,
-        value,
-        isDirty: value !== this.props.value,
-      }));
-
-      // Call user supplied function if given
-      if (isFunction(onChange)) {
-        onChange(value);
+    if (this.isMultipleSelect) {
+      const { options } = event.target;
+      const values = [];
+      for (let i = 0; i < options.length; i++) {
+        if (options[i].selected) {
+          values.push(options[i].value);
+        }
       }
+      if (!isEqual(this.state.value, values)) {
+        this.setValue(values);
+      }
+    } else if (this.state.value !== value) {
+      // Only run the setState method if the value is actually different
+      this.setValue(value);
     }
   }
 
@@ -314,7 +351,9 @@ export default class Field extends Component {
         name,
         validate: this.validate,
         getValue: this.getValue,
+        setValue: this.setValue,
         getRef: this.getRef,
+        reset: this.reset,
       });
     }
   }
@@ -326,8 +365,44 @@ export default class Field extends Component {
     }
   }
 
+  reset() {
+    this.setValue(this.initialState);
+  }
+
+  /**
+   * Gets the value of the field
+   *
+   * A bound version of this method is sent with the register method so that any component that
+   * controls this field can access its value.
+   *
+   * @return {any} the value of the field
+   */
   getValue() {
     return this.state.value;
+  }
+
+  /**
+   * Set the value of the field
+   *
+   * This is a different method because (1) a bit of code reuse, but more importantly (2) the parent
+   * a parent component might want to force update the value, hence, we provide a backdoor to the
+   * setState method. This will be sent as part of the callback in the `register` method, so that
+   * anything that this registers with shall have access to update the value.
+   *
+   * @param {any} value the value to set
+   */
+  setValue(value) {
+    this.setState(prevState => ({
+      ...prevState,
+      value,
+      isTouched: true,
+      isDirty: value !== this.props.value,
+    }));
+
+    // Call user supplied function if given
+    if (isFunction(this.props.onChange)) {
+      this.props.onChange(value);
+    }
   }
 
   getRef() {

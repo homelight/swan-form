@@ -1,60 +1,115 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Field from './Field';
+// import classes from '../../helpers/classes';
 
-const states = {
-  '----': '',
-  Alabama: 'AL',
-  Alaska: 'AK',
-  Arizona: 'AZ',
-  Arkansas: 'AR',
-  California: 'CA',
-  Colorado: 'CO',
-  Connecticut: 'CT',
-  Delaware: 'DE',
-  Florida: 'FL',
-  Georgia: 'GA',
-  Hawaii: 'HI',
-  Idaho: 'ID',
-  Illinois: 'IL',
-  Indiana: 'IN',
-  Iowa: 'IA',
-  Kansas: 'KS',
-  Kentucky: 'KY',
-  Louisiana: 'LA',
-  Maine: 'ME',
-  Maryland: 'MD',
-  Massachusetts: 'MA',
-  Michigan: 'MI',
-  Minnesota: 'MN',
-  Mississippi: 'MS',
-  Missouri: 'MO',
-  Montana: 'MT',
-  Nebraska: 'NE',
-  Nevada: 'NV',
-  'New Hampshire': 'NH',
-  'New Jersey': 'NJ',
-  'New Mexico': 'NM',
-  'New York': 'NY',
-  'North Carolina': 'NC',
-  'North Dakota': 'ND',
-  Ohio: 'OH',
-  Oklahoma: 'OK',
-  Oregon: 'OR',
-  Pennsylvania: 'PA',
-  'Rhode Island': 'RI',
-  'South Carolina': 'SC',
-  'South Dakota': 'SD',
-  Tennessee: 'TN',
-  Texas: 'TX',
-  Utah: 'UT',
-  Vermont: 'VT',
-  Virginia: 'VA',
-  Washington: 'WA',
-  'West Virginia': 'WV',
-  Wisconsin: 'WI',
-  Wyoming: 'WY',
-};
+// const states = {
+//   '----': '',
+//   Alabama: 'AL',
+//   Alaska: 'AK',
+//   Arizona: 'AZ',
+//   Arkansas: 'AR',
+//   California: 'CA',
+//   Colorado: 'CO',
+//   Connecticut: 'CT',
+//   Delaware: 'DE',
+//   Florida: 'FL',
+//   Georgia: 'GA',
+//   Hawaii: 'HI',
+//   Idaho: 'ID',
+//   Illinois: 'IL',
+//   Indiana: 'IN',
+//   Iowa: 'IA',
+//   Kansas: 'KS',
+//   Kentucky: 'KY',
+//   Louisiana: 'LA',
+//   Maine: 'ME',
+//   Maryland: 'MD',
+//   Massachusetts: 'MA',
+//   Michigan: 'MI',
+//   Minnesota: 'MN',
+//   Mississippi: 'MS',
+//   Missouri: 'MO',
+//   Montana: 'MT',
+//   Nebraska: 'NE',
+//   Nevada: 'NV',
+//   'New Hampshire': 'NH',
+//   'New Jersey': 'NJ',
+//   'New Mexico': 'NM',
+//   'New York': 'NY',
+//   'North Carolina': 'NC',
+//   'North Dakota': 'ND',
+//   Ohio: 'OH',
+//   Oklahoma: 'OK',
+//   Oregon: 'OR',
+//   Pennsylvania: 'PA',
+//   'Rhode Island': 'RI',
+//   'South Carolina': 'SC',
+//   'South Dakota': 'SD',
+//   Tennessee: 'TN',
+//   Texas: 'TX',
+//   Utah: 'UT',
+//   Vermont: 'VT',
+//   Virginia: 'VA',
+//   Washington: 'WA',
+//   'West Virginia': 'WV',
+//   Wisconsin: 'WI',
+//   Wyoming: 'WY',
+// };
+
+const states = [
+  '----',
+  'AL',
+  'AK',
+  'AZ',
+  'AR',
+  'CA',
+  'CO',
+  'CT',
+  'DE',
+  'FL',
+  'GA',
+  'HI',
+  'ID',
+  'IL',
+  'IN',
+  'IA',
+  'KS',
+  'KY',
+  'LA',
+  'ME',
+  'MD',
+  'MA',
+  'MI',
+  'MN',
+  'MS',
+  'MO',
+  'MT',
+  'NE',
+  'NV',
+  'NH',
+  'NJ',
+  'NM',
+  'NY',
+  'NC',
+  'ND',
+  'OH',
+  'OK',
+  'OR',
+  'PA',
+  'RI',
+  'SC',
+  'SD',
+  'TN',
+  'TX',
+  'UT',
+  'VT',
+  'VA',
+  'WA',
+  'WV',
+  'WI',
+  'WY',
+];
 
 export default class AddressField extends Component {
   constructor(props) {
@@ -79,9 +134,10 @@ export default class AddressField extends Component {
     this.onZipChange = this.updatePart.bind(this, 'zip');
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return this.props !== nextProps;
-  }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   // We should see about this....
+  //   return this.props !== nextProps;
+  // }
 
   updatePart(key, value) {
     if (
@@ -101,15 +157,37 @@ export default class AddressField extends Component {
   setValue(newValues) {
     this.setState(prevState => ({
       ...prevState,
-      line1: newValues.line1,
-      line2: newValues.line2,
-      city: newValues.city,
-      state: newValues.state,
-      zip: newValues.zip,
+      isDirty: true,
+      isTouched: true,
+      value: {
+        line1: newValues.line1,
+        line2: newValues.line2,
+        city: newValues.city,
+        state: newValues.state,
+        zip: newValues.zip,
+      },
     }));
   }
 
-  validate() {}
+  setDirty() {
+    if (this.state.isDirty !== true) {
+      this.setState(prevState => ({
+        ...prevState,
+        isDirty: true,
+      }));
+    }
+  }
+
+  setTouched() {
+    if (this.state.isTouched !== true) {
+      this.setState(prevState => ({
+        ...prevState,
+        isTouched: true,
+      }));
+    }
+  }
+
+  validate(updateErrors = false) {}
 
   register() {
     const { name, register } = this.props;
@@ -118,15 +196,15 @@ export default class AddressField extends Component {
         name,
         validate: this.validate,
         getValue: this.getValue,
+        setValue: this.setValue,
         getRef: this.getRef,
       });
     }
   }
 
   unregister() {
-    const { name } = this.props;
     if (isFunction(unregister)) {
-      unregister({ name });
+      unregister({ name: this.props.name });
     }
   }
 
@@ -135,9 +213,8 @@ export default class AddressField extends Component {
   }
 
   isDirty() {
-    return Object.keys(this.state.value).every(
-      key => this.props.value[key] === this.state.value[key],
-    );
+    const { value } = this.state;
+    return Object.keys(value).every(key => this.props.value[key] === value[key]);
   }
 
   isTouched() {
@@ -148,6 +225,7 @@ export default class AddressField extends Component {
     const { name, className } = this.props;
     return (
       <fieldset className={className}>
+        <legend>Address</legend>
         <Field
           type="text"
           name={`${name}-line1`}
@@ -163,12 +241,14 @@ export default class AddressField extends Component {
           autoComplete="address-line2"
           placeholder="Line 2"
         />
+        <br />
         <Field
           type="text"
           name={`${name}-city`}
           autoComplete="address-level2"
           onChange={this.onCityChange}
           placeholder="City"
+          required
         />
         <Field
           type="select"
@@ -177,13 +257,16 @@ export default class AddressField extends Component {
           onChange={this.onStateChange}
           autoComplete="address-level1"
           placeholder="State"
+          required
         />
+        <br />
         <Field
           type="text"
           name={`${name}-zipcode`}
           autoComplete="postal-code"
           onChange={this.onZipChange}
           placeholder="Zip"
+          required
         />
       </fieldset>
     );

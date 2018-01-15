@@ -1,8 +1,24 @@
 .flowform--field--required::after {
   content: '*';
   color: red;
+  position: absolute; /* fixes display with textareas */
+}
+
+.flowform--field--required {
+  margin-right: 1em; /* make up for position:absolute on ::after */
 }
 
 .flowform--field--errors {
   color: red;
+}
+
+.flowform--remove-fieldset {
+  border: 0;
+  -webkit-margin-start: 0;
+  -webkit-margin-end: 0;
+  -webkit-padding-before: 0;
+  -webkit-padding-start: 0;
+  -webkit-padding-end: 0;
+  -webkit-padding-after: 0;
+  min-width: -webkit-min-content;
 }
