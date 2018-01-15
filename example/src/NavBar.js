@@ -13,6 +13,7 @@ export default class NavBar extends Component {
           <li>
             <Link to="slider-form">Slider</Link>
           </li>
+          <li>Styling</li>
           <li>With Redux</li>
           <li>With React Router</li>
         </ul>
