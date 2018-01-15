@@ -1,14 +1,34 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import isFunction from '../helpers/isFunction';
+import hasOwnProperty from '../helpers/hasOwnProperty';
+import autobind from '../helpers/autobind';
 
 export default class Form extends Component {
   static propTypes = {
+    /**
+     * The name of the form
+     */
     name: PropTypes.string.isRequired,
+    /**
+     * The function to run on submit
+     */
     onSubmit: PropTypes.func.isRequired,
+    /**
+     * A preprocessor run on form values after validation but before submit
+     */
     beforeSubmit: PropTypes.func,
+    /**
+     * A function run after a successful submit
+     */
     afterSubmit: PropTypes.func,
+    /**
+     * Turn on or off autocomplete for forms (does not always work)
+     */
     autoComplete: PropTypes.oneOf(['on', 'off']),
+    /**
+     * Turn off native form validation
+     */
     noValidate: PropTypes.bool,
   };
 
@@ -43,7 +63,7 @@ export default class Form extends Component {
     // of all of the fields that get registered with this component.
     this.fields = {};
 
-    [
+    autobind(this, [
       'setRef',
       'handleBeforeSubmit',
       'handleOnSubmit',
@@ -51,7 +71,7 @@ export default class Form extends Component {
       'registerField',
       'unregsiterField',
       'resetForm',
-    ].forEach(func => (this[func] = this[func].bind(this)));
+    ]);
   }
 
   setRef(el) {
@@ -66,6 +86,15 @@ export default class Form extends Component {
       reset: this.resetForm,
       onSubmit: this.handleOnSubmit,
     };
+  }
+
+  getSpreadProps() {
+    return ['noValidate'].reduce((acc, prop) => {
+      if (hasOwnProperty(this.props, prop)) {
+        acc[prop] = this.props[prop];
+      }
+      return acc;
+    }, {});
   }
 
   handleBeforeSubmit(values) {
@@ -122,13 +151,15 @@ export default class Form extends Component {
   }
 
   resetForm() {
-    Object.keys(this.fields).forEach(field => this.fields[field].reset());
+    Object.keys(this.fields).forEach(
+      field => isFunction(this.fields[field].reset) && this.fields[field].reset(),
+    );
   }
 
   render() {
     const { autoComplete, children } = this.props;
     return (
-      <form onSubmit={this.handleOnSubmit} autoComplete={autoComplete}>
+      <form onSubmit={this.handleOnSubmit} autoComplete={autoComplete} {...this.getSpreadProps()}>
         {children}
       </form>
     );

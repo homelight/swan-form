@@ -4,6 +4,7 @@ import classes from '../../helpers/classes';
 import isFunction from '../../helpers/isFunction';
 import hasOwnProperty from '../../helpers/hasOwnProperty';
 import isObject from '../../helpers/isObject';
+import autobind from '../../helpers/autobind';
 
 import styles from './Field.css';
 
@@ -144,7 +145,7 @@ export default class Field extends Component {
     this.debounceValidateTimer = null;
 
     // Autobind factory
-    [
+    autobind(this, [
       // Bind some handlers for use with events
       'onChange',
       'onBlur',
@@ -159,9 +160,7 @@ export default class Field extends Component {
       // In case we need to reset the field
       'reset',
       'validate',
-    ].forEach(func => {
-      this[func] = this[func].bind(this);
-    });
+    ]);
   }
 
   componentDidMount() {

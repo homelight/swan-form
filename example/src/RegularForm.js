@@ -13,7 +13,7 @@ export default class RegularForm extends Component {
     return (
       <div>
         <div style={{ margin: '5rem', border: '1px solid steelblue', padding: '5rem' }}>
-          <Form onSubmit={onSubmit} name="testform">
+          <Form onSubmit={onSubmit} name="testform" noValidate={true}>
             <Field
               type="text"
               name="minTenField"
