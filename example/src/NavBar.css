@@ -1,0 +1,20 @@
+.NavBar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  border-bottom: 1px solid gray;
+  background-color: white;
+  width: 100%;
+  padding: 1rem;
+  box-shadow: 0 0 2px gray;
+  text-align: center;
+}
+
+.NavBar ul li {
+  display: inline-block;
+  margin-right: 1rem;
+}
+
+.NavBar ul li:last-child {
+  margin-right: 0;
+}
