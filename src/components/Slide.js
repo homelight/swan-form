@@ -17,6 +17,18 @@ export default class Slide extends Component {
     shouldShowIf: alwaysTrue,
   };
 
+  static contextTypes = {
+    registerSlide: PropTypes.func,
+    unregisterSlide: PropTypes.func,
+    register: PropTypes.func,
+    unregister: PropTypes.func,
+  };
+
+  static childContextTypes = {
+    register: PropTypes.func,
+    unregister: PropTypes.func,
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -25,9 +37,16 @@ export default class Slide extends Component {
     };
     this.registerField = this.registerField.bind(this);
     this.unregisterField = this.unregisterField.bind(this);
-    this.setRef = this.setRef.bind(this);
+    this.fields = {};
 
-    autobind(this, ['setRef', 'isValid']);
+    autobind(this, ['setRef', 'isValid', 'registerField', 'unregisterField']);
+  }
+
+  getChildContext() {
+    return {
+      register: this.registerField,
+      unregister: this.unregisterField,
+    };
   }
 
   componentDidMount() {
@@ -54,37 +73,47 @@ export default class Slide extends Component {
   }
 
   register() {
-    if (isFunction(this.props.register)) {
-      this.props.register();
+    if (isFunction(this.context.registerSlide)) {
+      this.context.registerSlide({ index: this.props.index, isValid: this.isValid });
     }
   }
 
   unregister() {
-    if (isFunction(this.props.unregister)) {
-      this.props.unregister();
+    if (isFunction(this.context.unregisterSlide)) {
+      this.context.unregisterSlide();
     }
   }
 
-  registerField(name, validate) {
-    this.setState(prevState => ({
-      ...prevState,
-      fields: {
-        ...prevState.fields,
-        [name]: validate,
+  registerField({ name, getRef, getValue, setValue, validate, reset, isValid }) {
+    if (isFunction(this.context.register)) {
+      this.context.register({ name, getRef, getValue, setValue, validate, reset });
+    }
+    this.fields = Object.assign({}, this.fields, {
+      [name]: {
+        isValid,
+        validate,
       },
-    }));
+    });
   }
 
   unregisterField(name) {
-    const { [name]: removed, ...remaining } = this.state.fields;
-    this.setState(prevState => ({
-      ...prevState,
-      fields: remaining,
-    }));
+    if (isFunction(this.context.unregister)) {
+      this.context.unregister(name);
+    }
+    const { [name]: removed, ...remaining } = this.fields;
+    this.fields = remaining;
   }
 
   isValid() {
-    return true;
+    // Run through all the validations...
+    return Object.keys(this.fields).every(field => {
+      const fieldIsValid = this.fields[field].isValid();
+      if (!fieldIsValid) {
+        // Make the errors appear
+        this.fields[field].validate();
+      }
+      return fieldIsValid;
+    });
   }
 
   render() {

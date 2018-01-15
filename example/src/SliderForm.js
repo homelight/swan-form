@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { Slide, Slider } from './flow-form';
+import { Field, Slide, Slider } from './flow-form';
+
+const required = value =>
+  value !== null && value !== undefined && value.trim() !== '' ? false : 'Required';
 
 export default class SliderForm extends Component {
   render() {
@@ -8,13 +11,20 @@ export default class SliderForm extends Component {
         <Slider
           slides={[
             {
-              render: () => <div>Hi ma 1!</div>,
+              render: () => (
+                <div>
+                  <h1>A first question</h1>
+                  <Field type="text" name="first-question" validate={required} />
+                </div>
+              ),
             },
             {
               render: () => <div>Hi ma 2!</div>,
+              shouldShowIf: () => false,
             },
             {
               render: () => <div>Hi ma 3!</div>,
+              shouldShowIf: () => false,
             },
             {
               render: () => <div>Hi ma 4!</div>,

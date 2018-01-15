@@ -5,6 +5,11 @@ import isFunction from '../../helpers/isFunction';
 import hasOwnProperty from '../../helpers/hasOwnProperty';
 import isObject from '../../helpers/isObject';
 import autobind from '../../helpers/autobind';
+import runValidations from './shared/runValidations';
+import noErrors from './shared/noErrors';
+import hasErrors from './shared/hasErrors';
+import noop from './shared/noop';
+import moveCursor from './shared/moveCursor';
 
 import styles from './Field.css';
 
@@ -134,7 +139,7 @@ export default class Field extends Component {
     const state = {
       value: props.value || (this.isMultipleSelect ? [''] : ''),
       errors: [],
-      isValid: true, // not sure what to do about this
+      isValid: !hasErrors(runValidations(props.validate, props.value)),
       isDirty: false,
       isTouched: false,
     };
@@ -160,6 +165,8 @@ export default class Field extends Component {
       // In case we need to reset the field
       'reset',
       'validate',
+      'runValidations',
+      'isValid',
     ]);
   }
 
@@ -173,16 +180,8 @@ export default class Field extends Component {
       fieldRef.focus();
       // We're going to try to position the cursor in the correct position for editing, so, if there
       // is a value already, we'll get the length and set the cursor to that.
-      const end = this.state.value.length; // @todo, we might have to turn this into a string
-
-      // See if setSelectionRange exists, if so, then use that
-      if (isFunction(fieldRef.setSelectionRange)) {
-        this.fieldRef.setSelectionRange(end, end);
-      } else if (isFunction(fieldRef.createTextRange)) {
-        const range = fieldRef.createTextRange;
-        range.move('character', end);
-        range.select();
-      }
+      // @todo, we might have to turn the second arg into a string
+      moveCursor(fieldRef, this.state.value.length);
     }
   }
 
@@ -218,8 +217,9 @@ export default class Field extends Component {
   }
 
   setRef(el) {
-    if (this.props.setRef && isFunction(this.props.setRef)) {
-      this.props.setRef(el);
+    const { setRef } = this.props;
+    if (setRef && isFunction(setRef)) {
+      setRef(el);
     }
     this.fieldRef = el;
   }
@@ -268,25 +268,15 @@ export default class Field extends Component {
   }
 
   validate() {
-    const { validate } = this.props;
+    return this.maybeUpdateErrors(this.runValidations());
+  }
 
-    let errors = [];
-    if (Array.isArray(validate)) {
-      return this.maybeUpdateErrors(
-        validate.map(fn => {
-          if (!isFunction(fn)) {
-            return false;
-          }
-          return fn(this.state.value);
-        }),
-      );
-    }
+  runValidations() {
+    return runValidations(this.props.validate, this.state.value);
+  }
 
-    if (isFunction(validate)) {
-      return this.maybeUpdateErrors(validate(this.state.value));
-    }
-
-    return this.maybeUpdateErrors(false);
+  isValid() {
+    return !hasErrors(this.runValidations());
   }
 
   maybeUpdateErrors(msg) {
@@ -408,10 +398,11 @@ export default class Field extends Component {
     if (isFunction(this.context.register)) {
       this.context.register({
         name: this.props.name,
-        validate: this.validate,
+        getRef: this.getRef,
         getValue: this.getValue,
         setValue: this.setValue,
-        getRef: this.getRef,
+        validate: this.validate,
+        isValid: this.isValid,
         reset: this.reset,
       });
     }

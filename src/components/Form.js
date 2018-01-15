@@ -140,7 +140,10 @@ export default class Form extends Component {
   }
 
   registerField({ name, getRef, getValue, setValue, validate, reset }) {
-    this.fields = Object.assign({}, this.fields, { [name]: { getRef, getValue, validate, reset } });
+    this.fields = {
+      ...this.fields,
+      [name]: { getRef, getValue, validate, reset },
+    };
   }
 
   unregsiterField(name) {

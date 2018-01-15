@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import autobind from '../../helpers/autobind';
 import isFunction from '../../helpers/isFunction';
-
-const noErrors = [false];
-const hasErrors = errors => errors.filter(x => x).length !== 0;
-const noop = () => {};
+import runValidations from './shared/runValidations';
+import noErrors from './shared/noErrors';
+import hasErrors from './shared/hasErrors';
+import noop from './shared/noop';
 
 // This function takes a component...
 function asField(WrappedComponent) {
@@ -21,11 +21,12 @@ function asField(WrappedComponent) {
         'handleOnChange',
         'handleOnFocus',
         'handleOnBlur',
+        'runValidations',
         'validate',
       ]);
 
       this.state = {
-        isValid: !hasErrors(this.runValidations(props.value)),
+        isValid: !hasErrors(runValidations(props.validate, props.value)),
         value: props.value || '',
       };
     }
@@ -70,21 +71,7 @@ function asField(WrappedComponent) {
     }
 
     runValidations() {
-      const { validate } = this.props;
-      if (Array.isArray(validate)) {
-        return validate.map(fn => {
-          if (!isFunction(fn)) {
-            return false;
-          }
-          return fn(this.state.value);
-        });
-      }
-
-      if (isFunction(validate)) {
-        return validate(this.state.value);
-      }
-
-      return noErrors;
+      return runValidations(this.props.validate, this.state.value);
     }
 
     maybeUpdateErrors(msg) {
