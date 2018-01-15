@@ -19,6 +19,6 @@ export default class DateField extends Component {
   }
 
   render() {
-    return <Field type="text" {...this.getSpreadProps()} />;
+    return <Field type="date" {...this.getSpreadProps()} />;
   }
 }

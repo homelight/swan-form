@@ -24,7 +24,12 @@ export default class App extends Component {
 
           <DateField name="date" placeholder="MM/YYYY" />
 
+          <br />
+          <br />
+
           <AddressField name="address1" />
+
+          <br />
 
           <Field
             type="textarea"
@@ -38,7 +43,6 @@ export default class App extends Component {
           <Field
             name="selectField"
             type="select"
-            multiple
             options={[
               'one',
               'two',
@@ -47,6 +51,15 @@ export default class App extends Component {
               { OptGroup: ['abc', 'def', 'hij'] },
             ]}
           />
+
+          <br />
+          <br />
+          <hr />
+          <br />
+
+          <Field name="submit" type="submit" value="Submit" />
+          <span>&nbsp;</span>
+          <Field name="reset" type="reset" value="Reset" />
         </form>
       </div>
     );
