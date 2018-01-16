@@ -78,8 +78,9 @@ If you want to use both while developing, open two terminals and do `yarn start`
 
 * [ ] Formatters in fields
 * [ ] Share more code between asField and Field
-* [ ] Make all field types avaiable
+* [x] Make all field types avaiable
 * [ ] Don't bind so many functions
+* [ ] Handle radio buttons appropriately
 
 ### Generic Form
 

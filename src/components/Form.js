@@ -140,6 +140,8 @@ export default class Form extends Component {
   }
 
   registerField({ name, getRef, getValue, setValue, validate, reset }) {
+    // This does not handle radio buttons correct (as they're supposed to have the same name)
+    // @TODO FIX THIS FOR RADIOS
     this.fields = {
       ...this.fields,
       [name]: { getRef, getValue, validate, reset },

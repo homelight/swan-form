@@ -138,6 +138,8 @@ export default class AddressField extends Component {
       isValid: false, // update this in case the initial value is valid
     };
 
+    this.refs = {};
+
     autobind(this, ['register', 'unregister', 'getValue', 'setValue', 'getRef', 'setRef']);
 
     this.onLine1Change = this.updatePart.bind(this, 'line1');
@@ -195,7 +197,12 @@ export default class AddressField extends Component {
     this.fieldRef = el;
   }
 
-  register() {
+  register({ name, getRef }) {
+    this.refs = {
+      ...this.refs,
+      [name]: getRef(),
+    };
+
     if (isFunction(this.context.register)) {
       this.context.register({
         name: this.props.name,
@@ -227,7 +234,7 @@ export default class AddressField extends Component {
   }
 
   render() {
-    const { name, className } = this.props;
+    const { autoFocus, name, className } = this.props;
     return (
       <fieldset className={className} ref={this.setRef}>
         <legend>Address</legend>
@@ -238,6 +245,7 @@ export default class AddressField extends Component {
           autoComplete="address-line1"
           onChange={this.onLine1Change}
           required
+          autoFocus={this.props.autoFocus}
         />
         <Field
           type="text"
