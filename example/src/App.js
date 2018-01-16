@@ -5,6 +5,8 @@ import Intro from './Intro';
 import RegularForm from './RegularForm';
 import SliderForm from './SliderForm';
 import asFieldHOC from './asFieldHOC';
+import DependentField from './DependentField';
+import DynamicField from './DynamicField';
 
 import NavBar from './NavBar';
 
@@ -22,6 +24,8 @@ export default class App extends Component {
             <Route path="/" exact component={Intro} />
             <Route path="/regular" exact component={RegularForm} />
             <Route path="/slider-form" component={SliderForm} />
+            <Route path="/dependent-field" component={DependentField} />
+            <Route path="/dynamic-field" component={DynamicField} />
             <Route path="/styling" component={() => <div>@TODO</div>} />
             <Route path="/with-redux" component={() => <div>@TODO</div>} />
             <Route path="/with-react-router" component={() => <div>@TODO</div>} />

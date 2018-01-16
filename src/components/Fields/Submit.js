@@ -6,6 +6,7 @@ import isFunction from 'lodash/isFunction';
 export default class Submit extends Component {
   static contextTypes = {
     onSubmit: PropTypes.func,
+    isSubmitting: PropTypes.func,
   };
 
   constructor(props, context) {
@@ -53,6 +54,13 @@ export default class Submit extends Component {
 
   render() {
     const { name, value } = this.props;
-    return <Field type="submit" name={name || 'flowform--submit'} value={value || 'Submit'} />;
+    return (
+      <Field
+        type="submit"
+        disabled={this.context.isSubmitting()}
+        name={name || 'flowform--submit'}
+        value={value || 'Submit'}
+      />
+    );
   }
 }

@@ -7,7 +7,14 @@ const alphaNumeric = value => (/^[a-zA-Z0-9]{1,}$/.test(value) ? false : 'Alpha 
 const threeDigits = value => (/^[\d]{3}$/.test(value) ? false : 'Must pass three digits');
 
 const tenAndAlpha = [minLenTen, alphaNumeric];
-const onSubmit = values => console.log(values);
+// const onSubmit = values => console.log(values);
+const onSubmit = values =>
+  new Promise(res => {
+    setTimeout(() => {
+      console.log(values);
+      res(true);
+    }, 3000);
+  });
 export default class RegularForm extends Component {
   render() {
     return (

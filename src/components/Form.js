@@ -47,6 +47,7 @@ export default class Form extends Component {
     autoComplete: PropTypes.oneOf(['on', 'off']),
     reset: PropTypes.func,
     onSubmit: PropTypes.func,
+    isSubmitting: PropTypes.func,
   };
 
   constructor(props) {
@@ -116,12 +117,34 @@ export default class Form extends Component {
     }, {});
   }
 
-  handleBeforeSubmit(values) {
-    if (isFunction(this.props.beforeSubmit)) {
-      // check if this is a promise
-      return this.props.beforeSubmit(values);
-    }
-    return Promise.resolve(values);
+  handleBeforeSubmit() {
+    this.setState(prevState => ({
+      ...prevState,
+      isSubmitting: true,
+    }));
+
+    return new Promise((res, rej) => {
+      const isValid = Object.keys(this.fields).every(field => this.fields[field].validate());
+      if (!isValid) {
+        console.log('Form is invalid. Field level errors should ensue.');
+      }
+      const values = Object.keys(this.fields)
+        .filter(field => !fieldToRemove.includes(field))
+        .reduce(
+          (acc, field) => ({
+            ...acc,
+            [field]: this.fields[field].getValue(),
+          }),
+          {},
+        );
+
+      if (isFunction(this.props.beforeSubmit)) {
+        // check if this is a promise
+        return res(this.props.beforeSubmit(values));
+      }
+
+      return res(values);
+    });
   }
 
   handleAfterSubmit(values) {
@@ -132,30 +155,21 @@ export default class Form extends Component {
     return Promise.resolve(values);
   }
 
+  handleSubmit(values) {
+    const result = this.props.onSubmit(values);
+    return isPromise(result) ? result : Promise.resolve(result);
+  }
+
   handleOnSubmit(event) {
     event.preventDefault();
     event.stopPropagation();
 
-    this.setState(prevState => ({
-      ...prevState,
-      isSubmitting: true,
-    }));
+    this.handleBeforeSubmit()
+      .then(values => this.handleSubmit)
+      .then(result => this.handleAfterSubmit);
 
-    const isValid = Object.keys(this.fields).every(field => this.fields[field].validate());
-    if (!isValid) {
-      console.log('Form is invalid. Field level errors should ensue.');
-    }
-    const values = Object.keys(this.fields)
-      .filter(field => !fieldToRemove.includes(field))
-      .reduce(
-        (acc, field) => ({
-          ...acc,
-          [field]: this.fields[field].getValue(),
-        }),
-        {},
-      );
-
-    console.log(values);
+    // this.props.onSubmit(values);
+    // console.log(values);
     // this.handleBeforeSubmit(values)
     //   .then(this.props.onSubmit)
     //   .then(this.handleAfterSubmit);
