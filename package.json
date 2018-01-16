@@ -15,7 +15,8 @@
     "predeploy": "cd example && npm install && npm run build",
     "prepublish": "npm run build",
     "start": "rollup -c -w",
-    "test": "react-scripts test --env=jsdom"
+    "test": "jest --env=jsdom",
+    "test:watch": "yarn run test -- --watch"
   },
   "dependencies": {
     "lodash": "^4.17.4"
@@ -29,18 +30,24 @@
     "autoprefixer": "^7.2.5",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.2",
+    "babel-jest": "^22.1.0",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-preset-env": "^1.6.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.1.1",
     "gh-pages": "^1.0.0",
     "glob": "^7.1.2",
     "husky": "^0.14.3",
+    "jest": "^22.1.1",
+    "jest-enzyme": "^4.0.2",
     "lint-staged": "^6.0.0",
     "prettier": "^1.10.2",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "react-scripts": "^1.0.17",
+    "react-test-renderer": "^16.2.0",
+    "regenerator-runtime": "^0.11.1",
     "rollup": "^0.50.0",
     "rollup-plugin-babel": "^3.0.2",
     "rollup-plugin-commonjs": "^8.2.1",
@@ -51,6 +58,19 @@
     "uglify-es": "^3.3.7"
   },
   "files": ["dist"],
+  "jest": {
+    "transform": {
+      "^.+\\.jsx?$": "babel-jest"
+    },
+    "setupTestFrameworkScriptFile": "./node_modules/jest-enzyme/lib/index.js",
+    "unmockedModulePathPatterns": ["react", "enzyme", "jest-enzyme"],
+    "testMatch": ["*.test.js", "**/?(*.)(spec|test).js?(x)"],
+    "moduleNameMapper": {
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$":
+        "<rootDir>/__mocks__/fileMock.js",
+      "\\.(css|less)$": "<rootDir>/__mocks__/styleMock.js"
+    }
+  },
   "prettier": {
     "printWidth": 100,
     "singleQuote": true,

@@ -24,6 +24,7 @@ export default {
     postcss({}),
     babel({
       exclude: 'node_modules/**',
+      plugins: ['external-helpers'],
     }),
     resolve(),
     commonjs(),

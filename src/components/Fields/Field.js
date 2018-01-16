@@ -21,12 +21,12 @@ const INPUT_TYPES = [
   // 'color',
   'date',
   // 'datetime-local',
-  // 'email',
+  'email',
   // 'file',
   // 'hidden',
   // 'image',
   // 'month',
-  // 'number',
+  'number',
   'password',
   // 'radio',
   // 'range ',
@@ -152,6 +152,7 @@ export default class Field extends Component {
     this.debounceValidateTimer = null;
 
     // Autobind factory
+    // @TODO bind fewer things
     autobind(this, [
       // Bind some handlers for use with events
       'onChange',
@@ -183,8 +184,10 @@ export default class Field extends Component {
       fieldRef.focus();
       // We're going to try to position the cursor in the correct position for editing, so, if there
       // is a value already, we'll get the length and set the cursor to that.
-      // @todo, we might have to turn the second arg into a string
-      moveCursor(fieldRef, this.state.value.length);
+      // #TODO expand this blacklist or convert to whitelist
+      if (!['number', 'date', 'select'].includes(this.props.type)) {
+        moveCursor(fieldRef, this.state.value.length);
+      }
     }
   }
 

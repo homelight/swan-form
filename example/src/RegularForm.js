@@ -35,6 +35,8 @@ export default class RegularForm extends Component {
               label="field with pattern"
             />
 
+            <Field type="number" label="Number Field" name="number-field" value="4" autoFocus />
+
             <DateField name="date" placeholder="MM/YYYY" />
 
             <br />

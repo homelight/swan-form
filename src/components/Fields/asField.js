@@ -159,6 +159,8 @@ function asField(WrappedComponent) {
     }
   };
 
+  HOC.displayName = `asField(${WrappedComponent.displayName || 'Component'})`;
+
   HOC.contextTypes = {
     register: PropTypes.func,
     unregister: PropTypes.func,
