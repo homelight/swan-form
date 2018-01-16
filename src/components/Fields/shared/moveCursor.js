@@ -6,7 +6,7 @@ import isFunction from 'lodash/isFunction';
  * @param  {Number} pos [description]
  * @return {void}
  */
-export default function moveCursor(el, pos) {
+function moveCursor(el, pos) {
   // See if setSelectionRange exists, if so, then use that
   if (isFunction(el.setSelectionRange)) {
     el.setSelectionRange(pos, pos);
@@ -14,5 +14,19 @@ export default function moveCursor(el, pos) {
     const range = el.createTextRange;
     range.move('character', pos);
     range.select();
+  }
+}
+
+export default function moveCursorToEnd(el) {
+  if (typeof el.selectionStart == 'number') {
+    el.selectionStart = el.selectionEnd = el.value.length;
+  } else if (typeof el.createTextRange != 'undefined') {
+    var range = el.createTextRange();
+    range.collapse(false);
+    range.select();
+  } else {
+    const tmpValue = el.value;
+    el.value = '';
+    el.value = tmpValue;
   }
 }

@@ -9,7 +9,7 @@ import runValidations from './shared/runValidations';
 import noErrors from './shared/noErrors';
 import hasErrors from './shared/hasErrors';
 import noop from './shared/noop';
-import moveCursor from './shared/moveCursor';
+import moveCursorToEnd from './shared/moveCursor';
 
 import { ENTER } from './shared/keyCodes';
 
@@ -182,12 +182,7 @@ export default class Field extends Component {
       const { fieldRef } = this;
 
       fieldRef.focus();
-      // We're going to try to position the cursor in the correct position for editing, so, if there
-      // is a value already, we'll get the length and set the cursor to that.
-      // #TODO expand this blacklist or convert to whitelist
-      if (!['number', 'date', 'select'].includes(this.props.type)) {
-        moveCursor(fieldRef, this.state.value.length);
-      }
+      moveCursorToEnd(fieldRef);
     }
   }
 

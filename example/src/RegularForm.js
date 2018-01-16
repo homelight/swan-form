@@ -23,7 +23,6 @@ export default class RegularForm extends Component {
               validateWhileTyping
               placeholder="test"
               value="testing"
-              autoFocus
             />
 
             <Field
@@ -35,7 +34,7 @@ export default class RegularForm extends Component {
               label="field with pattern"
             />
 
-            <Field type="number" label="Number Field" name="number-field" value="4" autoFocus />
+            <Field type="number" label="Number Field" name="number-field" value="4" />
 
             <DateField name="date" placeholder="MM/YYYY" />
 
@@ -50,6 +49,7 @@ export default class RegularForm extends Component {
               type="textarea"
               name="freeform"
               label="Please Explain"
+              autoFocus
               rows={5}
               cols={40}
               required
