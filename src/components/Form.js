@@ -61,7 +61,12 @@ export default class Form extends Component {
     });
 
     // Fill out with all the things
-    this.state = {};
+    this.state = {
+      isSubmitting: false,
+      hasSubmitted: false,
+      hasSubmitError: false,
+      submitError: [],
+    };
 
     // This isn't a pure component by any means. We're going to create an object to keep track
     // of all of the fields that get registered with this component.
@@ -76,6 +81,8 @@ export default class Form extends Component {
       'unregsiterField',
       'resetForm',
     ]);
+
+    this.isSubmitting = this.getValue.bind(this, 'isSubmitting');
   }
 
   setRef(el) {
@@ -89,7 +96,15 @@ export default class Form extends Component {
       autoComplete: this.props.autoComplete,
       reset: this.resetForm,
       onSubmit: this.handleOnSubmit,
+      isSubmitting: this.isSubmitting,
     };
+  }
+
+  getValue(key) {
+    if (hasOwnProperty(this.state, key)) {
+      return this.state[key];
+    }
+    return null;
   }
 
   getSpreadProps() {
@@ -103,6 +118,7 @@ export default class Form extends Component {
 
   handleBeforeSubmit(values) {
     if (isFunction(this.props.beforeSubmit)) {
+      // check if this is a promise
       return this.props.beforeSubmit(values);
     }
     return Promise.resolve(values);
@@ -110,6 +126,7 @@ export default class Form extends Component {
 
   handleAfterSubmit(values) {
     if (isFunction(this.props.afterSubmit)) {
+      // check if this is a promise
       return this.props.afterSubmit(values);
     }
     return Promise.resolve(values);
@@ -118,6 +135,12 @@ export default class Form extends Component {
   handleOnSubmit(event) {
     event.preventDefault();
     event.stopPropagation();
+
+    this.setState(prevState => ({
+      ...prevState,
+      isSubmitting: true,
+    }));
+
     const isValid = Object.keys(this.fields).every(field => this.fields[field].validate());
     if (!isValid) {
       console.log('Form is invalid. Field level errors should ensue.');

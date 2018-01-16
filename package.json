@@ -19,6 +19,7 @@
     "test:watch": "yarn run test -- --watch"
   },
   "dependencies": {
+    "is-promise": "^2.1.0",
     "lodash": "^4.17.4"
   },
   "peerDependencies": {

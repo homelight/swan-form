@@ -50,6 +50,7 @@ export default class RegularForm extends Component {
             <Field name="month" type="month" value="2018-01" label="month" />
             <Field name="notapassword" type="password" />
             <fieldset>
+              <legend>Radios are not working</legend>
               <Field name="radio" type="radio" value="a" />
               <Field name="radio" type="radio" value="b" checked />
             </fieldset>

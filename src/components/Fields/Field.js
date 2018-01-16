@@ -138,7 +138,8 @@ export default class Field extends Component {
 
     // Establish the initial state
     const state = {
-      // The value for a multiselect needs to be an array, and we need to do something special for checkboxes. This is convoluted
+      // The value for a multiselect needs to be an array, and we need to do something special for
+      // checkboxes. This is convoluted.
       value:
         (props.type === 'checkbox' ? props.checked || props.value : props.value) ||
         (this.isMultipleSelect ? [] : ''),
@@ -356,10 +357,7 @@ export default class Field extends Component {
   }
 
   onClick(event) {
-    // if (this.props.type === 'checkbox') {
-    //   console.log(this.state.value);
-    //   this.setValue(! this.state.value);
-    // }
+    // We might have to do something for buttons and things here
     if (isFunction(this.props.onClick)) {
       this.props.onClick();
     }
@@ -400,6 +398,8 @@ export default class Field extends Component {
    * @return {any} the value of the field
    */
   getValue() {
+    // We might have to do something different here for radios. Also, we need
+    // to intercept for formatters
     return this.state.value;
   }
 
@@ -439,6 +439,8 @@ export default class Field extends Component {
 
   /**
    * Validation and Errors
+   *
+   * @todo  allow for promise based validations
    */
 
   validate() {
@@ -450,10 +452,12 @@ export default class Field extends Component {
   }
 
   isValid() {
+    // support promises here
     return !hasErrors(this.runValidations());
   }
 
   maybeUpdateErrors(msg) {
+    // support promises here
     if (msg === false) {
       if (this.state.errors.length !== 0) {
         this.setState(prevState => ({
@@ -490,12 +494,13 @@ export default class Field extends Component {
   format() {
     const { formatter } = this.props;
     const { value } = this.state;
+    return isFunction(formatter) ? formatter(value) : value;
+  }
 
-    if (isFunction(formatter)) {
-      return formatter(value);
-    }
-
-    return value;
+  unformat() {
+    const { unformatter } = this.props;
+    const { value } = this.state;
+    return isFunction(unformatter) ? unformatter(value) : value;
   }
 
   maybeWrapInLabel(children) {
@@ -566,12 +571,12 @@ export default class Field extends Component {
   }
 
   renderInputField() {
-    const { name, required, type } = this.props;
-    const { value } = this.state;
+    const { name, required, type, value } = this.props;
+
     return (
       <input
         type={type}
-        value={'radio' === type ? this.props.value : this.format(value)}
+        value={'radio' === type ? value : this.format()}
         ref={this.setRef}
         onChange={this.onChange}
         onBlur={this.onBlur}
@@ -584,11 +589,10 @@ export default class Field extends Component {
 
   renderTextArea() {
     const { name, type } = this.props;
-    const { value } = this.state;
 
     return (
       <textarea
-        value={this.format(value)}
+        value={this.format()}
         onChange={this.onChange}
         onBlur={this.onBlur}
         onFocus={this.onFocus}
@@ -603,10 +607,9 @@ export default class Field extends Component {
   // a few different functions
   renderSelect() {
     const { options } = this.props;
-    const { value } = this.state;
     return (
       <select
-        value={this.format(value)}
+        value={this.format()}
         onChange={this.onChange}
         onBlur={this.onBlur}
         onFocus={this.onFocus}
@@ -638,7 +641,7 @@ export default class Field extends Component {
         </optgroup>
       ));
     }
-    // Cannot figure out what to do here.
+    // Cannot figure out what to do here. @TODO come up with a better fallback
     return null;
   }
 
