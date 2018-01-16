@@ -1,14 +1,15 @@
 {
-  "name": "react-modern-library-boilerplate-example",
-  "homepage": "https://transitive-bullshit.github.io/react-modern-library-boilerplate",
+  "name": "flow-form-examples",
   "version": "0.0.0",
   "private": true,
   "license": "MIT",
   "dependencies": {
+    "history": "^4.7.2",
     "prop-types": "^15.6.0",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "flow-form": "^1.0.0",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
     "react-scripts": "1.0.17"
   },
   "scripts": {
@@ -16,5 +17,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
+  },
+  "devDependencies": {
+    "react-perf-devtool": "^3.0.2"
   }
 }

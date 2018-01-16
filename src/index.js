@@ -1,36 +1,20 @@
-/**
- * @class ExampleComponent
- */
+export Field from './components/Fields/Field';
+export AddressField from './components/Fields/AddressField';
+export DateField from './components/Fields/DateField';
+export Reset from './components/Fields/Reset';
+export Submit from './components/Fields/Submit';
+export asField from './components/Fields/asField';
+export Form from './components/Form';
 
-import Field from './components/Fields/Field';
-import AddressField from './components/Fields/AddressField';
-import DateField from './components/Fields/DateField';
+export Slide from './components/Slide';
+export Slider from './components/Slider';
 
-export default {
-  Field,
-  AddressField,
-  DateField,
-};
-
-// import React, { Component } from 'react'
-// import PropTypes from 'prop-types'
-
-// import './styles.css'
-
-// export default class ExampleComponent extends Component {
-//   static propTypes = {
-//     text: PropTypes.string
-//   }
-
-//   render() {
-//     const {
-//       text
-//     } = this.props
-
-//     return (
-//       <div className='test'>
-//         Example Component or not: {text}
-//       </div>
-//     )
-//   }
-// }
+// // export default {
+// //   Form,
+// //   Field,
+// //   AddressField,
+// //   DateField,
+// //   Reset,
+// //   Submit,
+// //   asField,
+// };

@@ -8,45 +8,84 @@
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",
   "scripts": {
-    "test": "react-scripts test --env=jsdom",
     "build": "rollup -c",
-    "start": "rollup -c -w",
-    "prepublish": "npm run build",
-    "predeploy": "cd example && npm install && npm run build",
     "deploy": "gh-pages -d example/build",
-    "format": "prettier --write src/* src/**/* example/src/* src/**/**/*"
+    "format": "prettier --write src/* src/**/* example/src/* src/**/**/* src/**/**/**/*",
+    "precommit": "lint-staged",
+    "predeploy": "cd example && npm install && npm run build",
+    "prepublish": "npm run build",
+    "start": "rollup -c -w",
+    "test": "jest --env=jsdom",
+    "test:watch": "yarn run test -- --watch"
   },
-  "dependencies": {},
+  "dependencies": {
+    "lodash": "^4.17.4"
+  },
   "peerDependencies": {
     "prop-types": "^15.5.4",
     "react": "^0.14.9 || ^15.0.0 || ^16.0.0",
     "react-dom": "^0.14.9 || ^15.0.0 || ^16.0.0"
   },
   "devDependencies": {
+    "autoprefixer": "^7.2.5",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.2",
+    "babel-jest": "^22.1.0",
     "babel-plugin-external-helpers": "^6.22.0",
     "babel-preset-env": "^1.6.0",
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.1.1",
     "gh-pages": "^1.0.0",
+    "glob": "^7.1.2",
+    "husky": "^0.14.3",
+    "jest": "^22.1.1",
+    "jest-enzyme": "^4.0.2",
+    "lint-staged": "^6.0.0",
     "prettier": "^1.10.2",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
-    "react-scripts": "^1.0.17",
+    "react-test-renderer": "^16.2.0",
+    "regenerator-runtime": "^0.11.1",
     "rollup": "^0.50.0",
     "rollup-plugin-babel": "^3.0.2",
     "rollup-plugin-commonjs": "^8.2.1",
+    "rollup-plugin-filesize": "^1.5.0",
     "rollup-plugin-node-resolve": "^3.0.0",
-    "rollup-plugin-postcss": "^0.5.5"
+    "rollup-plugin-postcss": "^0.5.5",
+    "rollup-plugin-uglify": "^2.0.1",
+    "uglify-es": "^3.3.7"
   },
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
+  "jest": {
+    "transform": {
+      "^.+\\.jsx?$": "babel-jest"
+    },
+    "setupTestFrameworkScriptFile": "./node_modules/jest-enzyme/lib/index.js",
+    "unmockedModulePathPatterns": ["react", "enzyme", "jest-enzyme"],
+    "testMatch": ["*.test.js", "**/?(*.)(spec|test).js?(x)"],
+    "moduleNameMapper": {
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$":
+        "<rootDir>/__mocks__/fileMock.js",
+      "\\.(css|less)$": "<rootDir>/__mocks__/styleMock.js"
+    },
+    "collectCoverage": true,
+    "collectCoverageFrom": ["src/**/*.{js,jsx}", "!**/node_modules/**"],
+    "coveragePathIgnorePatterns": [
+      "<rootDir>/dist/",
+      "<rootDir>/node_modules/",
+      "<rootDir>/exmaple/"
+    ]
+  },
   "prettier": {
     "printWidth": 100,
     "singleQuote": true,
     "trailingComma": "all",
     "arrowParens": "avoid"
-  }
+  },
+  "lint-staged": {
+    "*.{js,json,css,md}": ["yarn run format", "git add"]
+  },
+  "browserslist": ["> 1%", "last 2 versions"]
 }

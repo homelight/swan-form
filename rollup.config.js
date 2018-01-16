@@ -1,33 +1,33 @@
-import babel from 'rollup-plugin-babel'
-import commonjs from 'rollup-plugin-commonjs'
-import postcss from 'rollup-plugin-postcss'
-import resolve from 'rollup-plugin-node-resolve'
+import babel from 'rollup-plugin-babel';
+import commonjs from 'rollup-plugin-commonjs';
+import postcss from 'rollup-plugin-postcss';
+import resolve from 'rollup-plugin-node-resolve';
+import filesize from 'rollup-plugin-filesize';
 
-import pkg from './package.json'
+import pkg from './package.json';
 
 export default {
   input: 'src/index.js',
   output: [
     {
       file: pkg.main,
-      format: 'cjs'
+      format: 'cjs',
     },
     {
       file: pkg.module,
-      format: 'es'
-    }
+      format: 'es',
+    },
   ],
-  external: [
-    'react',
-    'react-dom',
-    'prop-types'
-  ],
+  // sourcemap: true,
+  external: Object.keys(pkg.peerDependencies),
   plugins: [
     postcss({}),
     babel({
-      exclude: 'node_modules/**'
+      exclude: 'node_modules/**',
+      plugins: ['external-helpers'],
     }),
     resolve(),
-    commonjs()
-  ]
-}
+    commonjs(),
+    filesize(),
+  ],
+};

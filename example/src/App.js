@@ -1,36 +1,34 @@
 import React, { Component } from 'react';
+import { BrowserRouter, Route } from 'react-router-dom';
 
-import { AddressField, DateField, Field } from './flow-form';
+import Intro from './Intro';
+import RegularForm from './RegularForm';
+import SliderForm from './SliderForm';
+import asFieldHOC from './asFieldHOC';
 
-const minLenTen = value => (value.length > 9 ? false : 'Min len 10');
+import NavBar from './NavBar';
 
+// import registerObserver from 'react-perf-devtool';
+// registerObserver();
+
+const padding = { margin: '0 2rem 0', padding: '1rem', border: '2px solid steelblue' };
 export default class App extends Component {
   render() {
     return (
-      <div style={{ margin: '5rem', border: '1px solid steelblue', padding: '5rem' }}>
-        <Field
-          type="text"
-          name="minTenField"
-          validate={minLenTen}
-          asyncValidate
-          required={true}
-          validateWhileTyping
-          placeholder="test"
-          value="testing"
-          label="field"
-          autoFocus
-        />
-
-        <AddressField name="address1" />
-
-        <Field type="textarea" name="freeform" label="Please Explain" rows={5} cols={40} />
-
-        <Field
-          type="select"
-          name="select"
-          options={['one', { value: 'two', label: 'Test' }, 'three']}
-        />
-      </div>
+      <BrowserRouter>
+        <div>
+          <Route path="*" component={NavBar} />
+          <div style={padding}>
+            <Route path="/" exact component={Intro} />
+            <Route path="/regular" exact component={RegularForm} />
+            <Route path="/slider-form" component={SliderForm} />
+            <Route path="/styling" component={() => <div>@TODO</div>} />
+            <Route path="/with-redux" component={() => <div>@TODO</div>} />
+            <Route path="/with-react-router" component={() => <div>@TODO</div>} />
+            <Route path="/asfield-hoc" component={asFieldHOC} />
+          </div>
+        </div>
+      </BrowserRouter>
     );
   }
 }
