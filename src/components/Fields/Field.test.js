@@ -33,5 +33,4 @@ describe('Text Field Input Suite', () => {
   it('should have an input field with the value of ""', () => {
     expect(wrapper.find('input').attr('value')).toBe('');
   });
-  // console.log(wrapper);
 });
