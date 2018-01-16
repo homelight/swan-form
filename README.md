@@ -1,6 +1,6 @@
 # Flow Form
 
-> TODO: Component Description
+Flow Form is a toolbox for creating forms with React
 
 ## Install
 
@@ -62,7 +62,39 @@ If you want to use both while developing, open two terminals and do `yarn start`
 
 ## TODO
 
-Split everything into separate bundles lodash style.
+### General
+
+* [ ] Make readme readable
+* [ ] Fix dependencies/peer dependencies for wider coverage
+* [ ] Expand more test coverage
+* [ ] Add in thorough documentation
+* [ ] Ship CSS separately
+* [ ] Split everything into separate bundles lodash style.
+* [ ] Profile components to find penalty for context and overwriting context
+* [ ] Publish to npm
+* [ ] convert to typescript
+
+### Generic Field
+
+* [ ] Formatters in fields
+* [ ] Share more code between asField and Field
+* [ ] Make all field types avaiable
+* [ ] Don't bind so many functions
+
+### Generic Form
+
+* [ ] Sort out lifecycle methods on submit
+
+### Slider
+
+* [ ] Get a better slider API
+* [ ] Make slider more responsive
+* [ ] Allow for enter to let the slider advance to next field
+
+### Examples
+
+* [ ] Create withRedux example
+* [ ] Create withRouter example
 
 ## License
 
