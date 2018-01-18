@@ -1,6 +1,8 @@
 # Flow Form
 
-Flow Form is a toolbox for creating forms with React
+Flow Form is a toolbox for creating forms with React.
+
+WIP (do not use yet)
 
 ## Install
 
@@ -99,4 +101,4 @@ If you want to use both while developing, open two terminals and do `yarn start`
 
 ## License
 
-MIT © [Shawn Patrick Rice](https://github.com/shawnrice)
+MIT © [Eave](https://github.com/helloeave)
