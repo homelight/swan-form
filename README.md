@@ -72,7 +72,7 @@ If you want to use both while developing, open two terminals and do `yarn start`
 * [ ] Split everything into separate bundles lodash style.
 * [ ] Profile components to find penalty for context and overwriting context
 * [ ] Publish to npm
-* [ ] convert to typescript
+* [ ] convert to typescript or create typings (https://github.com/KnisterPeter/react-to-typescript-definitions)
 
 ### Generic Field
 

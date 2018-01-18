@@ -9,6 +9,7 @@ const onSubmit = values => {
 };
 const beforeSubmit = values =>
   Object.keys(values).reduce((acc, key) => ({ ...acc, [key]: values[key].toUpperCase() }), {});
+
 export default class SliderForm extends Component {
   render() {
     return (

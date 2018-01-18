@@ -29,7 +29,7 @@ const INPUT_TYPES = [
   'month',
   'number',
   'password',
-  'radio', // radio
+  'radio', // radio buttons do not work well with the change events...
   'range',
   'reset',
   'search',

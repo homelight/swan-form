@@ -224,10 +224,8 @@ function asField(WrappedComponent) {
 
     onBlur(event) {
       const { onBlur, validate, asyncValidate } = this.props;
-      console.log(`${this.props.name}:: on blur`);
 
       if (this.props.type !== 'textarea') {
-        console.log('removing prevent submit for', this.props.name, this.props.type);
         document.removeEventListener('keydown', this.preventSubmitOnEnter);
       }
 
@@ -402,6 +400,7 @@ function asField(WrappedComponent) {
           onChange={this.onChange}
           onBlur={this.onBlur}
           onFocus={this.onFocus}
+          value={this.state.value}
           {...spreadProps}
         />
       );
