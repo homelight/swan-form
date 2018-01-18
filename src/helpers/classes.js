@@ -1,18 +1,17 @@
-function filterAndJoin(arr) {
-  return arr.filter(x => x).join(' ');
-}
+import isObject from 'lodash/isObject';
 
-export default function classes(classNames) {
-  if (Array.isArray(classNames)) {
-    return filterAndJoin(classNames);
+export default function classes(obj) {
+  if (Array.isArray(obj)) {
+    obj.filter(x => x).join(' ');
   }
-  if (classNames != null && typeof classNames === 'object') {
-    return filterAndJoin(
-      Object.keys(classNames).map(name => !!classNames[name] && classNames[name]),
-    );
+  if (isObject(obj)) {
+    return Object.keys(obj)
+      .map(k => !!obj[k] && k)
+      .filter(x => x)
+      .join(' ');
   }
-  if (typeof classNames === 'string') {
-    return classNames;
+  if (typeof obj === 'string') {
+    return obj;
   }
   return '';
 }
