@@ -1,3 +1,12 @@
+/**
+ * This script is an alternative to running rollup via the cli. It still needs some work. It is
+ * supposed to split each component into a single file, sort of like lodash so that people can use
+ * parts of the project without using the whole thing.
+ *
+ * An alternative would be to use a monorepo and split things into different packages, but I'm
+ * not sure that I want to do that quite yet.
+ */
+
 const rollup = require('rollup');
 
 const babel = require('rollup-plugin-babel');
