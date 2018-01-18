@@ -28,6 +28,7 @@ export default class Slider extends Component {
     height: PropTypes.string,
     current: PropTypes.number,
     onSubmit: PropTypes.func,
+    beforeSubmit: PropTypes.func,
   };
 
   static defaultProps = {
@@ -171,7 +172,11 @@ export default class Slider extends Component {
         >
           R
         </div>
-        <Form name="slider-form" onSubmit={this.props.onSubmit}>
+        <Form
+          name="slider-form"
+          onSubmit={this.props.onSubmit}
+          beforeSubmit={this.props.beforeSubmit}
+        >
           {this.props.slides.map((slide, index) => (
             <Slide
               key={index}

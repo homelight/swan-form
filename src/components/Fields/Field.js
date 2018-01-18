@@ -605,7 +605,7 @@ export default class Field extends Component {
 
   // The way we nest options in a select can be a bit difficult, so we're going to break this into
   // a few different functions
-  renderSelect() {
+  renderSelectField() {
     const { options } = this.props;
     return (
       <select

@@ -117,6 +117,18 @@ export default class Slide extends Component {
   }
 
   render() {
-    <div ref={this.setRef}>{this.props.children}</div>;
+    const { position } = this.props;
+    const classNames = classes([
+      'flowform--slide',
+      position === 'before' && 'flowform--slide--before',
+      position === 'current' && 'flowform--slide--current',
+      position === 'after' && 'flowform--slide--after',
+    ]);
+    console.log(classNames);
+    return (
+      <div className={classNames} ref={this.setRef}>
+        {this.props.children}
+      </div>
+    );
   }
 }

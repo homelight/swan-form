@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
 import hasOwnProperty from '../helpers/hasOwnProperty';
 import autobind from '../helpers/autobind';
+import isPromise from 'is-promise';
 
 // These are fields that we will automatically pull out of the form as they are just the
 // automatically generated names for the submit and reset buttons
@@ -77,6 +78,7 @@ export default class Form extends Component {
       'setRef',
       'handleBeforeSubmit',
       'handleOnSubmit',
+      'handleSubmit',
       'handleAfterSubmit',
       'registerField',
       'unregsiterField',
@@ -122,7 +124,7 @@ export default class Form extends Component {
       ...prevState,
       isSubmitting: true,
     }));
-
+    console.log('handle before submit');
     return new Promise((res, rej) => {
       const isValid = Object.keys(this.fields).every(field => this.fields[field].validate());
       if (!isValid) {
@@ -137,17 +139,19 @@ export default class Form extends Component {
           }),
           {},
         );
-
+      console.log('in promise');
       if (isFunction(this.props.beforeSubmit)) {
+        console.log('passing to props');
         // check if this is a promise
         return res(this.props.beforeSubmit(values));
       }
-
+      console.log('resolving values');
       return res(values);
     });
   }
 
   handleAfterSubmit(values) {
+    console.log('after submit', values);
     if (isFunction(this.props.afterSubmit)) {
       // check if this is a promise
       return this.props.afterSubmit(values);
@@ -156,6 +160,7 @@ export default class Form extends Component {
   }
 
   handleSubmit(values) {
+    console.log('in regular handle submit');
     const result = this.props.onSubmit(values);
     return isPromise(result) ? result : Promise.resolve(result);
   }
@@ -163,10 +168,10 @@ export default class Form extends Component {
   handleOnSubmit(event) {
     event.preventDefault();
     event.stopPropagation();
-
+    console.log(event);
     this.handleBeforeSubmit()
-      .then(values => this.handleSubmit)
-      .then(result => this.handleAfterSubmit);
+      .then(this.handleSubmit)
+      .then(this.handleAfterSubmit);
 
     // this.props.onSubmit(values);
     // console.log(values);

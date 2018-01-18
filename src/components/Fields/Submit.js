@@ -38,6 +38,7 @@ export default class Submit extends Component {
   }
 
   submitForm() {
+    console.log('submit form');
     // We need to do something to Submit all the values here.
     // const { onSubmit } = this.props;
     // if (! isFunction(onSubmit)) {
@@ -60,6 +61,7 @@ export default class Submit extends Component {
         disabled={this.context.isSubmitting()}
         name={name || 'flowform--submit'}
         value={value || 'Submit'}
+        onSubmit={this.submitForm}
       />
     );
   }
