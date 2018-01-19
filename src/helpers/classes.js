@@ -2,7 +2,7 @@ import isObject from 'lodash/isObject';
 
 export default function classes(obj) {
   if (Array.isArray(obj)) {
-    obj.filter(x => x).join(' ');
+    return obj.filter(x => x).join(' ');
   }
   if (isObject(obj)) {
     return Object.keys(obj)
