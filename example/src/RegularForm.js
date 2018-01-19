@@ -29,6 +29,7 @@ export default class RegularForm extends Component {
               validateWhileTyping
               placeholder="test"
               value="testing12345"
+              autoFocus
             />
 
             <Radios
@@ -43,7 +44,8 @@ export default class RegularForm extends Component {
             <Field
               type="text"
               name="withPattern"
-              validate={threeDigits}
+              // validate={threeDigits}
+              pattern="[\d]{3}"
               asyncValidate
               placeholder="test2"
               value={323}
@@ -52,7 +54,7 @@ export default class RegularForm extends Component {
 
             <Field type="number" label="Number Field" name="number-field" value="4" />
 
-            <Field name="date" type="date" placeholder="MM/YYYY" autoFocus />
+            <Field name="date" type="date" placeholder="MM/YYYY" />
 
             <Field name="button" type="button" onClick={() => alert('Hi')} value="What?" />
             <div>
