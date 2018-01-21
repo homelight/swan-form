@@ -1,4 +1,5 @@
 export Field from './components/Fields/Field';
+export FieldFromHoc from './components/Fields/FieldFromHOC';
 export AddressField from './components/Fields/AddressField';
 export DateField from './components/Fields/DateField';
 export Reset from './components/Fields/Reset';

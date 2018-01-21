@@ -58,7 +58,19 @@ Use yarn.
 
 Uses prettier and husky to ensure that files are looking good before you commit them. No linters installed yet.
 
-In the main repo, do `yarn install`. Then, `cd example && yarn install`. The `example` directory is a create-react-app with the `dist` directory of flow-form symlinked into `src`.
+In the main directly, type `yarn link` to link `flow-form`. Then, link the module into the example directory:
+
+```shell
+cd example
+yarn link flow-form
+```
+
+Install the depdencies for each:
+
+```
+yarn
+cd example && yarn
+```
 
 If you want to use both while developing, open two terminals and do `yarn start` in the main directory to start rollup bundling the module and then, in the other one, cd into the `example` directory and `yarn start` to fire up the example application.
 

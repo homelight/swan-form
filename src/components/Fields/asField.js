@@ -288,6 +288,7 @@ function asField(WrappedComponent) {
      * @param {any} value the value to set
      */
     setValue(value, resetErrors = false, resetTouched = false) {
+      console.log('setting value', value);
       this.setState(prevState => ({
         ...prevState,
         errors: resetErrors === false ? prevState.errors : [],
@@ -373,7 +374,9 @@ function asField(WrappedComponent) {
     }
 
     render() {
-      const { onChange, onBlur, onFocus, registerWrapped, ...spreadProps } = this.props;
+      // We are going to pull out the internal things that we need and call the rest `spreadProps`,
+      // and then we'll, well, spread throse props over the component below it.
+      const { onChange, onBlur, onFocus, registerWrapped, value, ...spreadProps } = this.props;
 
       if (this.context.autoComplete === 'off') {
         spreadProps.autoComplete = 'off';

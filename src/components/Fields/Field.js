@@ -677,10 +677,10 @@ export default class Field extends Component {
       return this.renderInputField();
     }
     if (type === 'textarea') {
-      return this.maybeWrapInLabel(this.renderTextArea());
+      return this.renderTextArea();
     }
     if (type === 'select') {
-      return this.maybeWrapInLabel(this.renderSelectField());
+      return this.renderSelectField();
     }
     return (
       <span dangerouslySetInnerHTML={{ __html: `<!-- Unsupported Field Type (${type}) -->` }} />

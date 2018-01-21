@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
-import { AddressField, DateField, Radios, Field, Form, Submit, Reset } from './flow-form';
+import { AddressField, DateField, Radios, Form, Submit, Reset } from 'flow-form';
+import { FieldFromHoc as Field } from 'flow-form';
 
 const minLenTen = value => (value.length > 9 ? false : 'Min len 10');
 const alphaNumeric = value => (/^[a-zA-Z0-9]{1,}$/.test(value) ? false : 'Alpha Numeric');
@@ -34,10 +35,7 @@ export default class RegularForm extends Component {
 
             <Radios
               name="radioset"
-              radios={[
-                { label: 'first', value: 'first' },
-                { label: 'second', value: 'second', checked: true },
-              ]}
+              radios={[{ label: 'first', value: 'first' }, { label: 'second', value: 'second' }]}
               value="second"
             />
 

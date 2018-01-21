@@ -33,33 +33,42 @@ class Radios extends Component {
     value: PropTypes.string,
   };
 
-  constructor(props) {
-    super(props);
-    this.onChange = this.onChange.bind(this);
-  }
+  // constructor(props) {
+  //   super(props);
+  //   console.log('in constructor');
+  //   this.onChange = this.onChange.bind(this);
+  //   this.onFocus = this.onFocus.bind(this);
+  // }
 
-  onChange(event) {
-    console.log(event);
-  }
+  // onFocus(event) {
+  //   // console.log(event);
+  // }
+
+  // onChange(event) {
+  //   event.persist();
+
+  //   // const { value } = event.target;
+  //   console.log('Changing things,', event.target.value, event.target.name);
+  //   this.props.onChange(event);
+  // }
 
   render() {
     const { radios, name, onChange, onFocus, onBlur, value } = this.props;
+    console.log(name, value);
     return (
       <fieldset>
         <pre>{value}</pre>
         {radios.map(radio => {
           // right now, I'm spreading this
-          const spreadProps = value === radio.value ? isChecked : notChecked;
           return (
             <input
               type="radio"
-              name={name}
               key={radio.value}
               value={radio.value}
-              onChange={this.onChange}
+              onChange={onChange}
               onFocus={onFocus}
-              onBlur={onBlur}
-              {...spreadProps}
+              onBlur={onFocus}
+              checked={value === radio.value}
             />
           );
         })}
