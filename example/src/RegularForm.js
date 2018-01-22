@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import { AddressField, DateField, Radios, Form, Submit, Reset } from 'flow-form';
-import { FieldFromHoc as Field } from 'flow-form';
+import { FieldFromHOC as Field } from 'flow-form';
 
 import './RegularForm.css';
 

@@ -27,6 +27,9 @@ export default class NavBar extends Component {
             <li className={pathname === '/dependent-field' ? 'NavBar--Active' : ''}>
               <Link to="/dependent-field">Dependent Field</Link>
             </li>
+            <li className={pathname === '/formatters' ? 'NavBar--Active' : ''}>
+              <Link to="/formatters">Formatters</Link>
+            </li>
             <li className={pathname === '/regular' ? 'NavBar--Active' : ''}>
               <Link to="/regular">Regular Form</Link>
             </li>

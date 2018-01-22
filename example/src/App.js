@@ -7,6 +7,7 @@ import SliderForm from './SliderForm';
 import asFieldHOC from './asFieldHOC';
 import DependentField from './DependentField';
 import DynamicField from './DynamicField';
+import Formatters from './Formatters';
 
 import NavBar from './NavBar';
 
@@ -23,6 +24,7 @@ export default class App extends Component {
           <div style={padding}>
             <Route path="/" exact component={Intro} />
             <Route path="/regular" exact component={RegularForm} />
+            <Route path="/formatters" exact component={Formatters} />
             <Route path="/slider-form" component={SliderForm} />
             <Route path="/dependent-field" component={DependentField} />
             <Route path="/dynamic-field" component={DynamicField} />
