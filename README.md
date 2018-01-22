@@ -40,7 +40,7 @@ If you want to store your values in Redux or some other kind of state management
 
 Sliders are forms.
 
-```jsx
+```
 import React, { Component } from 'react';
 
 import MyComponent from 'flow-form';
@@ -67,7 +67,7 @@ yarn link flow-form
 
 Install the depdencies for each:
 
-```
+```shell
 yarn
 cd example && yarn
 ```
@@ -94,7 +94,7 @@ If you want to use both while developing, open two terminals and do `yarn start`
 * [ ] Share more code between asField and Field
 * [x] Make all field types avaiable
 * [ ] Don't bind so many functions
-* [ ] Handle radio buttons appropriately
+* [x] Handle radio buttons appropriately
 
 ### Generic Form
 

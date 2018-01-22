@@ -8,9 +8,11 @@
  * @return {[type]}    [description]
  */
 export default function moveCursorToEnd(el) {
-  if (typeof el.selectionStart == 'number') {
-    el.selectionStart = el.selectionEnd = el.value.length;
-  } else if (typeof el.createTextRange != 'undefined') {
+  /* eslint-disable no-param-reassign */
+  if (typeof el.selectionStart === 'number') {
+    el.selectionStart = el.value.length;
+    el.selectionEnd = el.value.length;
+  } else if (typeof el.createTextRange !== 'undefined') {
     const range = el.createTextRange();
     range.collapse(false);
     range.select();
@@ -20,4 +22,5 @@ export default function moveCursorToEnd(el) {
     el.value = '';
     el.value = tmpValue;
   }
+  /* eslint-enable no-param-reassign */
 }

@@ -1,3 +1,4 @@
+/* global document */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
@@ -6,7 +7,6 @@ import isFunction from 'lodash/isFunction';
 import isObject from 'lodash/isObject';
 
 import autobind from '../../helpers/autobind';
-import hasOwnProperty from '../../helpers/hasOwnProperty';
 import runValidations from './shared/runValidations';
 import noErrors from './shared/noErrors';
 import hasErrors from './shared/hasErrors';
@@ -28,7 +28,7 @@ function asField(WrappedComponent) {
       // Establish the initial state
       const state = {
         value: props.value || (this.isMultipleSelect ? [''] : ''),
-        errors: [],
+        errors: noErrors,
         isValid: !hasErrors(runValidations(props.validate, props.value)),
         isDirty: false,
         isTouched: false,
@@ -98,19 +98,19 @@ function asField(WrappedComponent) {
     }
 
     componentWillUnmount() {
-      // Since we're unmounting, unregister from any higher components — this
+      // Since we're unmounting, unregister from any higher components — this
       // means that the value will no longer be available
       this.unregister();
     }
 
-    /*****************************************************************************
+    /****************************************************************************
      * Registrations Methods
      *
      * Fields register with whatever controls them. So, if they are within a form,
      * the form can act on all of the fields (via bound functions passed by
      * context). This enables things like forms to get all the values for a submit
      * action or to pass all the values to determine if a slide should show, etc..
-     ****************************************************************************/
+     *************************************************************************** */
 
     /**
      * Use the registration function passed by context
@@ -339,23 +339,22 @@ function asField(WrappedComponent) {
         }
         // This means it is valid
         return true;
-      } else {
-        if (Array.isArray(msg) && msg.every(message => message === false)) {
-          this.setState(prevState => ({
-            ...prevState,
-            isValid: true,
-            errors: [],
-          }));
-          return true;
-        }
+      }
+      if (Array.isArray(msg) && msg.every(message => message === false)) {
         this.setState(prevState => ({
           ...prevState,
-          isValid: false,
-          errors: Array.isArray(msg) ? msg : [msg],
+          isValid: true,
+          errors: [],
         }));
-        // This means it is not valid
-        return false;
+        return true;
       }
+      this.setState(prevState => ({
+        ...prevState,
+        isValid: false,
+        errors: Array.isArray(msg) ? msg : [msg],
+      }));
+      // This means it is not valid
+      return false;
     }
 
     /**

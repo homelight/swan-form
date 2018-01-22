@@ -16,6 +16,11 @@ class Radios extends Component {
       }),
     ).isRequired,
     value: PropTypes.string,
+    onBlur: PropTypes.func.isRequired,
+    onChange: PropTypes.func.isRequired,
+    onFocus: PropTypes.func.isRequired,
+    required: PropTypes.bool,
+    errors: PropTypes.arrayOf(PropTypes.oneOf([PropTypes.string, false])),
   };
 
   static defaultProps = {

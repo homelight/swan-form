@@ -1,3 +1,5 @@
+/* global describe, it, expect */
+
 import hasErrors from './hasErrors';
 import runValidations from './runValidations';
 
