@@ -1,18 +1,20 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Field from './Field';
 import isFunction from 'lodash/isFunction';
+import classes from '../../helpers/classes';
 
 export default class Reset extends Component {
   static propTypes = {
     name: PropTypes.string,
     value: PropTypes.string,
     resetFunction: PropTypes.func,
+    className: PropTypes.string,
   };
 
   static defaultProps = {
     value: 'Reset',
     name: 'flowform--reset',
+    className: '',
   };
 
   static contextTypes = {
@@ -24,7 +26,7 @@ export default class Reset extends Component {
     this.resetForm = this.resetForm.bind(this);
   }
 
-  resetForm(event) {
+  resetForm() {
     if (isFunction(this.props.resetFunction)) {
       this.props.resetFunction();
     } else if (isFunction(this.context.reset)) {
@@ -37,12 +39,13 @@ export default class Reset extends Component {
   }
 
   render() {
-    const { name, value } = this.props;
+    const { className, name, value } = this.props;
     return (
       <input
+        className={classes(['flowform--reset', className])}
         type="reset"
-        name={name || 'flowform--reset'}
-        value={value || 'Reset'}
+        name={name}
+        value={value}
         onClick={this.resetForm}
       />
     );

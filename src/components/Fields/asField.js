@@ -334,7 +334,7 @@ function asField(WrappedComponent) {
           this.setState(prevState => ({
             ...prevState,
             isValid: true,
-            errors: [],
+            errors: noErrors,
           }));
         }
         // This means it is valid
@@ -344,7 +344,7 @@ function asField(WrappedComponent) {
         this.setState(prevState => ({
           ...prevState,
           isValid: true,
-          errors: [],
+          errors: noErrors,
         }));
         return true;
       }

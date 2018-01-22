@@ -101,11 +101,28 @@ function renderOptions(options) {
 
 class FieldFromHOC extends Component {
   static propTypes = {
+    /**
+     * Props shipped from the HOC
+     */
     errors: PropTypes.arrayOf(PropTypes.string).isRequired,
-    type: PropTypes.string.isRequired,
+    isValid: PropTypes.bool.isRequired,
+    onChange: PropTypes.func.isRequired,
+    onFocus: PropTypes.func.isRequired,
+    onBlur: PropTypes.func.isRequired,
+    onClick: PropTypes.func.isRequired,
+
+    /**
+     * Required user props
+     */
+    type: PropTypes.oneOf(['select', 'textarea', ...INPUT_TYPES]).isRequired,
+    name: PropTypes.string.isRequired,
+
+    /**
+     * Optional User supplied props. These are handled if not shipped, so we can ignore them
+     */
     label: PropTypes.string,
     className: PropTypes.string,
-    type: PropTypes.oneOf(['select', 'textarea', ...INPUT_TYPES]),
+    required: PropTypes.bool,
   };
 
   maybeWrapInLabel(children) {

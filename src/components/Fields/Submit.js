@@ -2,11 +2,24 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Field from './Field';
 import isFunction from 'lodash/isFunction';
+import classes from '../../helpers/classes';
 
 export default class Submit extends Component {
   static contextTypes = {
     onSubmit: PropTypes.func,
     isSubmitting: PropTypes.func,
+  };
+
+  static propTypes = {
+    name: PropTypes.string,
+    value: PropTypes.string,
+    className: PropTypes.string,
+  };
+
+  static defaultProps = {
+    name: 'flowform--submit',
+    className: '',
+    value: 'Submit',
   };
 
   constructor(props, context) {
@@ -54,13 +67,14 @@ export default class Submit extends Component {
   }
 
   render() {
-    const { name, value } = this.props;
+    const { className, name, value } = this.props;
     return (
       <Field
+        className={classes(['flowform--submit', className])}
         type="submit"
         disabled={this.context.isSubmitting()}
-        name={name || 'flowform--submit'}
-        value={value || 'Submit'}
+        name={name}
+        value={value}
         onSubmit={this.submitForm}
       />
     );
