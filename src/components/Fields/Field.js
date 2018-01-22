@@ -14,8 +14,6 @@ import moveCursorToEnd from './shared/moveCursor';
 
 import { ENTER } from './shared/keyCodes';
 
-import styles from './Field.css';
-
 const INPUT_TYPES = [
   'button',
   'checkbox',
@@ -504,26 +502,20 @@ export default class Field extends Component {
   }
 
   maybeWrapInLabel(children) {
-    const { label, required } = this.props;
-    const fieldStyle = classes(['flowform--field--field', required && 'flowform--field--required']);
-    if (label) {
-      return (
-        <label className={classes([!this.state.isValid && 'flowform--field-has-errors'])}>
-          <span className="flowform--field--label">{label}</span>
-          <span className={fieldStyle}>{children}</span>
-          <span className="flowform--field--errors">
-            {this.state.errors.filter(err => err).join(',')}
-          </span>
-        </label>
-      );
-    }
+    const { className, label, required } = this.props;
+    const fieldStyle = classes([
+      className,
+      'flowform--field--field',
+      required && 'flowform--field--required',
+    ]);
     return (
-      <span className={classes([!this.state.isValid && 'flowform--field-has-errors'])}>
+      <label className={classes([!this.state.isValid && 'flowform--field-has-errors'])}>
+        {label && <span className="flowform--field--label">{label}</span>}
         <span className={fieldStyle}>{children}</span>
         <span className="flowform--field--errors">
           {this.state.errors.filter(err => err).join(',')}
         </span>
-      </span>
+      </label>
     );
   }
 
@@ -688,6 +680,10 @@ export default class Field extends Component {
   }
 
   render() {
+    // Hidden fields are never wrapped in labels
+    if (this.props.type === 'hidden') {
+      return this.renderField();
+    }
     return this.maybeWrapInLabel(this.renderField());
   }
 }

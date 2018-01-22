@@ -1,0 +1,56 @@
+.flowform--field--required::after {
+  content: '*';
+  color: red;
+  position: absolute; /* fixes display with textareas */
+}
+
+.flowform--field--required {
+  margin-right: 1em; /* make up for position:absolute on ::after */
+}
+
+.flowform--field--errors {
+  color: red;
+}
+
+.fancy-field input {
+  font: 600 18px / 24px 'Open Sans', sans-serif;
+  color: #7a7a7a;
+  text-decoration: underline;
+  padding: 0.5em 0.75em;
+  border: 1px solid #a9a9a9;
+  border-radius: 6px;
+  outline: none;
+  box-shadow: inset 0 0 12px black;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.fancy-field input:focus {
+  background-color: #afa;
+}
+
+.fancy-field input:invalid {
+  background-color: #fab;
+}
+
+.fancy-field {
+  border: 2px solid black;
+  display: flex;
+  padding: 1rem;
+  position: relative;
+}
+
+.fancy-field .flowform--field--label {
+  font: 600 40px / 40px 'Montserrat', sans-serif;
+  display: block;
+  margin-right: 0.25em;
+}
+
+.fancy-field .flowform--field--label::after {
+  content: ' ';
+  display: block;
+}
+
+.fancy-field.flowform--field--required::after {
+  content: '';
+}

@@ -73,7 +73,7 @@ function asField(WrappedComponent) {
       this.register();
 
       // Emulate the browser autoFocus if (1) requested and (2) possible
-      if (this.props.autoFocus) {
+      if (this.props.autoFocus && this.fieldRef) {
         // Actually focus on the field
         this.fieldRef.focus();
         // Move the cursor to the end of the input if there is a value
@@ -117,7 +117,7 @@ function asField(WrappedComponent) {
      * @return {void}
      */
     register() {
-      if (isFunction(this.context.register)) {
+      if (isObject(this.context) && isFunction(this.context.register)) {
         this.context.register({
           // This should be a unique key
           name: this.props.name,
@@ -142,7 +142,7 @@ function asField(WrappedComponent) {
      * @return {void}
      */
     unregister() {
-      if (isFunction(this.context.unregister)) {
+      if (isObject(this.context) && isFunction(this.context.unregister)) {
         this.context.unregister(this.props.name);
       }
     }
@@ -251,6 +251,7 @@ function asField(WrappedComponent) {
 
     setRef(el) {
       const { setRef } = this.props;
+      // If setRef was sent to to the component as a prop, then also call it with the element
       if (setRef && isFunction(setRef)) {
         setRef(el);
       }
@@ -288,7 +289,6 @@ function asField(WrappedComponent) {
      * @param {any} value the value to set
      */
     setValue(value, resetErrors = false, resetTouched = false) {
-      console.log('setting value', value);
       this.setState(prevState => ({
         ...prevState,
         errors: resetErrors === false ? prevState.errors : [],
@@ -376,7 +376,17 @@ function asField(WrappedComponent) {
     render() {
       // We are going to pull out the internal things that we need and call the rest `spreadProps`,
       // and then we'll, well, spread throse props over the component below it.
-      const { onChange, onBlur, onFocus, registerWrapped, value, ...spreadProps } = this.props;
+      const {
+        onChange,
+        onBlur,
+        onFocus,
+        registerWrapped,
+        value,
+        asyncValidate,
+        validate,
+        validateWhileTyping,
+        ...spreadProps
+      } = this.props;
 
       if (this.context.autoComplete === 'off') {
         spreadProps.autoComplete = 'off';
@@ -403,7 +413,10 @@ function asField(WrappedComponent) {
           onChange={this.onChange}
           onBlur={this.onBlur}
           onFocus={this.onFocus}
+          setRef={this.setRef}
           value={this.state.value}
+          errors={this.state.errors}
+          isValid={this.state.isValid}
           {...spreadProps}
         />
       );
