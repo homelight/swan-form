@@ -6,14 +6,13 @@ import isEqual from 'lodash/isEqual';
 import isFunction from 'lodash/isFunction';
 import isObject from 'lodash/isObject';
 
-import autobind from '../../helpers/autobind';
-import runValidations from './shared/runValidations';
-import noErrors from './shared/noErrors';
-import hasErrors from './shared/hasErrors';
-import noop from './shared/noop';
-import moveCursorToEnd from './shared/moveCursor';
-
-import { ENTER } from './shared/keyCodes';
+import autobind from '@flow-form/helpers/autobind';
+import runValidations from '@flow-form/helpers/runValidations';
+import noErrors from '@flow-form/helpers/noErrors';
+import hasErrors from '@flow-form/helpers/hasErrors';
+import noop from '@flow-form/helpers/noop';
+import moveCursorToEnd from '@flow-form/helpers/moveCursor';
+import { ENTER } from '@flow-form/helpers/keyCodes';
 
 // This function takes a component...
 function asField(WrappedComponent) {

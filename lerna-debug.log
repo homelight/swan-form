@@ -1,0 +1,175 @@
+0 silly input [ 'lint' ]
+1 silly flags { _: [ 'run' ],
+1 silly flags   'reject-cycles': false,
+1 silly flags   rejectCycles: false,
+1 silly flags   script: 'lint',
+1 silly flags   args: [] }
+2 verbose rootPath /Users/shawn/projects/flow-form
+3 info version 2.8.0
+4 silly existsSync /Users/shawn/projects/flow-form/VERSION
+5 silly initialize attempt
+6 silly initialize success
+7 silly execute attempt
+8 silly runScriptInDir lint [] field
+9 silly getExecOpts { cwd: '/Users/shawn/projects/flow-form/packages/field' }
+10 silly runScriptInDir lint [] form
+11 silly getExecOpts { cwd: '/Users/shawn/projects/flow-form/packages/form' }
+12 silly runScriptInDir lint [] helpers
+13 silly getExecOpts { cwd: '/Users/shawn/projects/flow-form/packages/helpers' }
+14 silly runScriptInDir lint [] slider
+15 silly getExecOpts { cwd: '/Users/shawn/projects/flow-form/packages/slider' }
+16 error lint Errored while running script in '@flow-form/field'
+17 error execute callback with error
+18 error Error: Command failed: yarn run lint
+18 error error Command failed with exit code 1.
+18 error yarn run v1.3.2
+18 error $ eslint src
+18 error
+18 error /Users/shawn/projects/flow-form/packages/field/src/components/Fields/AddressField.js
+18 error     4:24  error  Absolute imports should come before relative imports   import/first
+18 error   130:22  error  'line1' is missing in props validation                 react/prop-types
+18 error   131:22  error  'line2' is missing in props validation                 react/prop-types
+18 error   132:21  error  'city' is missing in props validation                  react/prop-types
+18 error   133:22  error  'state' is missing in props validation                 react/prop-types
+18 error   134:20  error  'zip' is missing in props validation                   react/prop-types
+18 error   137:7   error  Unused state field: 'isDirty'                          react/no-unused-state
+18 error   138:7   error  Unused state field: 'isValid'                          react/no-unused-state
+18 error   141:5   error  Using this.refs is deprecated                          react/no-string-refs
+18 error   160:3   error  updatePart should be placed after getValue             react/sort-comp
+18 error   190:11  error  Expected 'this' to be used by class method 'validate'  class-methods-use-this
+18 error   190:12  error  'updateErrors' is assigned a value but never used      no-unused-vars
+18 error   201:5   error  Using this.refs is deprecated                          react/no-string-refs
+18 error   202:10  error  Using this.refs is deprecated                          react/no-string-refs
+18 error   208:26  error  'name' is missing in props validation                  react/prop-types
+18 error   229:55  error  'value' is missing in props validation                 react/prop-types
+18 error   237:13  error  'autoFocus' is assigned a value but never used         no-unused-vars
+18 error   237:13  error  'autoFocus' is missing in props validation             react/prop-types
+18 error   237:30  error  'className' is missing in props validation             react/prop-types
+18 error
+18 error /Users/shawn/projects/flow-form/packages/field/src/components/Fields/asField.js
+18 error    26:37  error  'type' is missing in props validation                              react/prop-types
+18 error    26:64  error  'multiple' is missing in props validation                          react/prop-types
+18 error    30:22  error  'value' is missing in props validation                             react/prop-types
+18 error    32:50  error  'validate' is missing in props validation                          react/prop-types
+18 error    76:22  error  'autoFocus' is missing in props validation                         react/prop-types
+18 error   106:5   error  Expected exception block, space or tab after '/**' in comment      spaced-comment
+18 error   119:5   error  register should be placed after setValue                           react/sort-comp
+18 error   123:28  error  'name' is missing in props validation                              react/prop-types
+18 error   164:15  error  'validateWhileTyping' is missing in props validation               react/prop-types
+18 error   164:36  error  'validateDebounceTimeout' is missing in props validation           react/prop-types
+18 error   164:61  error  'onChange' is assigned a value but never used                      no-unused-vars
+18 error   164:61  error  'onChange' is missing in props validation                          react/prop-types
+18 error   203:13  error  'event' is defined but never used                                  no-unused-vars
+18 error   204:15  error  'onFocus' is missing in props validation                           react/prop-types
+18 error   213:23  error  'prevState' is defined but never used                              no-unused-vars
+18 error   225:12  error  'event' is defined but never used                                  no-unused-vars
+18 error   226:15  error  'onBlur' is missing in props validation                            react/prop-types
+18 error   226:33  error  'asyncValidate' is missing in props validation                     react/prop-types
+18 error   242:25  error  Expected 'this' to be used by class method 'preventSubmitOnEnter'  class-methods-use-this
+18 error   253:15  error  'setRef' is missing in props validation                            react/prop-types
+18 error   296:44  error  Unnecessary use of boolean literals in conditional expression      no-unneeded-ternary
+18 error   365:15  error  'formatter' is missing in props validation                         react/prop-types
+18 error   392:29  error  'autoComplete' is missing in props validation                      react/prop-types
+18 error
+18 error /Users/shawn/projects/flow-form/packages/field/src/components/Fields/Field.js
+18 error    63:10  error    'renderOptions' was used before it was defined                                          no-use-before-define
+18 error    71:10  error    Expected to return a value at the end of function 'renderOptions'                       consistent-return
+18 error   123:5   error    propType "label" is not required, but has no corresponding defaultProp declaration      react/require-default-props
+18 error   124:5   error    propType "className" is not required, but has no corresponding defaultProp declaration  react/require-default-props
+18 error   125:5   error    propType "required" is not required, but has no corresponding defaultProp declaration   react/require-default-props
+18 error   131:7   error    Form label must have associated control                                                 jsx-a11y/label-has-for
+18 error   155:7   error    'setRef' is missing in props validation                                                 react/prop-types
+18 error   160:7   error    'options' is missing in props validation                                                react/prop-types
+18 error   185:13  warning  Dangerous property 'dangerouslySetInnerHTML' found                                      react/no-danger
+18 error
+18 error /Users/shawn/projects/flow-form/packages/field/src/components/Fields/Field.test.js
+18 error    2:1   error  'enzyme' should be listed in the project's dependencies. Run 'npm i -S enzyme' to add it                                    import/no-extraneous-dependencies
+18 error    2:27  error  '/Users/shawn/projects/flow-form/node_modules/enzyme/build/index.js' imported multiple times                                import/no-duplicates
+18 error    3:1   error  'enzyme-adapter-react-16' should be listed in the project's dependencies. Run 'npm i -S enzyme-adapter-react-16' to add it  import/no-extraneous-dependencies
+18 error    7:1   error  Import in body of module; reorder to top                                                                                    import/first
+18 error    8:1   error  'enzyme' should be listed in the project's dependencies. Run 'npm i -S enzyme' to add it                                    import/no-extraneous-dependencies
+18 error    8:1   error  Import in body of module; reorder to top                                                                                    import/first
+18 error    8:40  error  '/Users/shawn/projects/flow-form/node_modules/enzyme/build/index.js' imported multiple times                                import/no-duplicates
+18 error    9:1   error  Import in body of module; reorder to top                                                                                    import/first
+18 error   13:11  error  'wrapper' is assigned a value but never used                                                                                no-unused-vars
+18 error   17:11  error  'wrapper' is assigned a value but never used                                                                                no-unused-vars
+18 error   21:11  error  'wrapper' is assigned a value but never used                                                                                no-unused-vars
+18 error
+18 error /Users/shawn/projects/flow-form/packages/field/src/components/Fields/Radios.js
+18 error    6:1   error  Component should be written as a pure function                                                         react/prefer-stateless-function
+18 error   18:5   error  propType "value" is not required, but has no corresponding defaultProp declaration                     react/require-default-props
+18 error   22:5   error  propType "required" is not required, but has no corresponding defaultProp declaration                  react/require-default-props
+18 error   33:7   error  'className' is missing in props validation                                                             react/prop-types
+18 error   35:7   error  'label' is missing in props validation                                                                 react/prop-types
+18 error   37:7   error  'name' is assigned a value but never used                                                              no-unused-vars
+18 error   40:7   error  'onBlur' is assigned a value but never used                                                            no-unused-vars
+18 error   47:32  error  Unexpected block statement surrounding arrow body; move the returned value immediately after the `=>`  arrow-body-style
+18 error   50:13  error  Form label must have associated control                                                                jsx-a11y/label-has-for
+18 error
+18 error /Users/shawn/projects/flow-form/packages/field/src/components/Fields/Reset.js
+18 error   35:7  warning  Unexpected console statement  no-console
+18 error
+18 error /Users/shawn/projects/flow-form/packages/field/src/components/Fields/Submit.js
+18 error    4:24  error    Absolute imports should come before relative imports       import/first
+18 error   27:5   warning  Unexpected console statement                               no-console
+18 error   28:27  error    'onSubmit' is missing in props validation                  react/prop-types
+18 error   29:7   warning  Unexpected console statement                               no-console
+18 error   38:7   error    Unused state field: 'willSubmit'                           react/no-unused-state
+18 error   39:7   error    Unused state field: 'isSubmitting'                         react/no-unused-state
+18 error   40:7   error    Unused state field: 'hasSubmitted'                         react/no-unused-state
+18 error   44:15  error    Expected 'this' to be used by class method 'beforeSubmit'  class-methods-use-this
+18 error   53:13  error    Expected 'this' to be used by class method 'submitForm'    class-methods-use-this
+18 error   54:5   warning  Unexpected console statement                               no-console
+18 error   64:14  error    Expected 'this' to be used by class method 'afterSubmit'   class-methods-use-this
+18 error
+18 error /Users/shawn/projects/flow-form/packages/field/src/components/Form.js
+18 error     6:23  error    Absolute imports should come before relative imports                                       import/first
+18 error    25:5   error    propType "beforeSubmit" is not required, but has no corresponding defaultProp declaration  react/require-default-props
+18 error    29:5   error    propType "afterSubmit" is not required, but has no corresponding defaultProp declaration   react/require-default-props
+18 error    59:9   warning  Unexpected console statement                                                               no-console
+18 error    91:3   error    setRef should be placed after getChildContext                                              react/sort-comp
+18 error   127:5   warning  Unexpected console statement                                                               no-console
+18 error   128:30  error    'rej' is defined but never used                                                            no-unused-vars
+18 error   131:9   warning  Unexpected console statement                                                               no-console
+18 error   142:7   warning  Unexpected console statement                                                               no-console
+18 error   144:9   warning  Unexpected console statement                                                               no-console
+18 error   148:7   warning  Unexpected console statement                                                               no-console
+18 error   154:5   warning  Unexpected console statement                                                               no-console
+18 error   163:5   warning  Unexpected console statement                                                               no-console
+18 error   171:5   warning  Unexpected console statement                                                               no-console
+18 error   184:43  error    'setValue' is defined but never used                                                       no-unused-vars
+18 error   212:27  error    'children' is missing in props validation                                                  react/prop-types
+18 error
+18 error /Users/shawn/projects/flow-form/packages/field/src/components/Slide.js
+18 error     4:24  error  Absolute imports should come before relative imports       import/first
+18 error     7:8   error  'styles' is defined but never used                         no-unused-vars
+18 error    13:19  error  'shouldShowIf' PropType is defined but prop is never used  react/no-unused-prop-types
+18 error    35:7   error  Unused state field: 'isValid'                              react/no-unused-state
+18 error    36:7   error  Unused state field: 'fields'                               react/no-unused-state
+18 error    70:19  error  'prevState' is defined but never used                      no-unused-vars
+18 error    77:54  error  'index' is missing in props validation                     react/prop-types
+18 error   120:13  error  'position' is missing in props validation                  react/prop-types
+18 error   128:21  error  'children' is missing in props validation                  react/prop-types
+18 error
+18 error /Users/shawn/projects/flow-form/packages/field/src/components/Slider.js
+18 error    24:7   error    'onSubmit' is assigned a value but never used                                                   no-unused-vars
+18 error    24:28  warning  Unexpected console statement                                                                    no-console
+18 error    30:5   error    propType "onSubmit" is not required, but has no corresponding defaultProp declaration           react/require-default-props
+18 error    31:5   error    propType "beforeSubmit" is not required, but has no corresponding defaultProp declaration       react/require-default-props
+18 error    32:5   error    Prop type `array` is forbidden                                                                  react/forbid-prop-types
+18 error    50:7   warning  Unexpected console statement                                                                    no-console
+18 error   100:5   warning  Unexpected console statement                                                                    no-console
+18 error   128:5   warning  Unexpected console statement                                                                    no-console
+18 error   155:9   error    Visible, non-interactive elements with click handlers must have at least one keyboard listener  jsx-a11y/click-events-have-key-events
+18 error   155:9   error    Static HTML elements with event handlers require a role                                         jsx-a11y/no-static-element-interactions
+18 error   165:9   error    Static HTML elements with event handlers require a role                                         jsx-a11y/no-static-element-interactions
+18 error   165:9   error    Visible, non-interactive elements with click handlers must have at least one keyboard listener  jsx-a11y/click-events-have-key-events
+18 error   183:20  error    Do not use Array index in keys                                                                  react/no-array-index-key
+18 error
+18 error ✖ 121 problems (103 errors, 18 warnings)
+18 error   3 errors, 0 warnings potentially fixable with the `--fix` option.
+18 error
+18 error info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+18 error
+18 error     at Promise.all.then.arr (/usr/local/lib/node_modules/lerna/node_modules/execa/index.js:236:11)
+18 error     at <anonymous>

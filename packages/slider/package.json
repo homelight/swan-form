@@ -1,0 +1,19 @@
+{
+  "name": "@flow-form/slider",
+  "version": "0.1.0",
+  "description": "forms in sliders",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "build": "rollup -c",
+    "deploy": "gh-pages -d example/build",
+    "format": "prettier --write '**/*.{json,js,css,md}'",
+    "precommit": "lint-staged",
+    "predeploy": "cd example && npm install && npm run build",
+    "prepublish": "npm run build",
+    "start": "rollup -c -w",
+    "lint": "eslint src",
+    "test": "jest --env=jsdom",
+    "test:watch": "yarn run test -- --watch"
+  }
+}

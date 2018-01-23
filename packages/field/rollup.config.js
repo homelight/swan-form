@@ -27,7 +27,12 @@ export default {
       plugins: ['external-helpers'],
     }),
     resolve(),
-    commonjs(),
+    commonjs({
+      modulesOnly: true,
+      namedExports: {
+        '../../node_modules/lodash/isObject.js': ['isObject'],
+      },
+    }),
     filesize(),
   ],
 };

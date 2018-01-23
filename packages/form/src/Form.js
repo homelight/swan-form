@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
-import hasOwnProperty from '../helpers/hasOwnProperty';
-import autobind from '../helpers/autobind';
+import hasOwnProperty from '@flow-form/helpers/hasOwnProperty';
+import autobind from '@flow-form/helpers/autobind';
 import isPromise from 'is-promise';
 
 // These are fields that we will automatically pull out of the form as they are just the

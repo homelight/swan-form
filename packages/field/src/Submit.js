@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Field from './Field';
 import isFunction from 'lodash/isFunction';
-import classes from '../../helpers/classes';
+import classes from '@flow-form/helpers/classes';
+import Field from './Field';
 
 export default class Submit extends Component {
   static contextTypes = {

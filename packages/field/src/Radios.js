@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import classes from '@flow-form/helpers/classes';
 import asField from './asField';
-import classes from '../../helpers/classes';
 
 class Radios extends Component {
   static displayName = 'Radios';

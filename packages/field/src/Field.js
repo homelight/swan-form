@@ -1,15 +1,9 @@
-/**
- * This is an experiment to see if I can recreate the Field component just using the as field HOC
- * (for code reuse purposes, let's dog food it)
- */
-
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import isObject from 'lodash/isObject';
+import hasOwnProperty from '@flow-form/helpers/hasOwnProperty';
+import classes from '@flow-form/helpers/classes';
 import asField from './asField';
-import hasOwnProperty from '../../helpers/hasOwnProperty';
-
-import classes from '../../helpers/classes';
 
 const INPUT_TYPES = [
   'button',

@@ -1,24 +1,24 @@
 /* global describe, it, expect */
-import { configure } from 'enzyme';
+/* eslint-disable import/no-extraneous-dependencies */
+import React from 'react';
 import Adapter from 'enzyme-adapter-react-16';
+import { configure, shallow, mount, render } from 'enzyme';
+
+import Field from './Field';
 
 configure({ adapter: new Adapter() });
 
-import React from 'react';
-import { shallow, mount, render } from 'enzyme';
-import Field from './Field';
-
 describe('Text Field Input Suite', () => {
   it('should shallow render with no error', () => {
-    const wrapper = shallow(<Field name="test" type="text" />);
+    shallow(<Field name="test" type="text" />);
   });
 
   it('should mount with no error', () => {
-    const wrapper = mount(<Field name="test" type="text" />);
+    mount(<Field name="test" type="text" />);
   });
 
   it('should render with no error', () => {
-    const wrapper = render(<Field name="test" type="text" />);
+    render(<Field name="test" type="text" />);
   });
 
   const wrapper = render(<Field name="test" type="text" />);

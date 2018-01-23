@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
-import classes from '../../helpers/classes';
+import classes from '@flow-form/helpers/classes';
 
 export default class Reset extends Component {
   static propTypes = {

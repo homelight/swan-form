@@ -4,3 +4,5 @@ example/src/flow-form
 example/node_modules
 .DS_Store
 coverage
+packages/*/dist
+packages/**/dist
