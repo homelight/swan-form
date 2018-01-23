@@ -1,0 +1,60 @@
+.styled-reverse {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+.styled-reverse span {
+  display: flex;
+  position: relative;
+}
+
+.styled-reverse .flowform--field--label {
+  font: 400 12px / 1.618 'Open Sans', sans-serif;
+  font-style: italic;
+  float: right;
+  display: block;
+  margin-left: 6em;
+}
+
+.styled-reverse.flowform--field--required::after {
+  content: '';
+}
+
+.styled-reverse.flowform--field-has-errors {
+  margin-top: 1em;
+}
+
+.styled-reverse.flowform--field-has-errors::before {
+  content: 'Please fix the following field:';
+  position: absolute;
+  bottom: 1em;
+  border-bottom: 1px solid red;
+}
+
+.styled-reverse input {
+  padding: 0.25em 0.5em;
+  font: 400 24px / 1.616 'Montserrat', sans-serif;
+  outline: 0;
+  background-color: #f0f0f0;
+  border: 0;
+  border-bottom: 1px solid black;
+}
+
+.styled-reverse::after input:invalid {
+  content: '⁉';
+  position: absolute;
+  width: 10px;
+  display: block;
+  background-color: red;
+}
+
+.styled-reverse .flowform--field--error {
+  content: ' ' !important;
+  display: block;
+  font: 600 24px / 1 sans-serif;
+  position: relative;
+  clear: both;
+  width: 100%;
+  color: transparent;
+  user-select: none;
+}

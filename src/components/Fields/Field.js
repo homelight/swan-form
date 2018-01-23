@@ -398,7 +398,7 @@ export default class Field extends Component {
   getValue() {
     // We might have to do something different here for radios. Also, we need
     // to intercept for formatters
-    return this.state.value;
+    return this.unformat();
   }
 
   /**
@@ -422,7 +422,7 @@ export default class Field extends Component {
 
     // Call user supplied function if given
     if (isFunction(this.props.onChange)) {
-      this.props.onChange(value);
+      this.props.onChange(value, this.props.name);
     }
   }
 
@@ -503,17 +503,23 @@ export default class Field extends Component {
 
   maybeWrapInLabel(children) {
     const { className, label, required } = this.props;
-    const fieldStyle = classes([
-      className,
-      'flowform--field--field',
-      required && 'flowform--field--required',
-    ]);
     return (
-      <label className={classes([!this.state.isValid && 'flowform--field-has-errors'])}>
+      <label
+        className={classes([
+          className,
+          'flowform--field',
+          required && 'flowform--field--required',
+          !this.state.isValid && 'flowform--field-has-errors',
+        ])}
+      >
         {label && <span className="flowform--field--label">{label}</span>}
-        <span className={fieldStyle}>{children}</span>
+        <span className="flowform--field--field">{children}</span>
         <span className="flowform--field--errors">
-          {this.state.errors.filter(err => err).join(',')}
+          {this.state.errors.filter(err => err).map(error => (
+            <span key={error} className="flowform--field--error">
+              {error}
+            </span>
+          ))}
         </span>
       </label>
     );

@@ -7,6 +7,7 @@ import SliderForm from './SliderForm';
 import asFieldHOC from './asFieldHOC';
 import DependentField from './DependentField';
 import DynamicField from './DynamicField';
+import Styling from './Styling';
 import Formatters from './Formatters';
 
 import NavBar from './NavBar';
@@ -28,7 +29,7 @@ export default class App extends Component {
             <Route path="/slider-form" component={SliderForm} />
             <Route path="/dependent-field" component={DependentField} />
             <Route path="/dynamic-field" component={DynamicField} />
-            <Route path="/styling" component={() => <div>@TODO</div>} />
+            <Route path="/styling" component={Styling} />
             <Route path="/with-redux" component={() => <div>@TODO</div>} />
             <Route path="/with-react-router" component={() => <div>@TODO</div>} />
             <Route path="/asfield-hoc" component={asFieldHOC} />

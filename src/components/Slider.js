@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import Slide from './Slide';
-import autobind from '../helpers/autobind';
 import clamp from 'lodash/clamp';
 import isFunction from 'lodash/isFunction';
 import Form from './Form';
+import Slide from './Slide';
+import autobind from '../helpers/autobind';
 import classes from '../helpers/classes';
 
 import './Slider.css';
@@ -29,6 +29,7 @@ export default class Slider extends Component {
     current: PropTypes.number,
     onSubmit: PropTypes.func,
     beforeSubmit: PropTypes.func,
+    slides: PropTypes.array.isRequired,
   };
 
   static defaultProps = {
@@ -59,6 +60,13 @@ export default class Slider extends Component {
     autobind(this, ['registerSlide', 'unregisterSlide', 'prev', 'next']);
   }
 
+  getChildContext() {
+    return {
+      registerSlide: this.registerSlide,
+      unregisterSlide: this.unregisterSlide,
+    };
+  }
+
   shouldComponentUpdate(nextProps, nextState) {
     return this.props !== nextProps || this.state.current !== nextState.current;
   }
@@ -68,13 +76,6 @@ export default class Slider extends Component {
     if (nextProps.height !== this.props.height) {
       this.height = { height: nextProps.height };
     }
-  }
-
-  getChildContext() {
-    return {
-      registerSlide: this.registerSlide,
-      unregisterSlide: this.unregisterSlide,
-    };
   }
 
   registerSlide({ index, isValid }) {

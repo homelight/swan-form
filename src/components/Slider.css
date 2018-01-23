@@ -1,11 +1,11 @@
 .flowform--slider {
   border: 1px solid red;
-  height: auto;
-  position: relative;
-  width: 100%;
   display: flex;
   flex: 1;
+  height: auto;
   overflow: hidden;
+  position: relative;
+  width: 100%;
 }
 
 .flowform--slider--control {

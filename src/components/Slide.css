@@ -1,28 +1,25 @@
 .flowform--slide {
   position: absolute;
-  /*visibility: hidden;*/
   will-change: transform;
-  transition: transform 0.6s ease-in-out;
+  transition: transform 0.6s ease-in-out, opacity 0.3s ease-in-out;
   height: 100%;
   width: 100%;
   padding: 2rem;
   z-index: 1;
   background-color: white;
+  transform: translateX(0);
+  opacity: 1;
 }
 
 .flowform--slide--before {
   transform: translateX(-100%);
+  opacity: 0;
   /*
     these look a little weird when we skip slides. @todo figure out something better
   */
 }
 
-.flowform--slide--current {
-  transform: translateX(0);
-  z-index: 2;
-  /*visibility: visible;*/
-}
-
 .flowform--slide--after {
   transform: translateX(100%);
+  opacity: 0;
 }
