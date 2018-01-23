@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import autobind from '@flow-form/helpers/autobind';
+import autobind from '@flow-form/helpers/dist/autobind';
 import isFunction from 'lodash/isFunction';
-import classes from '@flow-form/helpers/classes';
+import classes from '@flow-form/helpers/dist/classes';
 
 import styles from './Slide.css';
 

@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import clamp from 'lodash/clamp';
 import isFunction from 'lodash/isFunction';
 import { Form } from '@flow-form/form';
-import autobind from '@flow-form/helpers/autobind';
-import classes from '@flow-form/helpers/classes';
+import autobind from '@flow-form/helpers/dist/autobind';
+import classes from '@flow-form/helpers/dist/classes';
 import Slide from './Slide';
 
 import './Slider.css';

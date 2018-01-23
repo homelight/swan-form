@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
-import hasOwnProperty from '@flow-form/helpers/hasOwnProperty';
-import autobind from '@flow-form/helpers/autobind';
+import hasOwnProperty from '@flow-form/helpers/dist/hasOwnProperty';
+import autobind from '@flow-form/helpers/dist/autobind';
 
 const isPromise = obj =>
   !!obj && ['function', 'object'].includes(typeof obj) && typeof obj.then === 'function';

@@ -2,6 +2,10 @@
   "name": "example",
   "version": "0.1.0",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/helloeave/flow-form.git"
+  },
   "dependencies": {
     "history": "^4.7.2",
     "libphonenumber-js": "^1.0.3",

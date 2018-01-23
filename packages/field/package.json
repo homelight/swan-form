@@ -4,11 +4,16 @@
   "description": "Forms and Things",
   "author": "Shawn Patrick Rice",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/helloeave/flow-form.git"
+  },
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",
   "scripts": {
-    "build": "babel --src-type module src --out-dir dist --ignore src/*.test.js",
+    "build":
+      "NODE_ENV='production' babel --src-type module src --out-dir dist --ignore src/*.test.js",
     "deploy": "gh-pages -d example/build",
     "format": "prettier --write '**/*.{json,js,css,md}'",
     "precommit": "lint-staged",
@@ -62,6 +67,5 @@
     "regenerator-runtime": "^0.11.1",
     "uglify-es": "^3.3.7"
   },
-  "browserslist": ["IE 11", "> 1%", "last 2 versions"],
   "files": ["dist"]
 }
