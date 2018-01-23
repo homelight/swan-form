@@ -1,25 +1,25 @@
 {
   "presets": [
     [
-      "env",
-      {
+      "@babel/env", {
+        "targets": [ "IE 11", ">1%" ],
         "modules": false
       }
     ],
-    "stage-0",
-    "react"
+    "@babel/stage-0",
+    "@babel/react"
   ],
   "env": {
     "test": {
       "presets": [
         [
-          "env",
+          "@babel/env",
           {
             "modules": "commonjs"
           }
         ],
-        "stage-0",
-        "react"
+        "@babel/stage-0",
+        "@babel/react"
       ]
     }
   }

@@ -1,0 +1,33 @@
+.ff--slider {
+  border: 1px solid red;
+  display: flex;
+  flex: 1;
+  height: auto;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.ff--slider--control {
+  background-color: dodgerblue;
+  border: 1px solid steelblue;
+  cursor: pointer;
+  padding: 0.25rem;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 999;
+}
+
+.ff--slider--control--disabled {
+  background-color: gray;
+  cursor: not-allowed;
+}
+
+.ff--slider--control--left {
+  left: 0;
+}
+
+.ff--slider--control--right {
+  right: 0;
+}

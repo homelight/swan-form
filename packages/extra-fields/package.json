@@ -1,0 +1,70 @@
+{
+  "name": "@flow-form/extra-fields",
+  "version": "0.1.0",
+  "license": "MIT",
+  "files": ["dist"],
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "jsnext:main": "dist/index.es.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/helloeave/flow-form.git"
+  },
+  "scripts": {
+    "build":
+      "NODE_ENV='production' babel --src-type module src --out-dir dist --ignore src/*.test.js",
+    "precommit": "lint-staged",
+    "predeploy": "cd example && npm install && npm run build",
+    "deploy": "gh-pages -d example/build",
+    "format": "prettier --write '**/*.{json,js,css,md}'",
+    "lint": "eslint src",
+    "prepublish": "npm run build",
+    "start": "yarn run build --watch",
+    "test": "jest --env=jsdom",
+    "test:watch": "yarn run test -- --watch"
+  },
+  "dependencies": {
+    "@flow-form/field": "^0.1.0",
+    "@flow-form/helpers": "^0.1.0",
+    "lodash": "^4.17.4"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.0.0-beta.38",
+    "@babel/core": "^7.0.0-beta.38",
+    "@babel/preset-env": "^7.0.0-beta.38",
+    "@babel/preset-react": "^7.0.0-beta.38",
+    "@babel/preset-stage-0": "^7.0.0-beta.38",
+    "@babel/preset-stage-1": "^7.0.0-beta.38",
+    "autoprefixer": "^7.2.5",
+    "babel-eslint": "^8.0.2",
+    "babel-jest": "^22.1.0",
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.1.1",
+    "eslint": "^4.9.0",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-config-prettier": "^2.9.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^6.0.2",
+    "eslint-plugin-react": "^7.4.0",
+    "gh-pages": "^1.0.0",
+    "glob": "^7.1.2",
+    "husky": "^0.14.3",
+    "jest": "^22.1.1",
+    "jest-enzyme": "^4.0.2",
+    "lint-staged": "^6.0.0",
+    "prettier": "^1.10.2",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
+    "react-test-renderer": "^16.2.0",
+    "regenerator-runtime": "^0.11.1",
+    "uglify-es": "^3.3.7"
+  },
+  "peerDependencies": {
+    "prop-types": "^15.5.4",
+    "react": "^15.0.0 || ^16.0.0",
+    "react-dom": "^15.0.0 || ^16.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

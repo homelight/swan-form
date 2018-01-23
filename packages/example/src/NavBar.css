@@ -1,0 +1,80 @@
+.NavBar {
+  background-color: white;
+  border-bottom: 1px solid gray;
+  box-shadow: 0 0 2px gray;
+  left: 0;
+  padding: 0.5rem;
+  position: fixed;
+  text-align: center;
+  top: 0;
+  transition: transform 0.4s ease-in-out;
+  width: 100%;
+}
+
+.NavBar a {
+  text-decoration: none;
+  color: steelblue;
+  font-weight: bold;
+  transition: color 0.2s ease-in-out;
+}
+
+.NavBar a:visited {
+  color: steelblue;
+}
+
+.NavBar--Active a,
+.NavBar a:hover {
+  color: dodgerblue;
+}
+
+.NavBar--Active a::after,
+.NavBar a::after {
+  border-bottom: 2px solid transparent;
+  content: ' ';
+  display: block;
+  transition: border-bottom 0.2s ease-in-out;
+}
+
+.NavBar a:hover::after {
+  border-bottom: 2px solid dodgerblue;
+}
+
+.NavBar--Spacer {
+  height: 100px;
+  position: static;
+  width: 100%;
+}
+
+.NavBar--Hide .NavBar--Spacer {
+  transform: translateY(-100%);
+}
+
+.NavBar ul li {
+  display: inline-block;
+  margin-right: 1rem;
+}
+
+.NavBar ul li:last-child {
+  margin-right: 0;
+}
+
+.NavBar--Hide .NavBar {
+  transform: translateY(-100%);
+}
+
+.NavBar--toggler {
+  background-color: white;
+  border-radius: 0 0 0.5rem 0.25rem;
+  border: 1px solid gray;
+  bottom: 0;
+  box-shadow: 0px 2px 1px 0.5px #ccc;
+  cursor: pointer;
+  font-size: 0.75em;
+  font-weight: bold;
+  line-height: 0.75em;
+  padding: 0.5rem;
+  position: absolute;
+  transform: translateY(100%);
+  user-select: none;
+  width: 3rem;
+}
