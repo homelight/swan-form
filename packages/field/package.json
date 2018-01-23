@@ -2,39 +2,32 @@
   "name": "@flow-form/field",
   "version": "0.1.0",
   "description": "Forms and Things",
-  "author": "Shawn Patrick Rice",
   "license": "MIT",
+  "author": "Shawn Patrick Rice",
+  "files": ["dist"],
+  "main": "dist/index.js",
+  "module": "dist/index.es.js",
+  "jsnext:main": "dist/index.es.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/helloeave/flow-form.git"
   },
-  "main": "dist/index.js",
-  "module": "dist/index.es.js",
-  "jsnext:main": "dist/index.es.js",
   "scripts": {
     "build":
       "NODE_ENV='production' babel --src-type module src --out-dir dist --ignore src/*.test.js",
-    "deploy": "gh-pages -d example/build",
-    "format": "prettier --write '**/*.{json,js,css,md}'",
     "precommit": "lint-staged",
     "predeploy": "cd example && npm install && npm run build",
+    "deploy": "gh-pages -d example/build",
+    "format": "prettier --write '**/*.{json,js,css,md}'",
+    "lint": "eslint src",
     "prepublish": "npm run build",
     "start": "yarn run build --watch",
-    "lint": "eslint src",
     "test": "jest --env=jsdom",
     "test:watch": "yarn run test -- --watch"
   },
   "dependencies": {
     "@flow-form/helpers": "^0.1.0",
     "lodash": "^4.17.4"
-  },
-  "peerDependencies": {
-    "prop-types": "^15.5.4",
-    "react": "^15.0.0 || ^16.0.0",
-    "react-dom": "^15.0.0 || ^16.0.0"
-  },
-  "publishConfig": {
-    "access": "public"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.38",
@@ -67,5 +60,12 @@
     "regenerator-runtime": "^0.11.1",
     "uglify-es": "^3.3.7"
   },
-  "files": ["dist"]
+  "peerDependencies": {
+    "prop-types": "^15.5.4",
+    "react": "^15.0.0 || ^16.0.0",
+    "react-dom": "^15.0.0 || ^16.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
 }

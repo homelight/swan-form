@@ -83,15 +83,16 @@ If you want to use both while developing, open two terminals and do `yarn start`
 * [ ] Expand more test coverage
 * [ ] Add in thorough documentation
 * [ ] Ship CSS separately
-* [ ] Split everything into separate bundles lodash style.
+* [x] ~Split everything into separate bundles lodash style~.
+* [ ] Use a monorepo
 * [ ] Profile components to find penalty for context and overwriting context
 * [ ] Publish to npm
 * [ ] convert to typescript or create typings (https://github.com/KnisterPeter/react-to-typescript-definitions)
 
 ### Generic Field
 
-* [ ] Formatters in fields
-* [ ] Share more code between asField and Field
+* [x] Formatters in fields
+* [x] Share more code between asField and Field
 * [x] Make all field types avaiable
 * [ ] Don't bind so many functions
 * [x] Handle radio buttons appropriately
@@ -104,7 +105,7 @@ If you want to use both while developing, open two terminals and do `yarn start`
 
 * [ ] Get a better slider API
 * [ ] Make slider more responsive
-* [ ] Allow for enter to let the slider advance to next field
+* [ ] Allow for `enter` to let the slider advance to next field
 
 ### Examples
 

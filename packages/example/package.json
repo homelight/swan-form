@@ -6,7 +6,16 @@
     "type": "git",
     "url": "https://github.com/helloeave/flow-form.git"
   },
+  "scripts": {
+    "build": "react-scripts build",
+    "eject": "react-scripts eject",
+    "start": "react-scripts start",
+    "test": "react-scripts test --env=jsdom"
+  },
   "dependencies": {
+    "@flow-form/field": "0.1.0",
+    "@flow-form/form": "0.1.0",
+    "@flow-form/slider": "0.1.0",
     "history": "^4.7.2",
     "libphonenumber-js": "^1.0.3",
     "prop-types": "^15.6.0",
@@ -15,16 +24,7 @@
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
     "react-scripts": "1.1.0",
-    "react-syntax-highlighter": "^6.1.2",
-    "@flow-form/field": "0.1.0",
-    "@flow-form/form": "0.1.0",
-    "@flow-form/slider": "0.1.0"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "react-syntax-highlighter": "^6.1.2"
   },
   "devDependencies": {
     "eslint": "^4.9.0",
