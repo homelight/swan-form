@@ -40,9 +40,9 @@ class Radios extends Component {
       onBlur,
       value,
     } = this.props;
-    const fieldStyle = classes(['flowform--field--field', required && 'flowform--field--required']);
+    const fieldStyle = classes(['ff--field--field', required && 'ff--field--required']);
     return (
-      <fieldset className={classes(['flowform--radios', className])}>
+      <fieldset className={classes(['ff--radios', className])}>
         {label && <legend>{label}</legend>}
         {options.map(option => {
           // right now, I'm spreading this
@@ -60,7 +60,7 @@ class Radios extends Component {
             </label>
           );
         })}
-        <span className="flowform--field--errors">{errors.filter(err => err).join(',')}</span>
+        <span className="ff--field--errors">{errors.filter(err => err).join(',')}</span>
       </fieldset>
     );
   }

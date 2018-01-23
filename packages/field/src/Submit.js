@@ -17,7 +17,7 @@ export default class Submit extends Component {
   };
 
   static defaultProps = {
-    name: 'flowform--submit',
+    name: 'ff--submit',
     className: '',
     value: 'Submit',
   };
@@ -70,7 +70,7 @@ export default class Submit extends Component {
     const { className, name, value } = this.props;
     return (
       <Field
-        className={classes(['flowform--submit', className])}
+        className={classes(['ff--submit', className])}
         type="submit"
         disabled={this.context.isSubmitting()}
         name={name}

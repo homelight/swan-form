@@ -50,12 +50,12 @@ const tenAndAlpha = [minLenTen, alphaNumeric];
         <p>will create the following HTML:</p>
         <SyntaxHighlighter language="jsx" style={prism}>
           {`
-<label class="flowform--field flowform--field--required flowform--field-has-errors">
-  <span class="flowform--field--label">A Field</span>
-  <span class="flowform--field--field">
+<label class="ff--field ff--field--required ff--field-has-errors">
+  <span class="ff--field--label">A Field</span>
+  <span class="ff--field--field">
     <input type="text" value="testing_" name="minTenField" placeholder="Type Something" required="">
   </span>
-  <span class="flowform--field--errors">
+  <span class="ff--field--errors">
     <span class="flowform-field-error">Min len 10</span>
     <span class="flowform-field-error">Alpha Numeric</span>
   </span>

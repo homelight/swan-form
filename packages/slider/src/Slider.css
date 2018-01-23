@@ -1,4 +1,4 @@
-.flowform--slider {
+.ff--slider {
   border: 1px solid red;
   display: flex;
   flex: 1;
@@ -8,7 +8,7 @@
   width: 100%;
 }
 
-.flowform--slider--control {
+.ff--slider--control {
   background-color: dodgerblue;
   border: 1px solid steelblue;
   cursor: pointer;
@@ -19,15 +19,15 @@
   z-index: 999;
 }
 
-.flowform--slider--control--disabled {
+.ff--slider--control--disabled {
   background-color: gray;
   cursor: not-allowed;
 }
 
-.flowform--slider--control--left {
+.ff--slider--control--left {
   left: 0;
 }
 
-.flowform--slider--control--right {
+.ff--slider--control--right {
   right: 0;
 }

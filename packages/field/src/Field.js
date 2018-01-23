@@ -125,14 +125,14 @@ class Field extends Component {
       <label
         className={classes([
           className,
-          'flowform--field',
-          required && 'flowform--field--required',
-          !isValid && 'flowform--field-has-errors',
+          'ff--field',
+          required && 'ff--field--required',
+          !isValid && 'ff--field-has-errors',
         ])}
       >
-        {label && <span className="flowform--field--label">{label}</span>}
-        <span className="flowform--field--field">{children}</span>
-        <span className="flowform--field--errors">
+        {label && <span className="ff--field--label">{label}</span>}
+        <span className="ff--field--field">{children}</span>
+        <span className="ff--field--errors">
           {errors.filter(err => err).map(err => (
             <span key={err} className="flowform-field-error">
               {err}

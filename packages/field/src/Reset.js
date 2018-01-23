@@ -13,7 +13,7 @@ export default class Reset extends Component {
 
   static defaultProps = {
     value: 'Reset',
-    name: 'flowform--reset',
+    name: 'ff--reset',
     className: '',
   };
 
@@ -42,7 +42,7 @@ export default class Reset extends Component {
     const { className, name, value } = this.props;
     return (
       <input
-        className={classes(['flowform--reset', className])}
+        className={classes(['ff--reset', className])}
         type="reset"
         name={name}
         value={value}

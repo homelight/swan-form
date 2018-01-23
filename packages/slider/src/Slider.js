@@ -151,13 +151,13 @@ export default class Slider extends Component {
 
   render() {
     return (
-      <div className="flowform--slider" style={this.height}>
+      <div className="ff--slider" style={this.height}>
         <div
           onClick={this.prev}
           className={classes([
-            'flowform--slider--control',
-            'flowform--slider--control--left',
-            this.state.current === 0 && 'flowform--slider--control--disabled',
+            'ff--slider--control',
+            'ff--slider--control--left',
+            this.state.current === 0 && 'ff--slider--control--disabled',
           ])}
         >
           L
@@ -165,10 +165,9 @@ export default class Slider extends Component {
         <div
           onClick={this.next}
           className={classes([
-            'flowform--slider--control',
-            'flowform--slider--control--right',
-            this.state.current === this.props.slides.length - 1 &&
-              'flowform--slider--control--disabled',
+            'ff--slider--control',
+            'ff--slider--control--right',
+            this.state.current === this.props.slides.length - 1 && 'ff--slider--control--disabled',
           ])}
         >
           R

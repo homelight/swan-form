@@ -1,4 +1,4 @@
-.flowform--slide {
+.ff--slide {
   position: absolute;
   will-change: transform;
   transition: transform 0.6s ease-in-out, opacity 0.3s ease-in-out;
@@ -11,7 +11,7 @@
   opacity: 1;
 }
 
-.flowform--slide--before {
+.ff--slide--before {
   transform: translateX(-100%);
   opacity: 0;
   /*
@@ -19,7 +19,7 @@
   */
 }
 
-.flowform--slide--after {
+.ff--slide--after {
   transform: translateX(100%);
   opacity: 0;
 }

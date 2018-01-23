@@ -1,14 +1,14 @@
-.flowform--field--required::after {
+.ff--field--required::after {
   content: '*';
   color: red;
   position: absolute; /* fixes display with textareas */
 }
 
-.flowform--field--required {
+.ff--field--required {
   margin-right: 1em; /* make up for position:absolute on ::after */
 }
 
-.flowform--field--errors {
+.ff--field--errors {
   color: red;
 }
 
@@ -40,17 +40,17 @@
   position: relative;
 }
 
-.fancy-field .flowform--field--label {
+.fancy-field .ff--field--label {
   font: 600 40px / 40px 'Montserrat', sans-serif;
   display: block;
   margin-right: 0.25em;
 }
 
-.fancy-field .flowform--field--label::after {
+.fancy-field .ff--field--label::after {
   content: ' ';
   display: block;
 }
 
-.fancy-field.flowform--field--required::after {
+.fancy-field.ff--field--required::after {
   content: '';
 }
