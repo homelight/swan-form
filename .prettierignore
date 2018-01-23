@@ -1,9 +1,7 @@
 .git
-dist
-example/src/flow-form
-example/node_modules
 .DS_Store
 coverage
-packages/*/dist
+package/**/coverage
 packages/**/dist
 packages/example/build
+packages/**/node_modules
