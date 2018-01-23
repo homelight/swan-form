@@ -6,3 +6,4 @@ example/node_modules
 coverage
 packages/*/dist
 packages/**/dist
+packages/example/build
