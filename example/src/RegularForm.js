@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 
-import { AddressField, DateField, Radios, Form, Submit, Reset } from 'flow-form';
-import { FieldFromHOC as Field } from 'flow-form';
+import { Field, Radios, Form, Submit, Reset } from 'flow-form';
 
 import './RegularForm.css';
 
@@ -158,10 +157,6 @@ export default class RegularForm extends Component {
 
             <Field name="week" type="week" label="week" />
             <br />
-            <br />
-
-            <AddressField name="address1" />
-
             <br />
 
             <Field

@@ -7,7 +7,7 @@ export default class Reset extends Component {
   static propTypes = {
     name: PropTypes.string,
     value: PropTypes.string,
-    resetFunction: PropTypes.func,
+    resetFunction: PropTypes.func, // eslint-disable-line
     className: PropTypes.string,
   };
 
