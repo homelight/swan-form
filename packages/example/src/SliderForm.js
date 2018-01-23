@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Field, Slider, Submit } from 'flow-form';
+import { Field, Submit } from '@flow-form/field';
+import { Slider } from '@flow-form/slider';
 
 const required = value =>
   value !== null && value !== undefined && value.trim() !== '' ? false : 'Required';

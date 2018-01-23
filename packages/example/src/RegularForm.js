@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
-import { Field, Radios, Form, Submit, Reset } from 'flow-form';
+import { Field, Radios, Submit, Reset } from '@flow-form/field';
+import { Form } from '@flow-form/form';
 
 import './RegularForm.css';
 

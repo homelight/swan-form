@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { parse, format, AsYouType } from 'libphonenumber-js';
 
-import { Field } from 'flow-form';
+import { Field } from '@flow-form/field';
 
 const stripNonNumeric = value => {
   let str = '';

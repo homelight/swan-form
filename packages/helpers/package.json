@@ -5,7 +5,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "build": "rollup -c",
+    "build": "babel --src-type module src --out-dir dist --ignore src/*.test.js",
     "deploy": "gh-pages -d example/build",
     "format": "prettier --write '**/*.{json,js,css,md}'",
     "precommit": "lint-staged",

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import isObject from 'lodash/isObject';
 import hasOwnProperty from '@flow-form/helpers/hasOwnProperty';
 import classes from '@flow-form/helpers/classes';
 import asField from './asField';
+import isObject from 'lodash/isObject';
 
 const INPUT_TYPES = [
   'button',

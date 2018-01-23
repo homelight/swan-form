@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 
-import { asField, Form, Submit } from 'flow-form';
+import { asField, Submit } from '@flow-form/field';
+import Form from '@flow-form/form/dist/Form';
 
 const onSubmit = values => console.log(values);
 

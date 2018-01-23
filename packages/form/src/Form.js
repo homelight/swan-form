@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
 import hasOwnProperty from '@flow-form/helpers/hasOwnProperty';
 import autobind from '@flow-form/helpers/autobind';
-import isPromise from 'is-promise';
+
+const isPromise = obj =>
+  !!obj && ['function', 'object'].includes(typeof obj) && typeof obj.then === 'function';
 
 // These are fields that we will automatically pull out of the form as they are just the
 // automatically generated names for the submit and reset buttons

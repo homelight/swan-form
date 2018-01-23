@@ -12,9 +12,6 @@ import Formatters from './Formatters';
 
 import NavBar from './NavBar';
 
-// import registerObserver from 'react-perf-devtool';
-// registerObserver();
-
 const padding = { margin: '0 2rem 0', padding: '1rem', border: '2px solid steelblue' };
 export default class App extends Component {
   render() {

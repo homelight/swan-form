@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import clamp from 'lodash/clamp';
 import isFunction from 'lodash/isFunction';
-import Form from './Form';
+import { Form } from '@flow-form/form';
+import autobind from '@flow-form/helpers/autobind';
+import classes from '@flow-form/helpers/classes';
 import Slide from './Slide';
-import autobind from '../helpers/autobind';
-import classes from '../helpers/classes';
 
 import './Slider.css';
 

@@ -383,6 +383,8 @@ function asField(WrappedComponent) {
         asyncValidate,
         validate,
         validateWhileTyping,
+        formatter,
+        unformatter,
         ...spreadProps
       } = this.props;
 
@@ -412,7 +414,7 @@ function asField(WrappedComponent) {
           onBlur={this.onBlur}
           onFocus={this.onFocus}
           setRef={this.setRef}
-          value={this.state.value}
+          value={this.format()}
           errors={this.state.errors}
           isValid={this.state.isValid}
           {...spreadProps}
