@@ -19,9 +19,7 @@ const stripNonNumeric = value => {
   return str;
 };
 
-const formatPhone = value => {
-  return new AsYouType('US').input(value);
-};
+const formatPhone = value => new AsYouType('US').input(value);
 
 const toUpperCase = value => value.toUpperCase();
 
@@ -53,10 +51,9 @@ export default class Formatters extends Component {
       <div>
         <h1>Using Formatters</h1>
         <p>Formatters can be supplied to fields, and they should be pure functions like:</p>
-        <SyntaxHighlighter
-          language="javascript"
-          style={prism}
-        >{`const formatter = (value) => value.toUpperCase();`}</SyntaxHighlighter>
+        <SyntaxHighlighter language="javascript" style={prism}>
+          {`const formatter = (value) => value.toUpperCase();`}
+        </SyntaxHighlighter>
         <p>E.g. the following field will type in all caps.</p>
         <p>
           <Field

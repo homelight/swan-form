@@ -16,13 +16,9 @@ const stripNonNumeric = value => {
   return str;
 };
 
-const formatter = value => {
-  return stripNonNumeric(value);
-};
+const formatter = value => stripNonNumeric(value);
 
-const unformatter = value => {
-  return stripNonNumeric(value);
-};
+const unformatter = value => stripNonNumeric(value);
 
 export default class FormattedPhone extends Component {
   constructor(props) {

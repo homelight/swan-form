@@ -1,9 +1,13 @@
+/* eslint-disable react/no-multi-comp, react/prefer-stateless-function, react/prop-types */
+
 import React, { Component } from 'react';
 
 import { asField, Submit } from '@flow-form/field';
 import Form from '@flow-form/form/dist/Form';
 
+/* eslint-disable no-console */
 const onSubmit = values => console.log(values);
+/* eslint-enable no-console */
 
 const toWrap = ({ name, onChange, value, placeholder }) => (
   <input name={name} onChange={onChange} value={value} placeholder={placeholder} />

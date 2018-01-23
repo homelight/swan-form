@@ -75,10 +75,10 @@ export default class RegularForm extends Component {
                 {' '}
                 This uses the <code>Radios</code> component. Radio buttons are different than the
                 rest of the standard form fields because they are, inherently, a set. Since they all
-                share a sort of "state value" (as opposed to the value attribute), the value of the
-                group is set to the currently selected radio button's value, so they get a different
-                approach. The buttons are rendered in a <code>fieldset</code> wrapper, and the
-                overall label is set as a <code>legend</code> tag.
+                share a sort of &quot;state value&quot; (as opposed to the value attribute), the
+                value of the group is set to the currently selected radio button&apos;s value, so
+                they get a different approach. The buttons are rendered in a <code>fieldset</code>{' '}
+                wrapper, and the overall label is set as a <code>legend</code> tag.
               </p>
               <Radios
                 name="radioset"
@@ -101,11 +101,13 @@ export default class RegularForm extends Component {
             </div>
 
             <div>
+              {/* eslint-disable no-useless-escape */}
               <p>
                 This text field must be three digits because it uses the native pattern attribute
-                for validation that browsers implement. So <code>pattern="[\d]{3}"</code> gets sent
-                to the <code>input</code> field.
+                for validation that browsers implement. So <code>{'pattern="[d]{3}"'}</code> gets
+                sent to the <code>input</code> field.
               </p>
+              {/* eslint-disable no-useless-escape */}
               <Field
                 type="text"
                 name="withPattern"

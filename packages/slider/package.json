@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@flow-form/helpers": "^0.1.0",
+    "@flow-form/form": "^0.1.0",
     "lodash": "^4.17.4"
   },
   "devDependencies": {

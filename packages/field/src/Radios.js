@@ -44,22 +44,20 @@ class Radios extends Component {
     return (
       <fieldset className={classes(['ff--radios', className])}>
         {label && <legend>{label}</legend>}
-        {options.map(option => {
+        {options.map(option => (
           // right now, I'm spreading this
-          return (
-            <label className={fieldStyle} key={option.value}>
-              <span>{option.label}</span>
-              <input
-                type="radio"
-                value={option.value}
-                onChange={onChange}
-                onFocus={onFocus}
-                onBlur={onFocus}
-                checked={value === option.value}
-              />
-            </label>
-          );
-        })}
+          <label className={fieldStyle} key={option.value}>
+            <span>{option.label}</span>
+            <input
+              type="radio"
+              value={option.value}
+              onChange={onChange}
+              onFocus={onFocus}
+              onBlur={onFocus}
+              checked={value === option.value}
+            />
+          </label>
+        ))}
         <span className="ff--field--errors">{errors.filter(err => err).join(',')}</span>
       </fieldset>
     );

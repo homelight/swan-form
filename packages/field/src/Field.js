@@ -1,3 +1,4 @@
+/* eslint-disable react/require-default-props */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import isObject from 'lodash/isObject';
@@ -30,6 +31,7 @@ const INPUT_TYPES = [
   'week',
 ];
 
+/* eslint-disable no-use-before-define */
 function renderOption(option) {
   // If the option is either a string or a number, then we'll use it for both the key and value.
   if (['string', 'number'].includes(typeof option)) {
@@ -91,7 +93,9 @@ function renderOptions(options) {
       return null;
     });
   }
+  return null;
 }
+/* eslint-enable no-use-before-define */
 
 class Field extends Component {
   static propTypes = {
@@ -104,6 +108,7 @@ class Field extends Component {
     onFocus: PropTypes.func.isRequired,
     onBlur: PropTypes.func.isRequired,
     onClick: PropTypes.func.isRequired,
+    setRef: PropTypes.func.isRequired,
 
     /**
      * Required user props
@@ -117,6 +122,7 @@ class Field extends Component {
     label: PropTypes.string,
     className: PropTypes.string,
     required: PropTypes.bool,
+    options: PropTypes.object, // eslint-disable-line
   };
 
   maybeWrapInLabel(children) {
@@ -175,9 +181,11 @@ class Field extends Component {
       );
     }
 
+    /* eslint-disable react/no-danger */
     return (
       <span dangerouslySetInnerHTML={{ __html: `<!-- Unsupported Field Type (${type}) -->` }} />
     );
+    /* eslint-disable react/no-danger */
   }
 
   render() {

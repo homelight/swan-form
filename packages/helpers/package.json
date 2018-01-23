@@ -22,5 +22,8 @@
     "lint": "eslint src",
     "test": "jest --env=jsdom",
     "test:watch": "yarn run test -- --watch"
+  },
+  "dependencies": {
+    "lodash": "^4.17.4"
   }
 }

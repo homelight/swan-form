@@ -1,4 +1,6 @@
 /* global document, window */
+/* eslint-disable react/prop-types, react/sort-comp */
+
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
@@ -102,7 +104,7 @@ function asField(WrappedComponent) {
       this.unregister();
     }
 
-    /****************************************************************************
+    /** **************************************************************************
      * Registrations Methods
      *
      * Fields register with whatever controls them. So, if they are within a form,
@@ -160,7 +162,7 @@ function asField(WrappedComponent) {
      */
     onChange(event) {
       const { value } = event.target;
-      const { validateWhileTyping, validateDebounceTimeout, onChange } = this.props;
+      const { validateWhileTyping, validateDebounceTimeout } = this.props;
 
       if (validateWhileTyping) {
         // If we are to validate while typing, then we'll debunce it. Basically, just set a timeout,
@@ -201,6 +203,7 @@ function asField(WrappedComponent) {
 
     onFocus(event) {
       const { onFocus } = this.props;
+      const { target } = event;
 
       // On most fields, add in a handler to prevent a form submit on enter
       if (!['textarea', 'button', 'submit', 'reset'].includes(this.props.type)) {
@@ -210,19 +213,20 @@ function asField(WrappedComponent) {
       // If this field has yet to be touched, then set it as touched
       if (this.state.isTouched === false) {
         this.setState(prevState => ({
-          ...this.state,
+          ...prevState,
           isTouched: true,
         }));
       }
 
       // Call user supplied function if given
       if (isFunction(onFocus)) {
-        onFocus();
+        onFocus(target);
       }
     }
 
     onBlur(event) {
       const { onBlur, validate, asyncValidate } = this.props;
+      const { target } = event;
 
       if (this.props.type !== 'textarea') {
         document.removeEventListener('keydown', this.preventSubmitOnEnter);
@@ -234,7 +238,7 @@ function asField(WrappedComponent) {
 
       // Call user supplied function if given
       if (isFunction(onBlur)) {
-        onBlur();
+        onBlur(target);
       }
     }
 
@@ -292,13 +296,13 @@ function asField(WrappedComponent) {
         ...prevState,
         errors: resetErrors === false ? prevState.errors : [],
         value,
-        isTouched: resetTouched === true ? false : true,
+        isTouched: resetTouched !== true,
         isDirty: value !== this.props.value,
       }));
 
       // Call user supplied function if given
       if (isFunction(this.props.onChange)) {
-        this.props.onChange(value);
+        this.props.onChange(value, this.props.name);
       }
     }
 
