@@ -5,7 +5,7 @@ export default class Formatters extends Component {
   render() {
     return (
       <div>
-        Formatting: <FormattedPhone />
+        US Formatted Phone: <FormattedPhone />
       </div>
     );
   }
