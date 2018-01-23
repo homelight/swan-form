@@ -2,17 +2,21 @@
 
 Flow Form is a toolbox for creating forms with React.
 
-WIP (do not use yet)
+## Development Note
+
+These packages are unstable, and it's not recommended that you use them yet.
 
 ## Install
 
-```bash
-npm install --save flow-form
-```
+Pick and choose what packages you want to use.
 
 ## Usage
 
 ### Fields
+
+```bash
+npm install --save @flow-form/field
+```
 
 The main field to use is the `Field` component.
 
@@ -30,6 +34,10 @@ Not implemented yet.
 
 ### Forms
 
+```bash
+npm install --save @flow-form/form
+```
+
 You must pass an `onSubmit` handler to the form. This should be a function that will just run.
 
 ### Usage with Redux
@@ -37,6 +45,10 @@ You must pass an `onSubmit` handler to the form. This should be a function that 
 If you want to store your values in Redux or some other kind of state management, then you can pass an onChange function.
 
 ### Sliders
+
+```bash
+npm install --save @flow-form/slider
+```
 
 Sliders are forms.
 
@@ -54,25 +66,17 @@ class Example extends Component {
 
 ## Contributing
 
-Use yarn.
+This is a Lerna monorepo (using yarn workspaces) so that we can isolate the packages so that people can pick and choose what they want to use without installing the whole lot.
 
-Uses prettier and husky to ensure that files are looking good before you commit them. No linters installed yet.
+To start, you should run `yarn run bootstrap`, which will install the dependencies for all the packages in the root `node_modules` directly and link each package's dependencies as well as create links for each package.
 
-In the main directly, type `yarn link` to link `flow-form`. Then, link the module into the example directory:
+Some convenience tooling is also made possible with `nps`, but each `nps` script has an `npm` equivalent. So, if you want to have Babel watch all the packages and start the example project, you can run `yarn run dev`.
 
-```shell
-cd example
-yarn link flow-form
-```
+### Code Formatting and Linting
 
-Install the depdencies for each:
+Uses prettier and husky to ensure that files are looking good before you commit them.
 
-```shell
-yarn
-cd example && yarn
-```
-
-If you want to use both while developing, open two terminals and do `yarn start` in the main directory to start rollup bundling the module and then, in the other one, cd into the `example` directory and `yarn start` to fire up the example application.
+Uses AirBnB's eslint config — one shared across all packages.
 
 ## TODO
 

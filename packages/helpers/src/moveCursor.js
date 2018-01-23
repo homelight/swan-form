@@ -3,6 +3,7 @@
  *
  * Works on text based
  *
+ * @todo  make this so we can change the cursor for formatters
  *
  * @param  {[type]} el [description]
  * @return {[type]}    [description]
