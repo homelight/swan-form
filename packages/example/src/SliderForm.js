@@ -1,3 +1,4 @@
+/* eslint-disable no-alert, react/prefer-stateless-function */
 import React, { Component } from 'react';
 import { Field, Submit } from '@flow-form/field';
 import { Slider } from '@flow-form/slider';
@@ -34,10 +35,8 @@ export default class SliderForm extends Component {
                     This slider has four slides. This one, two that we skip, and one with a submit
                     button. After we <em>press</em> submit, we transform the value in the first to
                     an uppercase string (<code>beforeSubmit</code>) that is passed to the actual
-                    submit (<code>onSubmit</code>) that is then console logged in the after submit (<code
-                    >
-                      afterSubmit
-                    </code>).
+                    submit (<code>onSubmit</code>) that is then logged to the console in the after
+                    submit method (<code>afterSubmit</code>).
                   </p>
                 </div>
               ),
@@ -61,7 +60,7 @@ export default class SliderForm extends Component {
             {
               render: () => (
                 <div>
-                  <h2>I will show, and I'm the last slide</h2>
+                  <h2>I will show, and I&apos;m the last slide</h2>
                   <Submit onSubmit={onSubmit} />
                 </div>
               ),

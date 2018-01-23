@@ -1,3 +1,4 @@
+/* eslint-disable react/prefer-stateless-function */
 import React, { Component } from 'react';
 import { Field } from '@flow-form/field';
 import SyntaxHighlighter, { registerLanguage } from 'react-syntax-highlighter/prism-light';
