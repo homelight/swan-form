@@ -13,6 +13,7 @@ module.exports = {
   rules: {
     'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
     'react/jsx-filename-extension': 0,
+    'react/prefer-stateless-function': 0,
     'import/extensions': 0, // this seemed to be broken, so we're turning it off
   },
   settings: {

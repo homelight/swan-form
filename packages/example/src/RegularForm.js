@@ -1,3 +1,4 @@
+/* eslint-disable no-console, no-alert */
 import React, { Component } from 'react';
 
 import { Field, Radios, Submit, Reset } from '@flow-form/field';

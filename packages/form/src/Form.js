@@ -205,6 +205,8 @@ export default class Form extends Component {
   }
 
   resetForm() {
+    console.log('resetForm', this.fields);
+
     Object.keys(this.fields).forEach(
       field => isFunction(this.fields[field].reset) && this.fields[field].reset(),
     );

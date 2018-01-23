@@ -1,7 +1,28 @@
-/* eslint-disable jsx-a11y/anchor-is-valid */
+/* eslint-disable jsx-a11y/anchor-is-valid, jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions */
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import './NavBar.css';
+
+function createLink(path, name, pathname) {
+  return (
+    <li key={path} className={pathname === path ? 'NavBar--Active' : ''}>
+      <Link to={path}>{name}</Link>
+    </li>
+  );
+}
+
+const pages = [
+  ['/', 'Intro'],
+  ['/dependent-field', 'Dependent Field'],
+  ['/extra-fields', 'Extra Field'],
+  ['/formatters', 'Formatters'],
+  ['/regular', 'Regular Form'],
+  ['/slider-form', 'Slider'],
+  ['/styling', 'Styling'],
+  ['/with-redux', 'With Redux'],
+  ['/with-react-router', 'With React Router'],
+  ['/asfield-hoc', 'asField HOC'],
+];
 
 export default class NavBar extends Component {
   constructor(props) {
@@ -21,35 +42,7 @@ export default class NavBar extends Component {
     return (
       <div className={!this.state.isShowing ? 'NavBar--Hide' : ''}>
         <div className="NavBar">
-          <ul>
-            <li className={pathname === '/' ? 'NavBar--Active' : ''}>
-              <Link to="/">Intro</Link>
-            </li>
-            <li className={pathname === '/dependent-field' ? 'NavBar--Active' : ''}>
-              <Link to="/dependent-field">Dependent Field</Link>
-            </li>
-            <li className={pathname === '/formatters' ? 'NavBar--Active' : ''}>
-              <Link to="/formatters">Formatters</Link>
-            </li>
-            <li className={pathname === '/regular' ? 'NavBar--Active' : ''}>
-              <Link to="/regular">Regular Form</Link>
-            </li>
-            <li className={pathname === '/slider-form' ? 'NavBar--Active' : ''}>
-              <Link to="/slider-form">Slider</Link>
-            </li>
-            <li className={pathname === '/styling' ? 'NavBar--Active' : ''}>
-              <Link to="/styling">Styling</Link>
-            </li>
-            <li className={pathname === '/with-redux' ? 'NavBar--Active' : ''}>
-              <Link to="/with-redux">With Redux</Link>
-            </li>
-            <li className={pathname === '/with-react-router' ? 'NavBar--Active' : ''}>
-              <Link to="/with-react-router">With React Router</Link>
-            </li>
-            <li className={pathname === '/asfield-hoc' ? 'NavBar--Active' : ''}>
-              <Link to="/asfield-hoc">asField HOC</Link>
-            </li>
-          </ul>
+          <ul>{pages.map(([path, name]) => createLink(path, name, pathname))}</ul>
           <div className="NavBar--toggler" onClick={this.toggle}>
             {this.state.isShowing ? 'Hide' : 'Show'}
           </div>

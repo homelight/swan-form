@@ -24,11 +24,12 @@ export default class Submit extends Component {
 
   constructor(props, context) {
     super(props);
-    console.log(context);
     if (!isFunction(props.onSubmit) && !isFunction(context.onSubmit)) {
+      /* eslint-disable no-console */
       console.error(
         'On Submit must be a function passed either as a prop on the `Submit` component or on the `Form` component.',
       );
+      /* eslint-ene no-console */
     }
     this.submitForm = this.submitForm.bind(this);
     this.beforeSubmit = this.beforeSubmit.bind(this);

@@ -102,7 +102,8 @@ class Field extends Component {
     /**
      * Props shipped from the HOC
      */
-    errors: PropTypes.arrayOf(PropTypes.string).isRequired,
+    errors: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([false])]))
+      .isRequired,
     isValid: PropTypes.bool.isRequired,
     onChange: PropTypes.func.isRequired,
     onFocus: PropTypes.func.isRequired,
@@ -122,7 +123,7 @@ class Field extends Component {
     label: PropTypes.string,
     className: PropTypes.string,
     required: PropTypes.bool,
-    options: PropTypes.object, // eslint-disable-line
+    options: PropTypes.oneOfType([PropTypes.object, PropTypes.array]), // eslint-disable-line
   };
 
   maybeWrapInLabel(children) {
@@ -135,6 +136,7 @@ class Field extends Component {
           required && 'ff--field--required',
           !isValid && 'ff--field-has-errors',
         ])}
+        htmlFor={this.props.name}
       >
         {label && <span className="ff--field--label">{label}</span>}
         <span className="ff--field--field">{children}</span>
@@ -163,19 +165,21 @@ class Field extends Component {
 
     // If it's an input type, then render the input with the spread spreadProps
     if (INPUT_TYPES.includes(type)) {
-      return <input ref={setRef} type={type} {...spreadProps} />;
+      console.log('input', spreadProps);
+      return <input id={this.props.name} ref={setRef} type={type} {...spreadProps} />;
     }
 
     // Text areas get spreadProps too
     if (type === 'textarea') {
-      return <textarea ref={setRef} {...spreadProps} />;
+      return <textarea id={this.props.name} ref={setRef} {...spreadProps} />;
     }
 
     // For select, we also have to render all the options / optgroups. We've moved these out to
     // separate functions so that we can call them recursively if needed.
     if (type === 'select') {
+      console.log(spreadProps);
       return (
-        <select ref={setRef} {...spreadProps}>
+        <select id={this.props.name} ref={setRef} {...spreadProps}>
           {renderOptions(options)}
         </select>
       );

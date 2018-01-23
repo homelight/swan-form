@@ -10,6 +10,7 @@ import DependentField from './DependentField';
 import DynamicField from './DynamicField';
 import Styling from './Styling';
 import Formatters from './Formatters';
+import ExtraFields from './ExtraFields';
 
 import NavBar from './NavBar';
 
@@ -27,6 +28,7 @@ export default class App extends Component {
             <Route path="/slider-form" component={SliderForm} />
             <Route path="/dependent-field" component={DependentField} />
             <Route path="/dynamic-field" component={DynamicField} />
+            <Route path="/extra-fields" component={ExtraFields} />
             <Route path="/styling" component={Styling} />
             <Route path="/with-redux" component={() => <div>@TODO</div>} />
             <Route path="/with-react-router" component={() => <div>@TODO</div>} />

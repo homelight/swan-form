@@ -1,14 +1,14 @@
 .NavBar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  border-bottom: 1px solid gray;
   background-color: white;
-  width: 100%;
-  padding: 1rem;
+  border-bottom: 1px solid gray;
   box-shadow: 0 0 2px gray;
+  left: 0;
+  padding: 0.5rem;
+  position: fixed;
   text-align: center;
+  top: 0;
   transition: transform 0.4s ease-in-out;
+  width: 100%;
 }
 
 .NavBar a {
@@ -29,9 +29,9 @@
 
 .NavBar--Active a::after,
 .NavBar a::after {
+  border-bottom: 2px solid transparent;
   content: ' ';
   display: block;
-  border-bottom: 2px solid transparent;
   transition: border-bottom 0.2s ease-in-out;
 }
 
@@ -40,9 +40,9 @@
 }
 
 .NavBar--Spacer {
+  height: 100px;
   position: static;
   width: 100%;
-  height: 100px;
 }
 
 .NavBar--Hide .NavBar--Spacer {
@@ -63,14 +63,18 @@
 }
 
 .NavBar--toggler {
-  position: absolute;
-  bottom: 0;
-  transform: translateY(100%);
-  border: 1px solid gray;
-  padding: 0.5rem;
   background-color: white;
-  cursor: pointer;
-  user-select: none;
-  width: 4rem;
   border-radius: 0 0 0.5rem 0.25rem;
+  border: 1px solid gray;
+  bottom: 0;
+  box-shadow: 0px 2px 1px 0.5px #ccc;
+  cursor: pointer;
+  font-size: 0.75em;
+  font-weight: bold;
+  line-height: 0.75em;
+  padding: 0.5rem;
+  position: absolute;
+  transform: translateY(100%);
+  user-select: none;
+  width: 3rem;
 }

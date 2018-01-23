@@ -26,15 +26,19 @@ export default class Reset extends Component {
     this.resetForm = this.resetForm.bind(this);
   }
 
-  resetForm() {
+  resetForm(event) {
+    event.preventDefault();
+    event.stopPropagation();
     if (isFunction(this.props.resetFunction)) {
       this.props.resetFunction();
     } else if (isFunction(this.context.reset)) {
       this.context.reset();
     } else {
+      /* eslint-disable no-console */
       console.error(
         'There was no reset function supplied to the reset input on either props or context.',
       );
+      /* eslint-enable no-console */
     }
   }
 

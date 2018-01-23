@@ -33,6 +33,10 @@ export default class Formatters extends Component {
     this.update = this.update.bind(this);
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return this.props !== nextProps || this.state !== nextState;
+  }
+
   update(value, name) {
     if (Object.keys(this.state).includes(name) && this.state[name] !== value) {
       this.setState(prevState => ({
@@ -40,10 +44,6 @@ export default class Formatters extends Component {
         [name]: value,
       }));
     }
-  }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return this.props !== nextProps || this.state !== nextState;
   }
 
   render() {

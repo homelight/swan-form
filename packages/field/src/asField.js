@@ -17,7 +17,7 @@ import moveCursorToEnd from '@flow-form/helpers/dist/moveCursor';
 import { ENTER } from '@flow-form/helpers/dist/keyCodes';
 
 // This function takes a component...
-function asField(WrappedComponent) {
+function asField(WrappedComponent, wrapperOptions = {}) {
   // ...and returns another component...
   const HOC = class extends Component {
     constructor(props) {
@@ -45,6 +45,7 @@ function asField(WrappedComponent) {
       autobind(this, [
         // Bind some handlers for use with events
         'onChange',
+        'onClick',
         'onBlur',
         'onFocus',
         'setRef',
@@ -62,10 +63,16 @@ function asField(WrappedComponent) {
     }
 
     getChildContext() {
+      if (wrapperOptions.registerWrapped !== false) {
+        return {
+          register: this.props.registerWrapped === true ? this.register : noop,
+          unregister: this.props.registerWrapped === true ? this.register : noop,
+          // autoComplete: this.context.autoComplete, // this might already be passed through
+        };
+      }
       return {
-        register: this.props.registerWrapped === true ? this.register : noop,
-        unregister: this.props.registerWrapped === true ? this.register : noop,
-        // autoComplete: this.context.autoComplete, // this might already be passed through
+        register: this.context.register,
+        unregister: this.context.unregister,
       };
     }
 
@@ -197,6 +204,14 @@ function asField(WrappedComponent) {
       }
     }
 
+    onClick(event) {
+      const { target } = event;
+      const { onClick } = this.props;
+      if (isFunction(onClick)) {
+        onClick(target);
+      }
+    }
+
     /**
      * Event Handlers
      */
@@ -311,7 +326,7 @@ function asField(WrappedComponent) {
       this.setState(this.initialState);
       // If we were provided a change function, then call it with the initial value
       if (isFunction(this.props.onChange)) {
-        this.props.onChange(this.initialState.value);
+        this.props.onChange(this.initialState.value, this.props.name);
       }
     }
 
@@ -417,6 +432,7 @@ function asField(WrappedComponent) {
           onChange={this.onChange}
           onBlur={this.onBlur}
           onFocus={this.onFocus}
+          onClick={this.onClick}
           setRef={this.setRef}
           value={this.format()}
           errors={this.state.errors}

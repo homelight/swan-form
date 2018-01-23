@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Field } from '@flow-form/field';
+import { asField, Field } from '@flow-form/field';
 import isFunction from 'lodash/isFunction';
-import autobind from '@flow-form/helpers/autobind';
+import autobind from '@flow-form/helpers/dist/autobind';
 
 const states = [
   '----',
@@ -58,13 +58,28 @@ const states = [
   'WY',
 ];
 
-export default class AddressField extends Component {
+class AddressField extends Component {
   static propTypes = {
     autoFocus: PropTypes.bool,
+    value: PropTypes.shape({
+      line1: PropTypes.string,
+      line2: PropTypes.string,
+      city: PropTypes.string,
+      state: PropTypes.string,
+      zip: PropTypes.string,
+    }),
+    name: PropTypes.string.isRequired,
   };
 
   static defaultProps = {
     autoFocus: false,
+    value: {
+      line1: '',
+      line2: '',
+      city: '',
+      state: '',
+      zip: '',
+    },
   };
 
   static contextTypes = {
@@ -80,21 +95,16 @@ export default class AddressField extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      value: {
-        line1: props.line1 || '',
-        line2: props.line2 || '',
-        city: props.city || '',
-        state: props.state || '',
-        zip: props.zip || '',
-      },
+      value: props.value,
       isTouched: false,
       isDirty: false,
       isValid: false, // update this in case the initial value is valid
     };
+    this.initialState = { ...this.state };
 
-    this.refs = {};
+    this.fieldRefs = {};
 
-    autobind(this, ['register', 'unregister', 'getValue', 'setValue', 'getRef', 'setRef']);
+    autobind(this, ['register', 'reset', 'unregister', 'getValue', 'setValue', 'getRef', 'setRef']);
 
     this.onLine1Change = this.updatePart.bind(this, 'line1');
     this.onLine2Change = this.updatePart.bind(this, 'line2');
@@ -109,6 +119,32 @@ export default class AddressField extends Component {
       register: this.register,
       unregister: this.unregister,
     });
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    console.log(...nextState);
+  }
+
+  componentDidMount() {
+    if (isFunction(this.context.register)) {
+      console.log('registering things', this.props.name, this.reset);
+      this.context.register({
+        // This should be a unique key
+        name: this.props.name,
+        // In case we need to grab the ref @TODO maybe remove
+        getRef: this.getRef,
+        // Gets the value from the field
+        getValue: this.getValue,
+        // setValue can be useful for overwriting a value
+        setValue: this.setValue,
+        // The form must call all the validation functions synchronously
+        validate: this.validate,
+        // Runs the validation functions to see if the field is valid
+        isValid: this.isValid,
+        // Resets the field
+        reset: this.reset,
+      });
+    }
   }
 
   updatePart(key, value) {
@@ -151,12 +187,19 @@ export default class AddressField extends Component {
     this.fieldRef = el;
   }
 
-  register({ name, getRef }) {
-    this.refs = {
-      ...this.refs,
-      [name]: getRef(),
-    };
+  reset() {
+    console.log('address field reset');
+    this.setState(this.initialState);
+  }
 
+  register({ name, getRef, reset }) {
+    this.fieldRefs = {
+      ...this.fieldRefs,
+      [name]: {
+        getRef: getRef(),
+        reset,
+      },
+    };
     if (isFunction(this.context.register)) {
       this.context.register({
         name: this.props.name,
@@ -164,6 +207,7 @@ export default class AddressField extends Component {
         getValue: this.getValue,
         setValue: this.setValue,
         getRef: this.getRef,
+        reset: this.reset,
       });
     }
   }
@@ -188,18 +232,19 @@ export default class AddressField extends Component {
   }
 
   render() {
-    const { autoFocus, name, className } = this.props;
+    const { autoFocus, label, name, className } = this.props;
     return (
       <fieldset className={className} ref={this.setRef}>
-        <legend>Address</legend>
+        {label && <legend>{label}</legend>}
         <Field
           type="text"
           name={`${name}-line1`}
           placeholder="Line 1"
           autoComplete="address-line1"
           onChange={this.onLine1Change}
+          value={this.state.value.line1}
           required
-          autoFocus={this.props.autoFocus}
+          autoFocus={autoFocus}
         />
         <Field
           type="text"
@@ -207,6 +252,7 @@ export default class AddressField extends Component {
           onChange={this.onLine2Change}
           autoComplete="address-line2"
           placeholder="Line 2"
+          value={this.state.value.line2}
         />
         <br />
         <Field
@@ -215,6 +261,7 @@ export default class AddressField extends Component {
           autoComplete="address-level2"
           onChange={this.onCityChange}
           placeholder="City"
+          value={this.state.value.city}
           required
         />
         <Field
@@ -223,7 +270,7 @@ export default class AddressField extends Component {
           options={states}
           onChange={this.onStateChange}
           autoComplete="address-level1"
-          placeholder="State"
+          value={this.state.value.state}
           required
         />
         <br />
@@ -233,9 +280,12 @@ export default class AddressField extends Component {
           autoComplete="postal-code"
           onChange={this.onZipChange}
           placeholder="Zip"
+          value={this.state.value.zip}
           required
         />
       </fieldset>
     );
   }
 }
+
+export default asField(AddressField, { registerWrapped: false });

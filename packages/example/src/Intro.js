@@ -6,8 +6,8 @@ export default function Intro() {
       <h1>Flow Form</h1>
       <p>
         Flow Form provides an interface to easily control components, handle forms, and put forms in
-        sliders. Out of the box, it looks fairly plain, but it's easy to add some pizzazz and make
-        them look nice.
+        sliders. Out of the box, it looks fairly plain, but it&apos;s easy to add some pizzazz and
+        make them look nice.
       </p>
       <h2>Dependencies</h2>
       <p>
@@ -22,9 +22,9 @@ export default function Intro() {
         radios are, well, different.
       </p>
       <p>
-        We also ship a Higher Order Component — <code>asField</code> — so that it's easy for you to
-        compose your own complex fields. <code>asField</code> provides the interface for any field
-        to work with the Form component out of the box.
+        We also ship a Higher Order Component — <code>asField</code> — so that it&apos;s easy for
+        you to compose your own complex fields. <code>asField</code> provides the interface for any
+        field to work with the Form component out of the box.
       </p>
       <h2>Forms</h2>
       <p>
@@ -39,8 +39,8 @@ export default function Intro() {
       <h2>Other Questions</h2>
       <h3>Can I use it with Redux?</h3>
       <p>
-        Internally, Flow Form just uses React's <code>setState</code>, but it provides hooks for you
-        to use Redux if you wish.
+        Internally, Flow Form just uses React&apos;s <code>setState</code>, but it provides hooks
+        for you to use Redux if you wish.
       </p>
     </div>
   );
