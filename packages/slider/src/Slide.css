@@ -14,9 +14,6 @@
 .ff--slide--before {
   transform: translateX(-100%);
   opacity: 0;
-  /*
-    these look a little weird when we skip slides. @todo figure out something better
-  */
 }
 
 .ff--slide--after {

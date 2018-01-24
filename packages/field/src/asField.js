@@ -28,7 +28,7 @@ const undefinedOrNull = val => val === undefined || val === null;
  * @return {[type]}                  [description]
  */
 function asField(WrappedComponent, wrapperOptions = {}) {
-  const HOC = class extends Component {
+  const asFieldWrapper = class extends Component {
     constructor(props) {
       super(props);
 
@@ -59,6 +59,10 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         'onFocus',
         'setRef',
         'getRef',
+
+        'register',
+        'unregister',
+
         // Bind these so that parental compenents can use them
         'getValue',
         'setValue',
@@ -76,7 +80,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       if (wrapperOptions.registerWrapped !== false) {
         return {
           registerField: this.props.registerWrapped === true ? this.register : noop,
-          unregisterField: this.props.registerWrapped === true ? this.register : noop,
+          unregisterField: this.props.registerWrapped === true ? this.unregister : noop,
           // autoComplete: this.context.autoComplete, // this might already be passed through
         };
       }
@@ -554,29 +558,29 @@ function asField(WrappedComponent, wrapperOptions = {}) {
     }
   };
 
-  HOC.displayName = `asField(${WrappedComponent.displayName || 'Component'})`;
+  asFieldWrapper.displayName = `asField(${WrappedComponent.displayName || 'Component'})`;
 
-  HOC.propTypes = {
+  asFieldWrapper.propTypes = {
     registerWrapped: PropTypes.bool,
   };
 
-  HOC.defaultProps = {
+  asFieldWrapper.defaultProps = {
     registerWrapped: true,
     validateDebounceTimeout: 200,
   };
 
-  HOC.contextTypes = {
+  asFieldWrapper.contextTypes = {
     registerField: PropTypes.func,
     unregisterField: PropTypes.func,
     autoComplete: PropTypes.oneOf(['on', 'off']),
   };
 
-  HOC.childContextTypes = {
+  asFieldWrapper.childContextTypes = {
     registerField: PropTypes.func,
     unregisterField: PropTypes.func,
     autoComplete: PropTypes.oneOf(['on', 'off']),
   };
 
-  return HOC;
+  return asFieldWrapper;
 }
 export default asField;

@@ -99,6 +99,8 @@ function renderOptions(options) {
 /* eslint-enable no-use-before-define */
 
 class Field extends Component {
+  static displayName = 'Field';
+
   static propTypes = {
     /**
      * Props shipped from the HOC

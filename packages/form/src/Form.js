@@ -58,8 +58,8 @@ export default class Form extends Component {
   };
 
   static childContextTypes = {
-    register: PropTypes.func,
-    unregister: PropTypes.func,
+    registerField: PropTypes.func,
+    unregisterField: PropTypes.func,
     autoComplete: PropTypes.oneOf(['on', 'off']),
     reset: PropTypes.func,
     onSubmit: PropTypes.func,
@@ -112,9 +112,9 @@ export default class Form extends Component {
       autoComplete: this.props.autoComplete,
       isSubmitting: this.isSubmitting,
       onSubmit: this.handleOnSubmit,
-      register: this.registerField,
+      registerField: this.registerField,
       reset: this.resetForm,
-      unregister: this.unregsiterField,
+      unregisterField: this.unregsiterField,
     };
   }
 
@@ -167,7 +167,6 @@ export default class Form extends Component {
           }),
           {},
         );
-
       if (isFunction(this.props.beforeSubmit)) {
         // If there a user supplied callback, then run it and resolve on its return.
         // However, we should probably check to see if it's a promise, or do some

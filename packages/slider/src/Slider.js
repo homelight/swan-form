@@ -7,7 +7,7 @@ import autobind from '@flow-form/helpers/dist/autobind';
 import classes from '@flow-form/helpers/dist/classes';
 import Slide from './Slide';
 
-import './Slider.css';
+// import './Slider.css';
 
 // this is a real dumb function. find a better way to do this
 function getPosition(slide, index) {

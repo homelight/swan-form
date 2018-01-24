@@ -4,7 +4,7 @@ import autobind from '@flow-form/helpers/dist/autobind';
 import isFunction from 'lodash/isFunction';
 import classes from '@flow-form/helpers/dist/classes';
 
-import styles from './Slide.css';
+// import styles from './Slide.css';
 
 const alwaysTrue = () => true;
 
@@ -97,15 +97,14 @@ export default class Slide extends Component {
   }
 
   unregisterField(name) {
-    if (isFunction(this.context.unregister)) {
-      this.context.unregister(name);
+    if (isFunction(this.context.unregisterField)) {
+      this.context.unregisterField(name);
     }
     const { [name]: removed, ...remaining } = this.fields;
     this.fields = remaining;
   }
 
   isValid() {
-    console.log(this.fields);
     // Run through all the validations...
     return Object.keys(this.fields).every(field => {
       const fieldIsValid = this.fields[field].isValid();
