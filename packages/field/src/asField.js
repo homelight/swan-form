@@ -16,9 +16,16 @@ import noop from '@flow-form/helpers/dist/noop';
 import moveCursorToEnd from '@flow-form/helpers/dist/moveCursor';
 import { ENTER } from '@flow-form/helpers/dist/keyCodes';
 
-// This function takes a component...
+/**
+ * Wraps a component to treat it like a field (a controlled input)
+ *
+ * This can be used to create complex fields as well
+ *
+ * @param  {React.Component|React.Element} WrappedComponent The component to turn into a field
+ * @param  {Object} wrapperOptions   [description]
+ * @return {[type]}                  [description]
+ */
 function asField(WrappedComponent, wrapperOptions = {}) {
-  // ...and returns another component...
   const HOC = class extends Component {
     constructor(props) {
       super(props);
@@ -63,6 +70,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
     }
 
     getChildContext() {
+      // @todo figure out this registered wrapped thing
       if (wrapperOptions.registerWrapped !== false) {
         return {
           register: this.props.registerWrapped === true ? this.register : noop,
@@ -125,7 +133,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * @return {void}
      */
     register() {
-      if (isObject(this.context) && isFunction(this.context.register)) {
+      if (isFunction(this.context.register) && wrapperOptions.registerWrapper !== false) {
         this.context.register({
           // This should be a unique key
           name: this.props.name,
@@ -195,6 +203,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
           }
         }
         // Only update the state value if the arrays are actually different
+        // @TODO consider removing this or doing something better (possible performance drain)
         if (!isEqual(this.state.value, values)) {
           this.setValue(values);
         }
@@ -243,7 +252,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       const { onBlur, validate, asyncValidate } = this.props;
       const { target } = event;
 
-      if (this.props.type !== 'textarea') {
+      if (!['textarea', 'button', 'submit', 'reset'].includes(this.props.type)) {
         document.removeEventListener('keydown', this.preventSubmitOnEnter);
       }
 
@@ -257,9 +266,21 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       }
     }
 
+    /**
+     * [preventSubmitOnEnter description]
+     *
+     * @todo
+     *
+     * @param  {[type]} event [description]
+     * @return {[type]}       [description]
+     */
     preventSubmitOnEnter(event) {
       if (event.keyCode === ENTER) {
         event.preventDefault();
+      }
+      if (isFunction(this.context.onEnterKey)) {
+        // Can be used by the `form` component to move through fields, or for other things
+        this.context.onEnterKey();
       }
     }
 
@@ -346,6 +367,14 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       return !hasErrors(this.runValidations());
     }
 
+    /**
+     * [maybeUpdateErrors description]
+     *
+     * @todo  remove return values
+     *
+     * @param  {[type]} msg [description]
+     * @return {[type]}     [description]
+     */
     maybeUpdateErrors(msg) {
       if (msg === false) {
         if (this.state.errors.length !== 0) {
@@ -379,6 +408,17 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * Formatting
      */
 
+    /**
+     * Runs the value through a formatter function
+     *
+     * @todo  we might need to pass in more information here in order to deal with the formatters
+     *        elegantly. Right now, for the google phone number example, pressing `backspace` on
+     *        a delimter (eg, a paren surrounding an area code) returns the extact same string,
+     *        but it should be deleting the last good number. Maybe we can get away with the
+     *        onChange. Otherwise, we might have to do something else.
+     *
+     * @return {[type]} [description]
+     */
     format() {
       const { formatter } = this.props;
       const { value } = this.state;

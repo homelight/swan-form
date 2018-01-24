@@ -38,6 +38,7 @@ export default class Formatters extends Component {
   }
 
   update(value, name) {
+    console.log('on update', name, this.state[name], value);
     if (Object.keys(this.state).includes(name) && this.state[name] !== value) {
       this.setState(prevState => ({
         ...prevState,
