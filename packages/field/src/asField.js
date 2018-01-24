@@ -279,18 +279,23 @@ function asField(WrappedComponent, wrapperOptions = {}) {
     /**
      * [preventSubmitOnEnter description]
      *
-     * @todo
+     * @todo maybe change the name of this function. Really, it's to prevent
+     *       forms from submitting, but it can be used for other things.
      *
      * @param  {[type]} event [description]
      * @return {[type]}       [description]
      */
     preventSubmitOnEnter(event) {
+      const { target } = event;
       if (event.keyCode === ENTER) {
         event.preventDefault();
-      }
-      if (isFunction(this.context.onEnterKey)) {
-        // Can be used by the `form` component to move through fields, or for other things
-        this.context.onEnterKey();
+        if (isFunction(this.props.handleEnterKey)) {
+          this.props.handleEnterKey(target);
+        }
+        if (isFunction(this.context.handleEnterKey)) {
+          // Can be used by the `form` component to move through fields, or for other things
+          this.context.handleEnterKey(target);
+        }
       }
     }
 
@@ -507,6 +512,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         validateWhileTyping,
         format,
         unformat,
+        handleEnterKey,
         ...spreadProps
       } = this.props;
 

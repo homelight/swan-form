@@ -23,6 +23,9 @@ class EditableDisplay extends Component {
   }
 
   onBlur(target) {
+    if (target.name !== this.props.name) {
+      return;
+    }
     this.props.onChange({ name: this.props.name, value: target.value });
     this.setState(prevState => ({
       ...prevState,
@@ -35,7 +38,14 @@ class EditableDisplay extends Component {
     const { name } = this.props;
     if (this.state.isEditing) {
       return (
-        <Field type="text" name={name} value={this.state.value} onBlur={this.onBlur} autoFocus />
+        <Field
+          type="text"
+          name={name}
+          value={this.state.value}
+          handleEnterKey={this.onBlur}
+          onBlur={this.onBlur}
+          autoFocus
+        />
       );
     }
     return <div onClick={this.onClick}>{this.state.value}</div>;
