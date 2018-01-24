@@ -9,6 +9,9 @@ registerLanguage('jsx', jsx);
 
 const stripNonNumeric = value => {
   let str = '';
+  if (typeof value === 'undefined') {
+    return '';
+  }
   for (let i = 0; i < value.length; i++) {
     const code = value.charCodeAt(i);
 
@@ -19,7 +22,14 @@ const stripNonNumeric = value => {
   return str;
 };
 
-const formatPhone = value => new AsYouType('US').input(value);
+const formatPhone = (value, prevValue) => {
+  const s1 = stripNonNumeric(value);
+  const s2 = stripNonNumeric(prevValue);
+  if (s1 === s2) {
+    return new AsYouType('US').input(s1.slice(0, -1));
+  }
+  return new AsYouType('US').input(value);
+};
 
 const toUpperCase = value => value.toUpperCase();
 
@@ -128,6 +138,7 @@ const stripNonNumeric = value => {
 />
           `.trim()}
         </SyntaxHighlighter>
+        <Field label="Formatted Currency: " type="text" name="formattedCurrency" />
       </div>
     );
   }

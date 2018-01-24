@@ -111,6 +111,14 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       return false;
     }
 
+    componentDidUpdate(prevProps, prevState) {
+      if (Array.isArray(this.state.cursor) && !isEqual(prevState.cursor, this.state.cursor)) {
+        const [start, end] = this.state.cursor;
+        this.fieldRef.selectionStart = start;
+        this.fieldRef.selectionEnd = end;
+      }
+    }
+
     componentWillUnmount() {
       // Since we're unmounting, unregister from any higher components — this
       // means that the value will no longer be available
@@ -148,8 +156,6 @@ function asField(WrappedComponent, wrapperOptions = {}) {
           // Resets the field
           reset: this.reset,
         });
-      } else {
-        console.log('no register field', this.context);
       }
     }
 
@@ -328,18 +334,28 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * @param {any} value the value to set
      */
     setValue(value, resetErrors = false, resetTouched = false) {
-      this.setState(prevState => ({
-        ...prevState,
-        errors: resetErrors === false ? prevState.errors : [],
-        value,
-        isTouched: resetTouched !== true,
-        isDirty: value !== this.props.value,
-      }));
+      const { name, onChange, formatter } = this.props;
 
-      // Call user supplied function if given
-      if (isFunction(this.props.onChange)) {
-        this.props.onChange(value, this.props.name);
-      }
+      this.setState(prevState => {
+        const newValue = isFunction(formatter) ? formatter(value, prevState.value) : value;
+        // we need to store the cursor in case they deleted something not from the end
+        const cursor =
+          newValue !== value
+            ? Array(2).fill(newValue)
+            : [this.fieldRef.selectionStart, this.fieldRef.selectionEnd];
+        return {
+          ...prevState,
+          errors: resetErrors === false ? prevState.errors : [],
+          value: newValue,
+          isTouched: resetTouched !== true,
+          isDirty: value !== this.props.value,
+          cursor,
+        };
+        // Call user supplied function if given
+        if (isFunction(onChange)) {
+          onChange(newValue, name);
+        }
+      });
     }
 
     reset() {
@@ -474,7 +490,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
           onFocus={this.onFocus}
           onClick={this.onClick}
           setRef={this.setRef}
-          value={this.format()}
+          value={this.state.value}
           errors={this.state.errors}
           isValid={this.state.isValid}
           {...spreadProps}
