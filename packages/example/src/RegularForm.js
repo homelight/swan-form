@@ -34,6 +34,12 @@ const fieldSetStyling = `
 }`.trim();
 
 export default class RegularForm extends Component {
+  constructor(props) {
+    super(props);
+    console.log(
+      'You should see a console.error message 👇 about an invalid type. It is a test to make sure that invalid types throw an error message. The field will instead be replaced with an HTML comment.',
+    );
+  }
   render() {
     return (
       <div>

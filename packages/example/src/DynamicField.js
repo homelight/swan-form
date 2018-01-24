@@ -26,6 +26,7 @@ class EditableDisplay extends Component {
     if (target.name !== this.props.name) {
       return;
     }
+
     this.props.onChange({ name: this.props.name, value: target.value });
     this.setState(prevState => ({
       ...prevState,
@@ -55,9 +56,8 @@ class EditableDisplay extends Component {
 const style = { padding: '.25em', border: '1px solid black', margin: '.25em', maxWidth: '300px' };
 
 export default class DynamicField extends Component {
-  constructor(...args) {
-    console.log(...args);
-    super(...args);
+  constructor(props) {
+    super(props);
     this.state = { field1: 'HiHi', field2: 'What', field3: 'Something Else' };
     this.update = this.update.bind(this);
   }
