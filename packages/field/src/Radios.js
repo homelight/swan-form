@@ -22,7 +22,7 @@ class Radios extends Component {
     onChange: PropTypes.func.isRequired,
     onFocus: PropTypes.func.isRequired,
     required: PropTypes.bool, // eslint-disable-line
-    errors: PropTypes.arrayOf(PropTypes.oneOf([PropTypes.string, PropTypes.bool])).isRequired,
+    errors: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.bool])).isRequired,
     className: PropTypes.string,
   };
 
