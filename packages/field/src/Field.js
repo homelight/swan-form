@@ -5,6 +5,7 @@ import isObject from 'lodash/isObject';
 import hasOwnProperty from '@flow-form/helpers/dist/hasOwnProperty';
 import classes from '@flow-form/helpers/dist/classes';
 import asField from './asField';
+import noop from '@flow-form/helpers/dist/noop';
 
 const INPUT_TYPES = [
   'button',
@@ -162,6 +163,19 @@ class Field extends Component {
       options, // valid for selects
       ...spreadProps // the rest of everything that we need to send on
     } = this.props;
+
+    /**
+     * This is an experiment. The input event seems to run faster than the change event, but react
+     * complains if we don't pass onChange, so we'll send a noop function. We're making the
+     * optimization for text fields only.
+     *
+     * @see  Some discussion https://github.com/facebook/react/issues/3964
+     */
+    if (type === 'text') {
+      spreadProps.onInput = spreadProps.onChange;
+      spreadProps.onChange = noop;
+      return <input id={this.props.name} ref={setRef} type={type} {...spreadProps} />;
+    }
 
     // If it's an input type, then render the input with the spread spreadProps
     if (INPUT_TYPES.includes(type)) {

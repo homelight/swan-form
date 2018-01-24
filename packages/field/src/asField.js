@@ -113,15 +113,15 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       return false;
     }
 
-    componentDidUpdate(prevProps, prevState) {
-      if (this.fieldRef && this.fieldRef.selectionStart) {
-        if (Array.isArray(this.state.cursor) && !isEqual(prevState.cursor, this.state.cursor)) {
-          const [start, end] = this.state.cursor;
-          this.fieldRef.selectionStart = start;
-          this.fieldRef.selectionEnd = end;
-        }
-      }
-    }
+    // componentDidUpdate(prevProps, prevState) {
+    //   if (this.fieldRef && this.fieldRef.selectionStart) {
+    //     if (Array.isArray(this.state.cursor) && !isEqual(prevState.cursor, this.state.cursor)) {
+    //       const [start, end] = this.state.cursor;
+    //       this.fieldRef.selectionStart = start;
+    //       this.fieldRef.selectionEnd = end;
+    //     }
+    //   }
+    // }
 
     componentWillUnmount() {
       // Since we're unmounting, unregister from any higher components — this
@@ -280,7 +280,8 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * [preventSubmitOnEnter description]
      *
      * @todo maybe change the name of this function. Really, it's to prevent
-     *       forms from submitting, but it can be used for other things.
+     *       forms from submitting, but it can be used for other things. Maybe
+     *       I can just wrap some generic keyHandlers.
      *
      * @param  {[type]} event [description]
      * @return {[type]}       [description]
@@ -510,6 +511,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         asyncValidate,
         validate,
         validateWhileTyping,
+        validateDebounceTimeout,
         format,
         unformat,
         handleEnterKey,
@@ -560,6 +562,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
 
   HOC.defaultProps = {
     registerWrapped: true,
+    validateDebounceTimeout: 200,
   };
 
   HOC.contextTypes = {
