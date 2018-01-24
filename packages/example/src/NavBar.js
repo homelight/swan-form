@@ -14,6 +14,7 @@ function createLink(path, name, pathname) {
 const pages = [
   ['/', 'Intro'],
   ['/dependent-field', 'Dependent Field'],
+  ['/dynamic-field', 'Dynamic Field'],
   ['/extra-fields', 'Extra Field'],
   ['/formatters', 'Formatters'],
   ['/regular', 'Regular Form'],
