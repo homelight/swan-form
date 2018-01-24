@@ -1,6 +1,6 @@
 {
   "name": "@flow-form/helpers",
-  "version": "0.0.1-1",
+  "version": "0.0.1",
   "description": "helpers for flow-form",
   "main": "index.js",
   "module": "dist/index.es.js",
