@@ -97,12 +97,12 @@ export default class Slider extends Component {
   }
 
   prev() {
-    console.log(this.findPrevSlide());
     this.moveTo(this.findPrevSlide());
   }
 
   next() {
     if (isFunction(this.slides[this.state.current]) && this.slides[this.state.current]()) {
+      console.log('isValid', this.slides[this.state.current]());
       this.moveTo(this.findNextSlide());
     }
   }
@@ -125,7 +125,6 @@ export default class Slider extends Component {
         return i;
       }
     }
-    console.log(this.props.slides.length - 1);
     // somehow, we're done.
     // so, we should do a form submit?
     // For now, we'll just move to the last slide, regardless.

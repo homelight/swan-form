@@ -20,13 +20,13 @@ export default class Slide extends Component {
   static contextTypes = {
     registerSlide: PropTypes.func,
     unregisterSlide: PropTypes.func,
-    register: PropTypes.func,
-    unregister: PropTypes.func,
+    registerField: PropTypes.func,
+    unregisterField: PropTypes.func,
   };
 
   static childContextTypes = {
-    register: PropTypes.func,
-    unregister: PropTypes.func,
+    registerField: PropTypes.func,
+    unregisterField: PropTypes.func,
   };
 
   constructor(props) {
@@ -44,8 +44,8 @@ export default class Slide extends Component {
 
   getChildContext() {
     return {
-      register: this.registerField,
-      unregister: this.unregisterField,
+      registerField: this.registerField,
+      unregisterField: this.unregisterField,
     };
   }
 
@@ -85,8 +85,8 @@ export default class Slide extends Component {
   }
 
   registerField({ name, getRef, getValue, setValue, validate, reset, isValid }) {
-    if (isFunction(this.context.register)) {
-      this.context.register({ name, getRef, getValue, setValue, validate, reset });
+    if (isFunction(this.context.registerField)) {
+      this.context.registerField({ name, getRef, getValue, setValue, validate, reset });
     }
     this.fields = Object.assign({}, this.fields, {
       [name]: {
@@ -105,6 +105,7 @@ export default class Slide extends Component {
   }
 
   isValid() {
+    console.log(this.fields);
     // Run through all the validations...
     return Object.keys(this.fields).every(field => {
       const fieldIsValid = this.fields[field].isValid();

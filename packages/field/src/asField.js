@@ -73,8 +73,8 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       // @todo figure out this registered wrapped thing
       if (wrapperOptions.registerWrapped !== false) {
         return {
-          register: this.props.registerWrapped === true ? this.register : noop,
-          unregister: this.props.registerWrapped === true ? this.register : noop,
+          registerField: this.props.registerWrapped === true ? this.register : noop,
+          unregisterField: this.props.registerWrapped === true ? this.register : noop,
           // autoComplete: this.context.autoComplete, // this might already be passed through
         };
       }
@@ -148,6 +148,8 @@ function asField(WrappedComponent, wrapperOptions = {}) {
           // Resets the field
           reset: this.reset,
         });
+      } else {
+        console.log('no register field', this.context);
       }
     }
 
@@ -492,14 +494,14 @@ function asField(WrappedComponent, wrapperOptions = {}) {
   };
 
   HOC.contextTypes = {
-    register: PropTypes.func,
-    unregister: PropTypes.func,
+    registerField: PropTypes.func,
+    unregisterField: PropTypes.func,
     autoComplete: PropTypes.oneOf(['on', 'off']),
   };
 
   HOC.childContextTypes = {
-    register: PropTypes.func,
-    unregister: PropTypes.func,
+    registerField: PropTypes.func,
+    unregisterField: PropTypes.func,
     autoComplete: PropTypes.oneOf(['on', 'off']),
   };
 
