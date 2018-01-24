@@ -165,7 +165,6 @@ class Field extends Component {
 
     // If it's an input type, then render the input with the spread spreadProps
     if (INPUT_TYPES.includes(type)) {
-      console.log('input', spreadProps);
       return <input id={this.props.name} ref={setRef} type={type} {...spreadProps} />;
     }
 
@@ -177,7 +176,6 @@ class Field extends Component {
     // For select, we also have to render all the options / optgroups. We've moved these out to
     // separate functions so that we can call them recursively if needed.
     if (type === 'select') {
-      console.log(spreadProps);
       return (
         <select id={this.props.name} ref={setRef} {...spreadProps}>
           {renderOptions(options)}

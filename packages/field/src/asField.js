@@ -16,6 +16,8 @@ import noop from '@flow-form/helpers/dist/noop';
 import moveCursorToEnd from '@flow-form/helpers/dist/moveCursor';
 import { ENTER } from '@flow-form/helpers/dist/keyCodes';
 
+const undefinedOrNull = val => val === undefined || val === null;
+
 /**
  * Wraps a component to treat it like a field (a controlled input)
  *
@@ -112,10 +114,12 @@ function asField(WrappedComponent, wrapperOptions = {}) {
     }
 
     componentDidUpdate(prevProps, prevState) {
-      if (Array.isArray(this.state.cursor) && !isEqual(prevState.cursor, this.state.cursor)) {
-        const [start, end] = this.state.cursor;
-        this.fieldRef.selectionStart = start;
-        this.fieldRef.selectionEnd = end;
+      if (this.fieldRef && this.fieldRef.selectionStart) {
+        if (Array.isArray(this.state.cursor) && !isEqual(prevState.cursor, this.state.cursor)) {
+          const [start, end] = this.state.cursor;
+          this.fieldRef.selectionStart = start;
+          this.fieldRef.selectionEnd = end;
+        }
       }
     }
 
@@ -320,7 +324,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * @return {any} the value of the field
      */
     getValue() {
-      return this.state.value;
+      return this.unformat(this.state.value);
     }
 
     /**
@@ -331,30 +335,55 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * setState method. This will be sent as part of the callback in the `register` method, so that
      * anything that this registers with shall have access to update the value.
      *
+     * @todo  the
+     *
      * @param {any} value the value to set
      */
     setValue(value, resetErrors = false, resetTouched = false) {
-      const { name, onChange, formatter } = this.props;
+      const { name, type, onChange } = this.props;
 
       this.setState(prevState => {
-        const newValue = isFunction(formatter) ? formatter(value, prevState.value) : value;
+        const formatted = this.format(value, prevState.value);
+
+        let newValue = formatted;
+
+        let cursorStart;
+        let cursorEnd;
+
+        if (this.fieldRef && this.fieldRef.selectionStart) {
+          cursorStart = this.fieldRef.selectionStart;
+          cursorEnd = this.fieldRef.selectionEnd;
+        }
+
+        if (Array.isArray(formatted)) {
+          const [val, start, end] = formatted;
+          newValue = val;
+          if (this.fieldRef && this.fieldRef.selectionStart) {
+            cursorStart = undefinedOrNull(start) ? cursorStart : start;
+            cursorEnd = undefinedOrNull(end) ? cursorEnd : end;
+          }
+        }
+
         // we need to store the cursor in case they deleted something not from the end
         const cursor =
-          newValue !== value
-            ? Array(2).fill(newValue)
-            : [this.fieldRef.selectionStart, this.fieldRef.selectionEnd];
+          this.unformat(value).length !== this.unformat(newValue).length
+            ? [cursorStart, cursorEnd]
+            : Array(2).fill(newValue.length);
+
+        // Call user supplied function if given
+        if (isFunction(onChange)) {
+          onChange(newValue, name);
+        }
+
         return {
           ...prevState,
           errors: resetErrors === false ? prevState.errors : [],
           value: newValue,
           isTouched: resetTouched !== true,
           isDirty: value !== this.props.value,
+          value: type === 'text' ? newValue : value,
           cursor,
         };
-        // Call user supplied function if given
-        if (isFunction(onChange)) {
-          onChange(newValue, name);
-        }
       });
     }
 
@@ -425,7 +454,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      */
 
     /**
-     * Runs the value through a formatter function
+     * Runs the value through a format function
      *
      * @todo  we might need to pass in more information here in order to deal with the formatters
      *        elegantly. Right now, for the google phone number example, pressing `backspace` on
@@ -435,12 +464,30 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      *
      * @return {[type]} [description]
      */
-    format() {
-      const { formatter } = this.props;
-      const { value } = this.state;
+    format(value, prevValue = '') {
+      const { format } = this.props;
 
-      if (isFunction(formatter)) {
-        return formatter(value);
+      if (this.fieldRef && this.fieldRef.selectionStart) {
+        const start = this.fieldRef.selectionStart;
+        const end = this.fieldRef.selectionEnd;
+
+        if (isFunction(format)) {
+          return format(value, prevValue, start, end);
+        }
+      }
+
+      if (isFunction(format)) {
+        return format(value, prevValue);
+      }
+
+      return value;
+    }
+
+    unformat(value) {
+      const { unformat } = this.props;
+
+      if (isFunction(unformat)) {
+        return unformat(value);
       }
 
       return value;
@@ -458,8 +505,8 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         asyncValidate,
         validate,
         validateWhileTyping,
-        formatter,
-        unformatter,
+        format,
+        unformat,
         ...spreadProps
       } = this.props;
 

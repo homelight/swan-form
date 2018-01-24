@@ -22,12 +22,7 @@ const stripNonNumeric = value => {
   return str;
 };
 
-const formatPhone = (value, prevValue) => {
-  const s1 = stripNonNumeric(value);
-  const s2 = stripNonNumeric(prevValue);
-  if (s1 === s2) {
-    return new AsYouType('US').input(s1.slice(0, -1));
-  }
+const formatPhone = value => {
   return new AsYouType('US').input(value);
 };
 
@@ -48,7 +43,6 @@ export default class Formatters extends Component {
   }
 
   update(value, name) {
-    console.log('on update', name, this.state[name], value);
     if (Object.keys(this.state).includes(name) && this.state[name] !== value) {
       this.setState(prevState => ({
         ...prevState,
@@ -71,7 +65,7 @@ export default class Formatters extends Component {
             type="text"
             placeholder="This field will be all caps"
             name="allCapsField"
-            formatter={toUpperCase}
+            format={toUpperCase}
             size={30}
           />
         </p>
@@ -86,8 +80,8 @@ export default class Formatters extends Component {
             type="text"
             name="formattedPhone"
             placeholder="(___) ___-____"
-            formatter={formatPhone}
-            unformatter={stripNonNumeric}
+            format={formatPhone}
+            unformat={stripNonNumeric}
             onChange={this.update}
           />
         </p>
