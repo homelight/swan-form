@@ -41,6 +41,7 @@ export default class DynamicField extends Component {
           <Submit />
           <Reset />
         </Form>
+        <h3>Press Submit to see the values</h3>
         <pre>{JSON.stringify(this.state, null, 2)}</pre>
       </div>
     );

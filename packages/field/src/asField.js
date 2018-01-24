@@ -78,10 +78,8 @@ function asField(WrappedComponent, wrapperOptions = {}) {
           // autoComplete: this.context.autoComplete, // this might already be passed through
         };
       }
-      return {
-        register: this.context.register,
-        unregister: this.context.unregister,
-      };
+      // Pass through this context. The existence of this method somewhat messes with it.
+      return this.context;
     }
 
     componentDidMount() {
@@ -133,8 +131,8 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * @return {void}
      */
     register() {
-      if (isFunction(this.context.register) && wrapperOptions.registerWrapper !== false) {
-        this.context.register({
+      if (isFunction(this.context.registerField) && wrapperOptions.registerWrapper !== false) {
+        this.context.registerField({
           // This should be a unique key
           name: this.props.name,
           // In case we need to grab the ref @TODO maybe remove
@@ -158,8 +156,8 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * @return {void}
      */
     unregister() {
-      if (isObject(this.context) && isFunction(this.context.unregister)) {
-        this.context.unregister(this.props.name);
+      if (isObject(this.context) && isFunction(this.context.unregisterField)) {
+        this.context.unregisterField(this.props.name);
       }
     }
 

@@ -3,7 +3,16 @@ import PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
 import hasOwnProperty from '@flow-form/helpers/dist/hasOwnProperty';
 import autobind from '@flow-form/helpers/dist/autobind';
+import noErrors from '@flow-form/helpers/dist/noErrors';
 
+/**
+ * Duck-type check for a promise
+ *
+ * @todo  we might consider doing something better than this
+ *
+ * @param  {[type]} obj [description]
+ * @return {[type]}     [description]
+ */
 const isPromise = obj =>
   !!obj && ['function', 'object'].includes(typeof obj) && typeof obj.then === 'function';
 
@@ -24,11 +33,11 @@ export default class Form extends Component {
     /**
      * A preprocessor run on form values after validation but before submit
      */
-    beforeSubmit: PropTypes.func,
+    beforeSubmit: PropTypes.func, // eslint-disable-line
     /**
      * A function run after a successful submit
      */
-    afterSubmit: PropTypes.func,
+    afterSubmit: PropTypes.func, // eslint-disable-line
     /**
      * Turn on or off autocomplete for forms (does not always work)
      */
@@ -37,6 +46,10 @@ export default class Form extends Component {
      * Turn off native form validation
      */
     noValidate: PropTypes.bool,
+    /**
+     * The form should have some fields
+     */
+    children: PropTypes.any.isRequired,
   };
 
   static defaultProps = {
@@ -58,9 +71,11 @@ export default class Form extends Component {
 
     ['acceptCharset', 'action', 'target'].forEach(prop => {
       if (props[prop]) {
+        /* eslint-disable no-console */
         console.error(
           `FlowForm Error: Do not provide a '${prop}' prop for a form. Instead, handle form submission with an onSubmit handler to submit and do any necessary transforms there.`,
         );
+        /* eslint-enable no-console */
       }
     });
 
@@ -69,11 +84,13 @@ export default class Form extends Component {
       isSubmitting: false,
       hasSubmitted: false,
       hasSubmitError: false,
-      submitError: [],
+      errors: noErrors,
     };
 
     // This isn't a pure component by any means. We're going to create an object to keep track
-    // of all of the fields that get registered with this component.
+    // of all of the fields that get registered with this component. We're avoiding keeping track
+    // of these in `state` because that would cause unnecessary re-renders and be quite
+    // annoying.
     this.fields = {};
 
     autobind(this, [
@@ -90,19 +107,19 @@ export default class Form extends Component {
     this.isSubmitting = this.getValue.bind(this, 'isSubmitting');
   }
 
-  setRef(el) {
-    this.form = el;
-  }
-
   getChildContext() {
     return {
-      register: this.registerField,
-      unregister: this.unregsiterField,
       autoComplete: this.props.autoComplete,
-      reset: this.resetForm,
-      onSubmit: this.handleOnSubmit,
       isSubmitting: this.isSubmitting,
+      onSubmit: this.handleOnSubmit,
+      register: this.registerField,
+      reset: this.resetForm,
+      unregister: this.unregsiterField,
     };
+  }
+
+  setRef(el) {
+    this.form = el;
   }
 
   getValue(key) {
@@ -122,16 +139,25 @@ export default class Form extends Component {
   }
 
   handleBeforeSubmit() {
+    // Update the state to show that we are currently submitting.
     this.setState(prevState => ({
       ...prevState,
       isSubmitting: true,
     }));
-    console.log('handle before submit');
+
     return new Promise((res, rej) => {
+      // First, synchronously validate all the fields. `required` and `pattern` fields that
+      // latch onto the native browser events will block the submit event, so we care only
+      // about user supplied validation functions. This will also make field errors appear
+      // everwhere. (@TODO do something to help identify fields in slider forms)
       const isValid = Object.keys(this.fields).every(field => this.fields[field].validate());
+
       if (!isValid) {
-        console.log('Form is invalid. Field level errors should ensue.');
+        // Reject the promise and leave the function. We should handle this.
+        return rej({ error: 'Fields not valid.' });
       }
+
+      // Grab all the field values
       const values = Object.keys(this.fields)
         .filter(field => !fieldToRemove.includes(field))
         .reduce(
@@ -141,51 +167,64 @@ export default class Form extends Component {
           }),
           {},
         );
-      console.log('in promise');
+
       if (isFunction(this.props.beforeSubmit)) {
-        console.log('passing to props');
-        // check if this is a promise
+        // If there a user supplied callback, then run it and resolve on its return.
+        // However, we should probably check to see if it's a promise, or do some
+        // other things here to make the hook better.
         return res(this.props.beforeSubmit(values));
       }
-      console.log('resolving values');
       return res(values);
     });
   }
 
   handleAfterSubmit(values) {
-    console.log('after submit', values);
-    if (isFunction(this.props.afterSubmit)) {
-      // check if this is a promise
-      return this.props.afterSubmit(values);
+    const { afterSubmit } = this.props;
+    this.setState(prevState => ({
+      ...prevState,
+      isSubmitting: false,
+      hasSubmitted: true,
+      hasSubmitError: false,
+      errors: noErrors,
+    }));
+
+    if (isFunction(afterSubmit)) {
+      // If after submit is a promise, then execute and return
+      if (isPromise(afterSubmit)) {
+        return afterSubmit(values);
+      }
+      // If it's not a promise, then wrap in a promise.resolve
+      return Promise.resolve(afterSubmit(values));
     }
+    // Resolve the promise with the values.
     return Promise.resolve(values);
   }
 
   handleSubmit(values) {
-    console.log('in regular handle submit');
     const result = this.props.onSubmit(values);
     return isPromise(result) ? result : Promise.resolve(result);
   }
 
   handleOnSubmit(event) {
+    // Prevent the form from doing anything native
     event.preventDefault();
     event.stopPropagation();
-    console.log(event);
+
     this.handleBeforeSubmit()
       .then(this.handleSubmit)
-      .then(this.handleAfterSubmit);
-
-    // this.props.onSubmit(values);
-    // console.log(values);
-    // this.handleBeforeSubmit(values)
-    //   .then(this.props.onSubmit)
-    //   .then(this.handleAfterSubmit);
-    // console.log('Submitting...');
+      .then(this.handleAfterSubmit)
+      .catch(errors =>
+        this.setState(prevState => ({
+          ...prevState,
+          isSubmitting: false,
+          hasSubmitError: true,
+          hasSubmitted: true,
+          errors,
+        })),
+      );
   }
 
   registerField({ name, getRef, getValue, setValue, validate, reset }) {
-    // This does not handle radio buttons correct (as they're supposed to have the same name)
-    // @TODO FIX THIS FOR RADIOS
     this.fields = {
       ...this.fields,
       [name]: { getRef, getValue, validate, reset },

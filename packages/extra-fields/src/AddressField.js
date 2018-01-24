@@ -121,10 +121,6 @@ class AddressField extends Component {
     });
   }
 
-  componentWillUpdate(nextProps, nextState) {
-    console.log(...nextState);
-  }
-
   componentDidMount() {
     if (isFunction(this.context.register)) {
       console.log('registering things', this.props.name, this.reset);
@@ -145,6 +141,10 @@ class AddressField extends Component {
         reset: this.reset,
       });
     }
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    console.log(...nextState);
   }
 
   updatePart(key, value) {
@@ -177,7 +177,9 @@ class AddressField extends Component {
     }));
   }
 
-  validate(updateErrors = false) {}
+  validate(updateErrors = false) {
+    return true;
+  }
 
   getRef() {
     return this.fieldRef;
