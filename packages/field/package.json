@@ -1,6 +1,6 @@
 {
   "name": "@flow-form/field",
-  "version": "0.0.1-0",
+  "version": "0.0.1-1",
   "description": "Forms and Things",
   "license": "MIT",
   "author": "Shawn Patrick Rice",
@@ -27,7 +27,7 @@
     "test:watch": "yarn run test -- --watch"
   },
   "dependencies": {
-    "@flow-form/helpers": "^0.0.1-0",
+    "@flow-form/helpers": "^0.0.1-1",
     "lodash": "^4.17.4"
   },
   "devDependencies": {

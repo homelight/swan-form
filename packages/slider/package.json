@@ -1,6 +1,6 @@
 {
   "name": "@flow-form/slider",
-  "version": "0.0.1-0",
+  "version": "0.0.1-1",
   "description": "forms in sliders",
   "license": "MIT",
   "files": [
@@ -26,8 +26,8 @@
     "test:watch": "yarn run test -- --watch"
   },
   "dependencies": {
-    "@flow-form/form": "^0.0.1-0",
-    "@flow-form/helpers": "^0.0.1-0",
+    "@flow-form/form": "^0.0.1-1",
+    "@flow-form/helpers": "^0.0.1-1",
     "lodash": "^4.17.4"
   },
   "devDependencies": {
