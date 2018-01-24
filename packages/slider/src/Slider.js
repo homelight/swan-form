@@ -22,6 +22,21 @@ function getPosition(slide, index) {
 
 // temp function; @todo fix the `Form` component so that it accepts handlers
 const onSubmit = values => console.log(values);
+const chevron = (size, rotation, color = '#000') => (
+  <svg
+    style={{
+      width: size,
+      height: size,
+      transform: `rotate(${rotation}deg)`,
+    }}
+    viewBox="0 0 24 24"
+  >
+    <path fill={color} d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
+  </svg>
+);
+
+const nextChevron = chevron('24px', 0);
+const prevChevron = chevron('24px', 180);
 
 export default class Slider extends Component {
   static propTypes = {
@@ -30,6 +45,8 @@ export default class Slider extends Component {
     onSubmit: PropTypes.func,
     beforeSubmit: PropTypes.func,
     slides: PropTypes.array.isRequired,
+    prevButton: PropTypes.element, // eslint-disable-line
+    nextButton: PropTypes.element, // eslint-disable-line
   };
 
   static defaultProps = {
@@ -47,7 +64,9 @@ export default class Slider extends Component {
   constructor(props) {
     super(props);
     if (!Array.isArray(props.slides) || props.slides.length < 1) {
+      /* eslint-disable no-console */
       console.error(`You must pass an array of slides.`);
+      /* eslint-enable no-console */
     }
     this.state = {
       current: clamp(props.current, 0, props.slides.length) || 0,
@@ -102,7 +121,6 @@ export default class Slider extends Component {
 
   next() {
     if (isFunction(this.slides[this.state.current]) && this.slides[this.state.current]()) {
-      console.log('isValid', this.slides[this.state.current]());
       this.moveTo(this.findNextSlide());
     }
   }
@@ -149,6 +167,7 @@ export default class Slider extends Component {
   }
 
   render() {
+    const { prevButton, nextButton } = this.props;
     return (
       <div className="ff--slider" style={this.height}>
         <div
@@ -159,7 +178,7 @@ export default class Slider extends Component {
             this.state.current === 0 && 'ff--slider--control--disabled',
           ])}
         >
-          L
+          {prevButton ? <prevButton /> : prevChevron}
         </div>
         <div
           onClick={this.next}
@@ -169,7 +188,7 @@ export default class Slider extends Component {
             this.state.current === this.props.slides.length - 1 && 'ff--slider--control--disabled',
           ])}
         >
-          R
+          {nextButton ? <nextButton /> : nextChevron}
         </div>
         <Form
           name="slider-form"

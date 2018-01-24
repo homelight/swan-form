@@ -1,5 +1,4 @@
 .ff--slider {
-  border: 1px solid red;
   display: flex;
   flex: 1;
   height: auto;
@@ -9,8 +8,6 @@
 }
 
 .ff--slider--control {
-  background-color: dodgerblue;
-  border: 1px solid steelblue;
   cursor: pointer;
   padding: 0.25rem;
   position: absolute;
@@ -20,7 +17,6 @@
 }
 
 .ff--slider--control--disabled {
-  background-color: gray;
   cursor: not-allowed;
 }
 
