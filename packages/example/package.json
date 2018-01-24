@@ -1,6 +1,6 @@
 {
   "name": "example",
-  "version": "0.1.0",
+  "version": "0.0.1-0",
   "private": true,
   "repository": {
     "type": "git",
@@ -13,9 +13,9 @@
     "test": "react-scripts test --env=jsdom"
   },
   "dependencies": {
-    "@flow-form/field": "0.1.0",
-    "@flow-form/form": "0.1.0",
-    "@flow-form/slider": "0.1.0",
+    "@flow-form/field": "^0.0.1-0",
+    "@flow-form/form": "^0.0.1-0",
+    "@flow-form/slider": "^0.0.1-0",
     "history": "^4.7.2",
     "libphonenumber-js": "^1.0.3",
     "prop-types": "^15.6.0",
