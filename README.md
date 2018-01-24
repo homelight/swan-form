@@ -88,9 +88,11 @@ Uses AirBnB's eslint config — one shared across all packages.
 * [ ] Add in thorough documentation
 * [ ] Ship CSS separately
 * [x] ~Split everything into separate bundles lodash style~.
-* [ ] Use a monorepo
+* [x] Use a monorepo
 * [ ] Profile components to find penalty for context and overwriting context
 * [ ] Publish to npm
+* [ ] Publish to github
+* [ ] possibly build with webpack or go back to rollup
 * [ ] convert to typescript or create typings (https://github.com/KnisterPeter/react-to-typescript-definitions)
 
 ### Generic Field
@@ -100,16 +102,21 @@ Uses AirBnB's eslint config — one shared across all packages.
 * [x] Make all field types avaiable
 * [ ] Don't bind so many functions
 * [x] Handle radio buttons appropriately
+* [ ] Put in an escape hatch not to handle state (this is possibly good for complex fields made up of multiple Field components that also use `asField`)
 
 ### Generic Form
 
 * [ ] Sort out lifecycle methods on submit
+* [ ] Fix problems with reset in AddressField (as proof of concept)
 
 ### Slider
 
 * [ ] Get a better slider API
+* [ ] consider React.cloneChildren for slides
 * [ ] Make slider more responsive
 * [ ] Allow for `enter` to let the slider advance to next field
+* [ ] Allow passing components for next/prev
+* [ ] implment afterSlide and beforeSlide hooks
 
 ### Examples
 
