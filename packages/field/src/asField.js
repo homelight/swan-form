@@ -147,6 +147,10 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * @return {void}
      */
     register() {
+      if (!this.props.name) {
+        // If there is no name, return early, and do not register with the form.
+        return;
+      }
       if (isFunction(this.context.registerField) && wrapperOptions.registerWrapper !== false) {
         this.context.registerField({
           // This should be a unique key
@@ -172,6 +176,10 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * @return {void}
      */
     unregister() {
+      if (!this.props.name) {
+        // If there was no name, then we never registered.
+        return;
+      }
       if (isObject(this.context) && isFunction(this.context.unregisterField)) {
         this.context.unregisterField(this.props.name);
       }

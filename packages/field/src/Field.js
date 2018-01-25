@@ -118,7 +118,12 @@ class Field extends Component {
      * Required user props
      */
     type: PropTypes.oneOf(['select', 'textarea', ...INPUT_TYPES]).isRequired,
-    name: PropTypes.string.isRequired,
+    /**
+     * If you do not pass a name, then the field will not register with the form. This
+     * is a nice escape-hatch to use form fields as controls. Make sure that you pass an `onChange`
+     * callback.
+     */
+    name: PropTypes.string,
 
     /**
      * Optional User supplied props. These are handled if not shipped, so we can ignore them
@@ -166,6 +171,10 @@ class Field extends Component {
       ...spreadProps // the rest of everything that we need to send on
     } = this.props;
 
+    if (spreadProps.name) {
+      spreadProps.id = name;
+    }
+
     /**
      * This is an experiment. The input event seems to run faster than the change event, but react
      * complains if we don't pass onChange, so we'll send a noop function. We're making the
@@ -176,24 +185,24 @@ class Field extends Component {
     if (type === 'text') {
       spreadProps.onInput = spreadProps.onChange;
       spreadProps.onChange = noop;
-      return <input id={this.props.name} ref={setRef} type={type} {...spreadProps} />;
+      return <input ref={setRef} type={type} {...spreadProps} />;
     }
 
     // If it's an input type, then render the input with the spread spreadProps
     if (INPUT_TYPES.includes(type)) {
-      return <input id={this.props.name} ref={setRef} type={type} {...spreadProps} />;
+      return <input ref={setRef} type={type} {...spreadProps} />;
     }
 
     // Text areas get spreadProps too
     if (type === 'textarea') {
-      return <textarea id={this.props.name} ref={setRef} {...spreadProps} />;
+      return <textarea ref={setRef} {...spreadProps} />;
     }
 
     // For select, we also have to render all the options / optgroups. We've moved these out to
     // separate functions so that we can call them recursively if needed.
     if (type === 'select') {
       return (
-        <select id={this.props.name} ref={setRef} {...spreadProps}>
+        <select ref={setRef} {...spreadProps}>
           {renderOptions(options)}
         </select>
       );
