@@ -21,16 +21,45 @@ describe('Text Field Input Suite', () => {
     render(<Field name="test" type="text" />);
   });
 
-  const wrapper = render(<Field name="test" type="text" />);
+  const testTextField = render(<Field name="test" type="text" />);
   it('should have an input field with the name of "test"', () => {
-    expect(wrapper.find('input').attr('name')).toBe('test');
+    expect(testTextField.find('input').attr('name')).toBe('test');
   });
 
   it('should have an input field with the tpye of "text"', () => {
-    expect(wrapper.find('input').attr('type')).toBe('text');
+    expect(testTextField.find('input').attr('type')).toBe('text');
   });
 
   it('should have an input field with the value of ""', () => {
-    expect(wrapper.find('input').attr('value')).toBe('');
+    expect(testTextField.find('input').attr('value')).toBe('');
+  });
+
+  const multipleSelect = render(
+    <Field
+      name="selectField"
+      type="select"
+      multiple
+      options={[
+        'one',
+        'two',
+        'three',
+        { label: 'four', value: 'four' },
+        { OptGroup: ['abc', 'def', 'hij'] },
+      ]}
+    />,
+  );
+  it('renders weird multiple select correctly', () => {
+    expect(multipleSelect.find('select').attr('multiple')).toBe('multiple');
+    // @todo add more tests on this select
+  });
+
+  it('renders textareas correctly', () => {
+    const node = render(<Field type="textarea" name="test" value="abc" />);
+    expect(node.find('textarea')[0].children[0].data).toBe('abc');
+  });
+
+  it('renders hidden fields', () => {
+    const hidden = render(<Field type="hidden" name="test" value="1" />);
+    expect(hidden[0].attribs.type).toBe('hidden');
   });
 });
