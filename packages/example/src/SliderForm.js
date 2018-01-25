@@ -1,6 +1,6 @@
 /* eslint-disable no-alert, react/prefer-stateless-function */
 import React, { Component } from 'react';
-import { Field, Submit } from '@flow-form/field';
+import { Field, Radios, Submit } from '@flow-form/field';
 import { Slider } from '@flow-form/slider';
 import '@flow-form/slider/dist/Slider.css';
 import '@flow-form/slider/dist/Slide.css';
@@ -23,7 +23,8 @@ export default class SliderForm extends Component {
           onSubmit={onSubmit}
           slides={[
             {
-              render: () => (
+              key: 'first',
+              render: (
                 <div>
                   <h1>A first question</h1>
                   <Field
@@ -42,25 +43,54 @@ export default class SliderForm extends Component {
                   </p>
                 </div>
               ),
+              onExit: values => {
+                console.log(values);
+              },
             },
             {
-              render: () => (
+              key: 'second',
+              render: (
                 <div>
-                  <h2>This is slide 2</h2>
+                  <h2>Decision Tree</h2>
+                  <p>
+                    Here are two radio buttons. If you choose the first one, you'll see the next
+                    slide and skip the one after that. If you choose the other one, you'll see the
+                    reverse.
+                  </p>
+                  <Radios
+                    validate={required}
+                    name="decisionTree"
+                    options={[
+                      { label: 'Next Slide', value: '0' },
+                      { label: 'The Other One', value: '1' },
+                    ]}
+                  />
                 </div>
               ),
-              shouldShowIf: () => false,
             },
             {
-              render: () => (
+              key: 'third-a',
+              render: (
                 <div>
-                  <h2>This is slide 3</h2>
+                  <h2>You chose the first slide.</h2>
+                  <p>(This is a static message, in case you&apos;re wondering).</p>
                 </div>
               ),
-              shouldShowIf: () => false,
+              shouldShowIf: values => values.decisionTree === '0',
             },
             {
-              render: () => (
+              key: 'third-b',
+              render: (
+                <div>
+                  <h2>You skipped the last slide.</h2>
+                  <p>(This is a static message, in case you&apos;re wondering).</p>
+                </div>
+              ),
+              shouldShowIf: values => values.decisionTree === '1',
+            },
+            {
+              key: 'fourth',
+              render: (
                 <div>
                   <h2>I will show, and I&apos;m the last slide</h2>
                   <Submit onSubmit={onSubmit} />

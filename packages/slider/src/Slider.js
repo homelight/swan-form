@@ -15,9 +15,9 @@ function getPosition(slide, index) {
     return 'current';
   }
   if (slide > index) {
-    return 'before';
+    return 'prev';
   }
-  return 'after';
+  return 'next';
 }
 
 // temp function; @todo fix the `Form` component so that it accepts handlers
@@ -37,27 +37,40 @@ const chevron = (size, rotation, color = '#000') => (
 
 const nextChevron = chevron('24px', 0);
 const prevChevron = chevron('24px', 180);
+const alwaysTrue = () => true;
 
 export default class Slider extends Component {
   static propTypes = {
     height: PropTypes.string,
     current: PropTypes.number,
     onSubmit: PropTypes.func,
-    beforeSubmit: PropTypes.func,
-    slides: PropTypes.array.isRequired,
+    beforeSubmit: PropTypes.func, // eslint-disable-line
+    afterSubmit: PropTypes.func, // eslint-disable-line
+    slides: PropTypes.arrayOf(
+      PropTypes.shape({
+        key: PropTypes.string.isRequired,
+        render: PropTypes.oneOfType([PropTypes.node, PropTypes.element, PropTypes.string])
+          .isRequired,
+        shouldShowIf: PropTypes.func,
+      }),
+    ).isRequired,
     prevButton: PropTypes.element, // eslint-disable-line
     nextButton: PropTypes.element, // eslint-disable-line
+    autoComplete: PropTypes.oneOf(['on', 'off']),
   };
 
   static defaultProps = {
     height: '500px',
     current: 0,
+    autoComplete: 'off',
   };
 
   static childContextTypes = {
     registerSlide: PropTypes.func,
     unregisterSlide: PropTypes.func,
-    // implement a reset method that will push the slider back to 0 and reset
+    registerForm: PropTypes.func,
+    unregisterForm: PropTypes.func,
+    // @todo implement a reset method that will push the slider back to 0 and reset
     // the forms (or call the form context) if a <input type='reset' /> is pressed
   };
 
@@ -76,13 +89,23 @@ export default class Slider extends Component {
     this.height = { height: props.height };
     this.slides = {};
 
-    autobind(this, ['registerSlide', 'unregisterSlide', 'prev', 'next']);
+    autobind(this, [
+      'getFormValues',
+      'registerSlide',
+      'unregisterSlide',
+      'registerForm',
+      'unregisterForm',
+      'prev',
+      'next',
+    ]);
   }
 
   getChildContext() {
     return {
       registerSlide: this.registerSlide,
       unregisterSlide: this.unregisterSlide,
+      registerForm: this.registerForm,
+      unregisterForm: this.unregisterForm,
     };
   }
 
@@ -97,15 +120,35 @@ export default class Slider extends Component {
     }
   }
 
+  getFormValues() {
+    if (this.form && isFunction(this.form.getValues)) {
+      return this.form.getValues();
+    }
+    return {};
+  }
+
   registerSlide({ index, isValid }) {
-    this.slides = Object.assign({}, this.slides, { [index]: isValid });
-    // not quite adequate....
-    // this.slides = [...this.slides, ref];
+    this.slides = {
+      ...this.slides,
+      [index]: {
+        isValid,
+      },
+    };
   }
 
   unregisterSlide(index) {
     const { [index]: remove, ...remaining } = this.slides;
     this.slides = remaining;
+  }
+
+  registerForm({ name, getValues, submit }) {
+    this.form = { name, getValues, submit };
+  }
+
+  unregisterForm(name) {
+    if (this.form.name === name) {
+      this.form = {};
+    }
   }
 
   moveTo(index) {
@@ -120,40 +163,39 @@ export default class Slider extends Component {
   }
 
   next() {
-    if (isFunction(this.slides[this.state.current]) && this.slides[this.state.current]()) {
+    const slide = this.slides[this.state.current];
+    if (slide && isFunction(slide.isValid) && slide.isValid()) {
       this.moveTo(this.findNextSlide());
     }
   }
 
-  change(val) {
-    this.setState(prevState => ({
-      ...prevState,
-      current: clamp(prevState.current + val, 0, this.props.slides.length - 1),
-    }));
-  }
-
   findNextSlide() {
     const { current } = this.state;
-    for (let i = current + 1; i < this.props.slides.length - 1; i++) {
-      if (isFunction(this.props.slides[i].shouldShowIf)) {
-        if (this.props.slides[i].shouldShowIf()) {
+    const formValues = this.form ? this.form.getValues() : {};
+    const length = this.props.slides.length;
+    for (let i = current + 1; i <= length - 1; i++) {
+      const slide = this.props.slides[i];
+      if (isFunction(slide.shouldShowIf)) {
+        if (slide.shouldShowIf(formValues)) {
           return i;
         }
       } else {
         return i;
       }
     }
+    this.form.submit();
     // somehow, we're done.
     // so, we should do a form submit?
     // For now, we'll just move to the last slide, regardless.
-    return this.props.slides.length - 1;
+    return length - 1;
   }
 
   findPrevSlide() {
     const { current } = this.state;
+    const formValues = this.form ? this.form.getValues() : {};
     for (let i = current - 1; i >= 0; i--) {
       if (isFunction(this.props.slides[i].shouldShowIf)) {
-        if (this.props.slides[i].shouldShowIf()) {
+        if (this.props.slides[i].shouldShowIf(formValues)) {
           return i;
         }
       } else {
@@ -170,7 +212,7 @@ export default class Slider extends Component {
     const { prevButton, nextButton } = this.props;
     return (
       <div className="ff--slider" style={this.height}>
-        <div
+        <button
           onClick={this.prev}
           className={classes([
             'ff--slider--control',
@@ -179,30 +221,28 @@ export default class Slider extends Component {
           ])}
         >
           {prevButton ? <prevButton /> : prevChevron}
-        </div>
-        <div
+        </button>
+        <button
           onClick={this.next}
-          className={classes([
-            'ff--slider--control',
-            'ff--slider--control--right',
-            this.state.current === this.props.slides.length - 1 && 'ff--slider--control--disabled',
-          ])}
+          className={classes(['ff--slider--control', 'ff--slider--control--right'])}
         >
           {nextButton ? <nextButton /> : nextChevron}
-        </div>
+        </button>
         <Form
           name="slider-form"
           onSubmit={this.props.onSubmit}
           beforeSubmit={this.props.beforeSubmit}
+          afterSubmit={this.props.afterSubmit}
         >
           {this.props.slides.map((slide, index) => (
             <Slide
-              key={index}
-              shouldShowIf={isFunction(slide.shouldShowIf) ? slide.shouldShowIf : () => true}
+              key={slide.key || index}
+              shouldShowIf={isFunction(slide.shouldShowIf) ? slide.shouldShowIf : alwaysTrue}
               index={index}
               position={getPosition(this.state.current, index)}
+              getFormValues={this.getFormValues}
             >
-              {slide.render()}
+              {slide.render}
             </Slide>
           ))}
         </Form>

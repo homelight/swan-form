@@ -11,12 +11,12 @@
   opacity: 1;
 }
 
-.ff--slide--before {
+.ff--slide--prev {
   transform: translateX(-100%);
   opacity: 0;
 }
 
-.ff--slide--after {
+.ff--slide--next {
   transform: translateX(100%);
   opacity: 0;
 }

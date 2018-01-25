@@ -57,6 +57,11 @@ export default class Form extends Component {
     noValidate: false,
   };
 
+  static contextTypes = {
+    registerForm: PropTypes.func,
+    unregisterForm: PropTypes.func,
+  };
+
   static childContextTypes = {
     registerField: PropTypes.func,
     unregisterField: PropTypes.func,
@@ -94,14 +99,15 @@ export default class Form extends Component {
     this.fields = {};
 
     autobind(this, [
-      'setRef',
+      'getValues',
+      'handleAfterSubmit',
       'handleBeforeSubmit',
       'handleOnSubmit',
       'handleSubmit',
-      'handleAfterSubmit',
+      'resetForm',
+      'setRef',
       'registerField',
       'unregsiterField',
-      'resetForm',
     ]);
 
     this.isSubmitting = this.getValue.bind(this, 'isSubmitting');
@@ -118,6 +124,22 @@ export default class Form extends Component {
     };
   }
 
+  componentDidMount() {
+    if (this.context && isFunction(this.context.registerForm)) {
+      this.context.registerForm({
+        name: this.props.name,
+        getValues: this.getValues,
+        submit: this.handleOnSubmit,
+      });
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.context && isFunction(this.context.unregisterForm)) {
+      this.context.unregisterForm(this.props.name);
+    }
+  }
+
   setRef(el) {
     this.form = el;
   }
@@ -127,6 +149,18 @@ export default class Form extends Component {
       return this.state[key];
     }
     return null;
+  }
+
+  getValues() {
+    return Object.keys(this.fields)
+      .filter(field => !fieldToRemove.includes(field))
+      .reduce(
+        (acc, field) => ({
+          ...acc,
+          [field]: this.fields[field].getValue(),
+        }),
+        {},
+      );
   }
 
   getSpreadProps() {
@@ -158,15 +192,8 @@ export default class Form extends Component {
       }
 
       // Grab all the field values
-      const values = Object.keys(this.fields)
-        .filter(field => !fieldToRemove.includes(field))
-        .reduce(
-          (acc, field) => ({
-            ...acc,
-            [field]: this.fields[field].getValue(),
-          }),
-          {},
-        );
+      const values = this.getValues();
+
       if (isFunction(this.props.beforeSubmit)) {
         // If there a user supplied callback, then run it and resolve on its return.
         // However, we should probably check to see if it's a promise, or do some
@@ -205,9 +232,11 @@ export default class Form extends Component {
   }
 
   handleOnSubmit(event) {
-    // Prevent the form from doing anything native
-    event.preventDefault();
-    event.stopPropagation();
+    if (event) {
+      // Prevent the form from doing anything native
+      event.preventDefault();
+      event.stopPropagation();
+    }
 
     this.handleBeforeSubmit()
       .then(this.handleSubmit)
