@@ -3,6 +3,7 @@
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
+    "postinstall": "yarn run build",
     "precommit": "lint-staged",
     "dev": "nps dev.all",
     "dev:form": "nps dev.form",
@@ -22,6 +23,7 @@
     "babel-core": "^7.0.0-0",
     "babel-eslint": "^8.0.2",
     "babel-jest": "^22.1.0",
+    "babel-plugin-transform-react-remove-prop-types": "^0.4.12",
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
     "eslint": "^4.9.0",
