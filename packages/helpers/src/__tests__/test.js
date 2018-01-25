@@ -1,7 +1,7 @@
 /* global describe, it, expect */
 
-import hasErrors from './hasErrors';
-import runValidations from './runValidations';
+import hasErrors from '../hasErrors';
+import runValidations from '../runValidations';
 
 describe('Shared helper functions tests', () => {
   it('hasErrors should filter all `[false, false, false]` to be false', () => {

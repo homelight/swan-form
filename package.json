@@ -12,19 +12,49 @@
     "test:watch": "yarn run test -- --watch"
   },
   "devDependencies": {
+    "@babel/cli": "^7.0.0-beta.38",
+    "@babel/core": "^7.0.0-beta.38",
+    "@babel/preset-env": "^7.0.0-beta.38",
+    "@babel/preset-react": "^7.0.0-beta.38",
+    "@babel/preset-stage-0": "^7.0.0-beta.38",
+    "@babel/preset-stage-1": "^7.0.0-beta.38",
+    "autoprefixer": "^7.2.5",
+    "babel-core": "^7.0.0-0",
+    "babel-eslint": "^8.0.2",
+    "babel-jest": "^22.1.0",
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.1.1",
+    "eslint": "^4.9.0",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-config-prettier": "^2.9.0",
     "eslint-import-resolver-lerna": "^1.0.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-jsx-a11y": "^6.0.2",
+    "eslint-plugin-react": "^7.4.0",
     "husky": "^0.14.3",
+    "jest": "^22.1.1",
+    "jest-enzyme": "^4.0.2",
+    "jest-environment-jsdom": "22.1.4",
     "lerna": "2.8.0",
     "lint-staged": "^6.0.0",
     "nps": "^5.7.1",
     "nps-utils": "^1.5.0",
-    "prettier": "^1.10.2"
+    "prettier": "^1.10.2",
+    "react-test-renderer": "^16.2.0",
+    "regenerator-runtime": "^0.11.1"
   },
   "browserslist": {
     "development": ["last 2 chrome versions", "last 2 firefox versions", "last 2 edge versions"],
     "production": [">1%", "last 4 versions", "Firefox ESR", "ie > 10", "not ie < 11"]
   },
   "jest": {
+    "projects": [
+      "<rootDir>/packages/extra-fields",
+      "<rootDir>/packages/field",
+      "<rootDir>/packages/form",
+      "<rootDir>/packages/helpers",
+      "<rootDir>/packages/slider"
+    ],
     "transform": {
       "^.+\\.jsx?$": "babel-jest"
     },
