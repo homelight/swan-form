@@ -43,13 +43,26 @@ class Radios extends Component {
       onBlur,
       value,
     } = this.props;
-    const fieldStyle = classes(['ff--field--field', required && 'ff--field--required']);
+
     return (
-      <fieldset className={classes(['ff--radios', className])}>
+      <fieldset
+        className={classes([
+          'ff--radios',
+          'ff--fieldset',
+          required && 'ff--field--required',
+          className,
+        ])}
+      >
         {label && <legend>{label}</legend>}
         {options.map(option => (
           // right now, I'm spreading this
-          <label className={fieldStyle} key={option.value}>
+          <label
+            className={classes([
+              'ff--radio--field',
+              value === option.value && 'ff--radio--checked',
+            ])}
+            key={option.value}
+          >
             <span>{option.label}</span>
             <input
               type="radio"

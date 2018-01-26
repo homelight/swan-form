@@ -18,6 +18,25 @@ import { ENTER } from '@flow-form/helpers/dist/keyCodes';
 
 const undefinedOrNull = val => val === undefined || val === null;
 
+function getInitialValue(props) {
+  if (props.type === 'checkbox' && isObject(props)) {
+    if (props.hasOwnProperty('checked')) {
+      return !!props.checked;
+    } else if (props.hasOwnProperty('defaultChecked')) {
+      return !!props.defaultChecked;
+    } else {
+      return !!props.value;
+    }
+  }
+  if (props.value) {
+    return props.value;
+  }
+  if (props.type === 'select' && props.multiple === true) {
+    return [''];
+  }
+  return '';
+}
+
 /**
  * Wraps a component to treat it like a field (a controlled input)
  *
@@ -37,7 +56,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
 
       // Establish the initial state
       const state = {
-        value: props.value || (this.isMultipleSelect ? [''] : ''),
+        value: getInitialValue(props),
         errors: noErrors,
         isValid: !hasErrors(runValidations(props.validate, props.value)),
         isDirty: false,
@@ -200,6 +219,12 @@ function asField(WrappedComponent, wrapperOptions = {}) {
     onChange(event) {
       const { value } = event.target;
       const { validateWhileTyping, validateDebounceTimeout } = this.props;
+
+      if (this.props.type === 'checkbox') {
+        // @todo clean this up
+        const checked = event.target.checked;
+        return this.setValue(!!checked);
+      }
 
       if (validateWhileTyping) {
         // If we are to validate while typing, then we'll debunce it. Basically, just set a timeout,

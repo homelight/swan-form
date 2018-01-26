@@ -54,8 +54,8 @@ export default class Slider extends Component {
         shouldShowIf: PropTypes.func,
       }),
     ).isRequired,
-    prevButton: PropTypes.element, // eslint-disable-line
-    nextButton: PropTypes.element, // eslint-disable-line
+    PrevButton: PropTypes.element, // eslint-disable-line
+    NextButton: PropTypes.element, // eslint-disable-line
     autoComplete: PropTypes.oneOf(['on', 'off']),
   };
 
@@ -209,7 +209,7 @@ export default class Slider extends Component {
   }
 
   render() {
-    const { prevButton, nextButton } = this.props;
+    const { PrevButton, NextButton } = this.props;
     return (
       <div className="ff--slider" style={this.height}>
         <button
@@ -219,14 +219,15 @@ export default class Slider extends Component {
             'ff--slider--control--left',
             this.state.current === 0 && 'ff--slider--control--disabled',
           ])}
+          disabled={this.state.current === 0}
         >
-          {prevButton ? <prevButton /> : prevChevron}
+          {PrevButton ? PrevButton : prevChevron}
         </button>
         <button
           onClick={this.next}
           className={classes(['ff--slider--control', 'ff--slider--control--right'])}
         >
-          {nextButton ? <nextButton /> : nextChevron}
+          {NextButton ? NextButton : nextChevron}
         </button>
         <Form
           name="slider-form"

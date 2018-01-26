@@ -173,6 +173,7 @@ export default class Form extends Component {
   }
 
   handleBeforeSubmit() {
+    console.log('handling before submit');
     // Update the state to show that we are currently submitting.
     this.setState(prevState => ({
       ...prevState,
@@ -227,20 +228,24 @@ export default class Form extends Component {
   }
 
   handleSubmit(values) {
+    console.log('in form submit', values);
     const result = this.props.onSubmit(values);
+    console.log('result', result);
     return isPromise(result) ? result : Promise.resolve(result);
   }
 
   handleOnSubmit(event) {
+    // We can call this event manually, so, we might not always have an event
     if (event) {
       // Prevent the form from doing anything native
       event.preventDefault();
       event.stopPropagation();
     }
+    console.log('form uberhandlesubmit');
 
     this.handleBeforeSubmit()
-      .then(this.handleSubmit)
-      .then(this.handleAfterSubmit)
+      .then(values => this.handleSubmit(values))
+      .then(values => this.handleAfterSubmit(values))
       .catch(errors =>
         this.setState(prevState => ({
           ...prevState,
@@ -250,6 +255,7 @@ export default class Form extends Component {
           errors,
         })),
       );
+    console.log('chain finished');
   }
 
   registerField({ name, getRef, getValue, setValue, validate, reset }) {

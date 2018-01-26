@@ -63,6 +63,10 @@ export default class RegularForm extends Component {
             </div>
 
             <div>
+              <Field type="checkbox" label="Checkbox field" name="checkboxaaa" value={true} />
+            </div>
+
+            <div>
               <p>You can style inputs with CSS.</p>
 
               <Field

@@ -172,7 +172,7 @@ class Field extends Component {
     } = this.props;
 
     if (spreadProps.name) {
-      spreadProps.id = name;
+      spreadProps.id = spreadProps.name;
     }
 
     /**
@@ -186,6 +186,15 @@ class Field extends Component {
       spreadProps.onInput = spreadProps.onChange;
       spreadProps.onChange = noop;
       return <input ref={setRef} type={type} {...spreadProps} />;
+    }
+
+    if (type === 'checkbox') {
+      /**
+       * @TODO clean this up
+       */
+      spreadProps.value = !!spreadProps.value ? 'on' : 'off';
+      spreadProps.defaultChecked = spreadProps.value === 'on';
+      delete spreadProps.checked;
     }
 
     // If it's an input type, then render the input with the spread spreadProps
