@@ -266,15 +266,8 @@ export default class Form extends Component {
   }
 
   unregsiterField(name) {
-    this.fields = Object.keys(this.fields).reduce((fields, field) => {
-      if (name === field) {
-        return fields;
-      }
-      return {
-        ...fields,
-        [field]: fields[field],
-      };
-    }, {});
+    const { [name]: removed, ...remaining } = this.fields;
+    this.fields = remaining;
   }
 
   resetForm() {
