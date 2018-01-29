@@ -134,27 +134,31 @@ class Field extends Component {
     options: PropTypes.oneOfType([PropTypes.object, PropTypes.array]), // eslint-disable-line
   };
 
-  maybeWrapInLabel(children) {
-    const { className, errors, isValid, label, required } = this.props;
+  maybeWrapInLabel(input) {
+    const { className, icon, errors, type, isValid, label, required } = this.props;
     return (
       <label
         className={classes([
           className,
           'ff--field',
+          `ff--field--type--${type}`,
           required && 'ff--field--required',
-          !isValid && 'ff--field-has-errors',
+          errors.length !== 0 && 'ff--field-has-errors',
         ])}
         htmlFor={this.props.name}
       >
-        {label && <span className="ff--field--label">{label}</span>}
-        <span className="ff--field--field">{children}</span>
-        <span className="ff--field--errors">
-          {errors.filter(err => err).map(err => (
-            <span key={err} className="flowform-field-error">
-              {err}
-            </span>
-          ))}
+        <span className="ff--field--field">
+          {input}
+          {icon ? <span className="ff--field--icon">{icon}</span> : <span />}
+          <span className="ff--field--errors">
+            {errors.filter(err => err).map(err => (
+              <span key={err} className="ff--field--error">
+                {err}
+              </span>
+            ))}
+          </span>
         </span>
+        {label ? <span className="ff--field--label">{label}</span> : <span />}
       </label>
     );
   }
@@ -168,6 +172,7 @@ class Field extends Component {
       isValid, // gets sent to a different method, but we'll ignore it here
       className, // gets sent to a different method, but we'll ignore it here
       options, // valid for selects
+      icon,
       ...spreadProps // the rest of everything that we need to send on
     } = this.props;
 

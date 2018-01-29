@@ -143,6 +143,7 @@ export default class Slide extends Component {
   }
 
   render() {
+    console.log('slide fields', this.props.index, this.fields);
     const { className, position } = this.props;
     const classNames = classes([
       className,

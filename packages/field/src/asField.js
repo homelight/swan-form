@@ -125,6 +125,10 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         return false;
       }
 
+      if (this.props.type !== nextProps.type) {
+        return true;
+      }
+
       if (this.state.value !== nextState.value) {
         return true;
       }
