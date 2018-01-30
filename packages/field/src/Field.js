@@ -135,31 +135,61 @@ class Field extends Component {
   };
 
   maybeWrapInLabel(input) {
-    const { className, icon, errors, type, isValid, label, required } = this.props;
-    return (
-      <label
-        className={classes([
-          className,
-          'ff--field',
-          `ff--field--type--${type}`,
-          required && 'ff--field--required',
-          errors.length !== 0 && 'ff--field-has-errors',
-        ])}
-        htmlFor={this.props.name}
-      >
-        <span className="ff--field--field">
+    const { className, icon, errors, type, label } = this.props;
+    // const { className, icon, errors, type, isValid, label, required } = this.props;
+
+    if (type === 'radio' || type === 'checkbox') {
+      // In order to get the click targets better, we will wrap radios and checkboxes in labels
+      // and do something else for the others.
+      const spread = name ? { htmlFor: name } : {};
+      return (
+        <label
+          {...spread}
+          className={classes([
+            'ff--field',
+            `ff--type-${type}`,
+            errors.length !== 0 && `ff--has-errors`,
+            icon && 'ff--has-icon',
+            className,
+          ])}
+        >
+          <span className="ff--label">{label && label}</span>
           {input}
-          {icon ? <span className="ff--field--icon">{icon}</span> : <span />}
-          <span className="ff--field--errors">
+          <span className="ff--icon">{icon && icon}</span>
+          <span className="ff--errors">
             {errors.filter(err => err).map(err => (
-              <span key={err} className="ff--field--error">
+              <span key={err} className="ff--error">
                 {err}
               </span>
             ))}
           </span>
+        </label>
+      );
+    }
+
+    return (
+      <span
+        className={classes([
+          'ff--field',
+          `ff--type-${type}`,
+          errors.length !== 0 && `ff--has-errors`,
+          icon && 'ff--has-icon',
+          className,
+        ])}
+      >
+        <label className="ff--label" htmlFor={name}>
+          {label && label}
+        </label>
+        {input}
+        <span className="ff--icon">{icon && icon}</span>
+        <span className="ff--errors">
+          {errors.filter(err => err).map(err => (
+            <span key={err} className="ff--error">
+              {err}
+            </span>
+          ))}
         </span>
-        {label ? <span className="ff--field--label">{label}</span> : <span />}
-      </label>
+      </span>
     );
   }
 
@@ -176,7 +206,7 @@ class Field extends Component {
       ...spreadProps // the rest of everything that we need to send on
     } = this.props;
 
-    if (spreadProps.name) {
+    if (!spreadProps.id && spreadProps.name && type !== 'radio') {
       spreadProps.id = spreadProps.name;
     }
 
@@ -193,7 +223,7 @@ class Field extends Component {
       return <input ref={setRef} type={type} {...spreadProps} />;
     }
 
-    if (type === 'checkbox') {
+    if (type === 'checkbox' || type === 'radio') {
       /**
        * @TODO clean this up
        */
