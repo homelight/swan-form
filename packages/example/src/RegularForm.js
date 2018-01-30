@@ -53,6 +53,7 @@ export default class RegularForm extends Component {
                 type="text"
                 name="minTenField"
                 validate={tenAndAlpha}
+                label="This is a label"
                 asyncValidate
                 validateWhileTyping
                 placeholder="test"

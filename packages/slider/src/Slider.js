@@ -221,13 +221,13 @@ export default class Slider extends Component {
           ])}
           disabled={this.state.current === 0}
         >
-          {PrevButton ? PrevButton : prevChevron}
+          {PrevButton || prevChevron}
         </button>
         <button
           onClick={this.next}
           className={classes(['ff--slider--control', 'ff--slider--control--right'])}
         >
-          {NextButton ? NextButton : nextChevron}
+          {NextButton || nextChevron}
         </button>
         <Form
           name="slider-form"
