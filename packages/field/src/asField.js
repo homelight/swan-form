@@ -140,15 +140,15 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       return false;
     }
 
-    // componentDidUpdate(prevProps, prevState) {
-    //   if (this.fieldRef && this.fieldRef.selectionStart) {
-    //     if (Array.isArray(this.state.cursor) && !isEqual(prevState.cursor, this.state.cursor)) {
-    //       const [start, end] = this.state.cursor;
-    //       this.fieldRef.selectionStart = start;
-    //       this.fieldRef.selectionEnd = end;
-    //     }
-    //   }
-    // }
+    componentDidUpdate(prevProps, prevState) {
+      if (this.fieldRef && this.fieldRef.selectionStart) {
+        const { cursor } = this.state;
+        if (typeof cursor !== 'undefined' && cursor !== prevState.cursor) {
+          this.fieldRef.selectionStart = cursor;
+          this.fieldRef.selectionEnd = cursor;
+        }
+      }
+    }
 
     componentWillUnmount() {
       // Since we're unmounting, unregister from any higher components — this
@@ -390,32 +390,15 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       const { name, type, onChange } = this.props;
 
       this.setState(prevState => {
-        const formatted = this.format(value, prevState.value);
+        const formatted = this.format(value);
 
         let newValue = formatted;
-
-        let cursorStart;
-        let cursorEnd;
-
-        if (this.fieldRef && this.fieldRef.selectionStart) {
-          cursorStart = this.fieldRef.selectionStart;
-          cursorEnd = this.fieldRef.selectionEnd;
-        }
+        let cursor;
 
         if (Array.isArray(formatted)) {
-          const [val, start, end] = formatted;
+          const [val, cursor] = formatted;
           newValue = val;
-          if (this.fieldRef && this.fieldRef.selectionStart) {
-            cursorStart = undefinedOrNull(start) ? cursorStart : start;
-            cursorEnd = undefinedOrNull(end) ? cursorEnd : end;
-          }
         }
-
-        // we need to store the cursor in case they deleted something not from the end
-        const cursor =
-          this.unformat(value).length !== this.unformat(newValue).length
-            ? [cursorStart, cursorEnd]
-            : Array(2).fill(newValue.length);
 
         // Call user supplied function if given
         if (isFunction(onChange)) {
@@ -424,12 +407,11 @@ function asField(WrappedComponent, wrapperOptions = {}) {
 
         return {
           ...prevState,
-          errors: resetErrors === false ? prevState.errors : [],
-          value: newValue,
-          isTouched: resetTouched !== true,
-          isDirty: value !== this.props.value,
-          value: type === 'text' ? newValue : value,
           cursor,
+          errors: resetErrors === false ? prevState.errors : noErrors,
+          isDirty: newValue !== this.props.value,
+          isTouched: resetTouched !== true,
+          value: newValue,
         };
       });
     }
@@ -511,20 +493,15 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      *
      * @return {[type]} [description]
      */
-    format(value, prevValue = '') {
+    format(value) {
       const { format } = this.props;
 
-      if (this.fieldRef && this.fieldRef.selectionStart) {
-        const start = this.fieldRef.selectionStart;
-        const end = this.fieldRef.selectionEnd;
-
-        if (isFunction(format)) {
-          return format(value, prevValue, start, end);
-        }
-      }
-
       if (isFunction(format)) {
-        return format(value, prevValue);
+        if (this.fieldRef && this.fieldRef.selectionStart) {
+          const cursor = this.fieldRef.selectionEnd;
+          return format(value, cursor);
+        }
+        return format(value);
       }
 
       return value;
@@ -556,6 +533,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         format,
         unformat,
         handleEnterKey,
+        // children,
         ...spreadProps
       } = this.props;
 
@@ -599,6 +577,11 @@ function asField(WrappedComponent, wrapperOptions = {}) {
 
   asFieldWrapper.propTypes = {
     registerWrapped: PropTypes.bool,
+    /**
+     * Number of ms to delay asyncValidation while typing
+     * @type {Number}
+     */
+    validateDebounceTimeout: PropTypes.number,
   };
 
   asFieldWrapper.defaultProps = {

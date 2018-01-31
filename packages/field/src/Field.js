@@ -202,6 +202,7 @@ class Field extends Component {
       isValid, // gets sent to a different method, but we'll ignore it here
       className, // gets sent to a different method, but we'll ignore it here
       options, // valid for selects
+      children,
       icon,
       ...spreadProps // the rest of everything that we need to send on
     } = this.props;
@@ -219,8 +220,29 @@ class Field extends Component {
      */
     if (type === 'text') {
       spreadProps.onInput = spreadProps.onChange;
-      spreadProps.onChange = noop;
+      spreadProps.onChange = noop; // React complains if there is no `onChange` method
       return <input ref={setRef} type={type} {...spreadProps} />;
+    }
+
+    if (type === 'button') {
+      // We do not wrap buttons in labels. So, give them a class.
+      if (children) {
+        // If there are children, use a button node rather than an input`type=button`.
+        return (
+          <button ref={setRef} className={classes(['ff--field', className])} {...spreadProps}>
+            {children}
+          </button>
+        );
+      }
+      // If there are no children, then we use a regular input.
+      return (
+        <input
+          type="button"
+          ref={setRef}
+          className={classes(['ff--field', className])}
+          {...spreadProps}
+        />
+      );
     }
 
     if (type === 'checkbox' || type === 'radio') {
@@ -261,7 +283,7 @@ class Field extends Component {
 
   render() {
     // Hidden fields are never wrapped in labels
-    if (this.props.type === 'hidden') {
+    if (this.props.type === 'hidden' || this.props.type === 'button') {
       return this.renderField();
     }
     return this.maybeWrapInLabel(this.renderField());
