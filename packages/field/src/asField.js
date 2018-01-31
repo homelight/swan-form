@@ -14,9 +14,9 @@ import noErrors from '@flow-form/helpers/dist/noErrors';
 import hasErrors from '@flow-form/helpers/dist/hasErrors';
 import noop from '@flow-form/helpers/dist/noop';
 import moveCursorToEnd from '@flow-form/helpers/dist/moveCursor';
-import { ENTER } from '@flow-form/helpers/dist/keyCodes';
+import { ENTER, TAB } from '@flow-form/helpers/dist/keyCodes';
 
-const undefinedOrNull = val => val === undefined || val === null;
+// const undefinedOrNull = val => val === undefined || val === null;
 
 function getInitialValue(props) {
   if (props.type === 'checkbox' && isObject(props)) {
@@ -338,6 +338,9 @@ function asField(WrappedComponent, wrapperOptions = {}) {
           // Can be used by the `form` component to move through fields, or for other things
           this.context.handleEnterKey(target);
         }
+      } else if (event.keyCode === TAB) {
+        // Temporary. Consider passing a function in context or as a prop instead.
+        event.preventDefault();
       }
     }
 

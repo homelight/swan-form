@@ -135,13 +135,21 @@ class Field extends Component {
   };
 
   maybeWrapInLabel(input) {
-    const { className, icon, errors, type, label } = this.props;
+    const { className, icon, errors, type, label, style } = this.props;
     // const { className, icon, errors, type, isValid, label, required } = this.props;
 
     if (type === 'radio' || type === 'checkbox') {
       // In order to get the click targets better, we will wrap radios and checkboxes in labels
       // and do something else for the others.
-      const spread = name ? { htmlFor: name } : {};
+      const spread = {};
+      if (name) {
+        spread.htmlFor = name;
+      }
+      if (style) {
+        spread.style = style;
+      }
+
+      /* eslint-disable jsx-a11y/label-has-for */
       return (
         <label
           {...spread}
@@ -166,9 +174,15 @@ class Field extends Component {
         </label>
       );
     }
+    /* eslint-enable jsx-a11y/label-has-for */
 
+    const spread = {};
+    if (style) {
+      spread.style = style;
+    }
     return (
       <span
+        {...spread}
         className={classes([
           'ff--field',
           `ff--type-${type}`,
@@ -177,17 +191,19 @@ class Field extends Component {
           className,
         ])}
       >
-        <label className="ff--label" htmlFor={name}>
-          {label && label}
-        </label>
-        {input}
-        <span className="ff--icon">{icon && icon}</span>
-        <span className="ff--errors">
-          {errors.filter(err => err).map(err => (
-            <span key={err} className="ff--error">
-              {err}
-            </span>
-          ))}
+        <span>
+          <label className="ff--label" htmlFor={name}>
+            {label && label}
+          </label>
+          {input}
+          <span className="ff--icon">{icon && icon}</span>
+          <span className="ff--errors">
+            {errors.filter(err => err).map(err => (
+              <span key={err} className="ff--error">
+                {err}
+              </span>
+            ))}
+          </span>
         </span>
       </span>
     );
