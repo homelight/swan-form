@@ -41,7 +41,7 @@ export default class Form extends Component {
     /**
      * Turn on or off autocomplete for forms (does not always work)
      */
-    autoComplete: PropTypes.oneOf(['on', 'off']),
+    autoComplete: PropTypes.oneOf(['on', 'off']), // maybe change this to bool?
     /**
      * Turn off native form validation
      */
@@ -173,7 +173,6 @@ export default class Form extends Component {
   }
 
   handleBeforeSubmit() {
-    console.log('handling before submit');
     // Update the state to show that we are currently submitting.
     this.setState(prevState => ({
       ...prevState,
@@ -228,9 +227,7 @@ export default class Form extends Component {
   }
 
   handleSubmit(values) {
-    console.log('in form submit', values);
     const result = this.props.onSubmit(values);
-    console.log('result', result);
     return isPromise(result) ? result : Promise.resolve(result);
   }
 
@@ -241,7 +238,6 @@ export default class Form extends Component {
       event.preventDefault();
       event.stopPropagation();
     }
-    console.log('form uberhandlesubmit');
 
     this.handleBeforeSubmit()
       .then(values => this.handleSubmit(values))
@@ -255,13 +251,12 @@ export default class Form extends Component {
           errors,
         })),
       );
-    console.log('chain finished');
   }
 
   registerField({ name, getRef, getValue, setValue, validate, reset }) {
     this.fields = {
       ...this.fields,
-      [name]: { getRef, getValue, validate, reset },
+      [name]: { getRef, getValue, validate, reset, setValue },
     };
   }
 
@@ -271,8 +266,7 @@ export default class Form extends Component {
   }
 
   resetForm() {
-    console.log('resetForm', this.fields);
-
+    // @TODO not quite working for all cases
     Object.keys(this.fields).forEach(
       field => isFunction(this.fields[field].reset) && this.fields[field].reset(),
     );

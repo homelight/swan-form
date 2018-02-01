@@ -16,17 +16,14 @@ import noop from '@flow-form/helpers/dist/noop';
 import moveCursorToEnd from '@flow-form/helpers/dist/moveCursor';
 import { ENTER, TAB } from '@flow-form/helpers/dist/keyCodes';
 
-// const undefinedOrNull = val => val === undefined || val === null;
-
 function getInitialValue(props) {
   if (props.type === 'checkbox' && isObject(props)) {
     if (props.hasOwnProperty('checked')) {
       return !!props.checked;
     } else if (props.hasOwnProperty('defaultChecked')) {
       return !!props.defaultChecked;
-    } else {
-      return !!props.value;
     }
+    return !!props.value;
   }
   if (props.value) {
     return props.value;
@@ -90,7 +87,8 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         'validate',
         'runValidations',
         'isValid',
-        'preventSubmitOnEnter',
+        // 'preventSubmitOnEnter',
+        'handleKey', // @TODO temp
       ]);
     }
 
@@ -226,7 +224,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
 
       if (this.props.type === 'checkbox') {
         // @todo clean this up
-        const checked = event.target.checked;
+        const { checked } = event.target;
         return this.setValue(!!checked);
       }
 
@@ -281,9 +279,12 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       const { target } = event;
 
       // On most fields, add in a handler to prevent a form submit on enter
-      if (!['textarea', 'button', 'submit', 'reset'].includes(this.props.type)) {
-        document.addEventListener('keydown', this.preventSubmitOnEnter, false);
+      // if (!['textarea', 'button', 'submit', 'reset'].includes(this.props.type)) {
+      if (this.fieldRef) {
+        this.fieldRef.addEventListener('keydown', this.handleKey, false);
       }
+
+      // }
 
       // If this field has yet to be touched, then set it as touched
       if (this.state.isTouched === false) {
@@ -303,9 +304,12 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       const { onBlur, validate, asyncValidate } = this.props;
       const { target } = event;
 
-      if (!['textarea', 'button', 'submit', 'reset'].includes(this.props.type)) {
-        document.removeEventListener('keydown', this.preventSubmitOnEnter);
+      // if (!['textarea', 'button', 'submit', 'reset'].includes(this.props.type)) {
+      if (this.fieldRef) {
+        this.fieldRef.removeEventListener('keydown', this.handleKey);
       }
+
+      // }
 
       if (asyncValidate && validate) {
         this.validate();
@@ -341,6 +345,26 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       } else if (event.keyCode === TAB) {
         // Temporary. Consider passing a function in context or as a prop instead.
         event.preventDefault();
+      }
+    }
+
+    // This is a temporary solution
+    handleKey(event) {
+      const { name, type } = this.props;
+      const { handleKey, handleTab } = this.context;
+
+      if (event.keyCode === ENTER) {
+        if (!['textarea', 'button', 'submit', 'reset'].includes(type)) {
+          event.preventDefault();
+          if (isFunction(handleKey)) {
+            handleKey(ENTER, type, name, this.fieldRef);
+          }
+        }
+      } else if (event.keyCode === TAB && handleTab) {
+        event.preventDefault();
+        if (isFunction(handleKey)) {
+          handleKey(TAB, type, name, this.fieldRef);
+        }
       }
     }
 
@@ -541,7 +565,11 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       } = this.props;
 
       if (this.context.autoComplete === 'off') {
-        spreadProps.autoComplete = 'off';
+        // spreadProps.autoComplete = 'off';
+        // This spoofs autocomplete so it at least won't try to autocomplete
+        spreadProps.autoComplete = Math.random()
+          .toString(36)
+          .slice(-5);
       } else if (this.props.autoComplete) {
         spreadProps.autoComplete = this.props.autoComplete;
       }
@@ -554,11 +582,11 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       // @TODO consider taking this out and adding in a note in the README saying it won't work.
       //
       // If we update this condition to something other than Chrome, then we need to update the README.
-      if (spreadProps.autoComplete === 'off') {
-        if (global && global.navigator && global.navigator.appVersion.includes('Chrome')) {
-          spreadProps.autoComplete = 'nope';
-        }
-      }
+      // if (spreadProps.autoComplete === 'off') {
+      //   if (global && global.navigator && global.navigator.appVersion.includes('Chrome')) {
+      //     spreadProps.autoComplete = 'nope';
+      //   }
+      // }
 
       return (
         <WrappedComponent
@@ -595,6 +623,8 @@ function asField(WrappedComponent, wrapperOptions = {}) {
   asFieldWrapper.contextTypes = {
     registerField: PropTypes.func,
     unregisterField: PropTypes.func,
+    handleKey: PropTypes.func, // @TODO temp
+    handleTab: PropTypes.bool, // @TODO temp
     autoComplete: PropTypes.oneOf(['on', 'off']),
   };
 

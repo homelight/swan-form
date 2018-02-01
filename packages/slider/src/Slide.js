@@ -14,6 +14,7 @@ export default class Slide extends Component {
     children: PropTypes.oneOfType([PropTypes.node, PropTypes.element, PropTypes.string]).isRequired,
     className: PropTypes.string,
     getFormValues: PropTypes.func.isRequired,
+    afterSlide: PropTypes.func,
   };
 
   static defaultProps = {
@@ -31,6 +32,8 @@ export default class Slide extends Component {
   static childContextTypes = {
     registerField: PropTypes.func,
     unregisterField: PropTypes.func,
+    handleKey: PropTypes.func, // @TODO temp
+    handleTab: PropTypes.bool, // @TODO temp
   };
 
   constructor(props) {
@@ -45,7 +48,7 @@ export default class Slide extends Component {
     this.unregisterField = this.unregisterField.bind(this);
     this.fields = {};
 
-    autobind(this, ['setRef', 'isValid', 'registerField', 'unregisterField']);
+    autobind(this, ['setRef', 'isValid', 'registerField', 'unregisterField', 'handleKey']);
   }
 
   getChildContext() {
@@ -54,24 +57,26 @@ export default class Slide extends Component {
     return {
       registerField: this.registerField,
       unregisterField: this.unregisterField,
+      handleKey: this.handleKey, // @TODO temp
+      handleTab: true, // @TODO temp
     };
   }
 
   componentDidMount() {
     if (isFunction(this.context.registerSlide)) {
-      this.context.registerSlide({ index: this.props.index, isValid: this.isValid });
+      const { index, beforeExitOnce } = this.props;
+      this.context.registerSlide({ index, beforeExitOnce, isValid: this.isValid });
     }
   }
 
   componentWillReceiveProps(nextProps) {
     const { position } = this.props;
     const next = nextProps.position;
-
     if (position !== next) {
       this.setState({
         willExit: position === 'current',
-        willExitPrev: position === 'current' && next === 'before', // hitting the next button
-        willExitNext: position === 'current' && next === 'after', // hitting the prev button
+        willExitPrev: position === 'current' && next === 'prev', // hitting the next button
+        willExitNext: position === 'current' && next === 'next', // hitting the prev button
         willShow: next === 'current',
         hasShown: !this.state.hasShown ? next === 'current' : true,
         lastPosition: position,
@@ -82,7 +87,7 @@ export default class Slide extends Component {
   componentWillUpdate(nextProps, nextState) {
     if (nextState.willExitPrev) {
       if (isFunction(this.props.afterSlide)) {
-        this.props.afterSlide();
+        this.props.afterSlide({ values: this.props.getFormValues(), props: this.props.slideProps });
       }
     }
   }
@@ -95,6 +100,21 @@ export default class Slide extends Component {
   componentWillUnmount() {
     if (isFunction(this.context.unregisterSlide)) {
       this.context.unregisterSlide();
+    }
+  }
+
+  // this is a hack for tabs/enter @TODO temp
+  handleKey(keyCode, type, name, element) {
+    const keys = Object.keys(this.fields);
+    let focusNext = false;
+    for (let i = 0; i < keys.length; i++) {
+      if (keys[i] === name) {
+        focusNext = true;
+      } else if (focusNext) {
+        const nextEl = this.fields[keys[i]].getRef();
+        nextEl.focus();
+        break;
+      }
     }
   }
 
@@ -111,6 +131,7 @@ export default class Slide extends Component {
       [name]: {
         isValid,
         validate,
+        getRef,
       },
     };
   }
@@ -143,7 +164,6 @@ export default class Slide extends Component {
   }
 
   render() {
-    console.log('slide fields', this.props.index, this.fields);
     const { className, position } = this.props;
     const classNames = classes([
       className,

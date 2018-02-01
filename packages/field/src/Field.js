@@ -32,6 +32,9 @@ const INPUT_TYPES = [
   'week',
 ];
 
+// A list of input types not to wrap in a label
+const noWrap = ['button', 'hidden', 'reset', 'submit'];
+
 /* eslint-disable no-use-before-define */
 function renderOption(option) {
   // If the option is either a string or a number, then we'll use it for both the key and value.
@@ -261,6 +264,18 @@ class Field extends Component {
       );
     }
 
+    // Make sure we add a ref and a className to the unwrapped element
+    if (type === 'submit' || type === 'reset') {
+      return (
+        <input
+          type={type}
+          ref={setRef}
+          className={classes(['ff--field', className])}
+          {...spreadProps}
+        />
+      );
+    }
+
     if (type === 'checkbox' || type === 'radio') {
       /**
        * @TODO clean this up
@@ -299,7 +314,7 @@ class Field extends Component {
 
   render() {
     // Hidden fields are never wrapped in labels
-    if (this.props.type === 'hidden' || this.props.type === 'button') {
+    if (noWrap.includes(this.props.type)) {
       return this.renderField();
     }
     return this.maybeWrapInLabel(this.renderField());

@@ -6,8 +6,21 @@ import { Form } from '@flow-form/form';
 import autobind from '@flow-form/helpers/dist/autobind';
 import classes from '@flow-form/helpers/dist/classes';
 import Slide from './Slide';
+import { ENTER, TAB } from '@flow-form/helpers/dist/keyCodes';
 
-// import './Slider.css';
+/**
+ * @TODO  the slider / slides need to be thought out better in terms of nesting forms as well
+ *        as the actions taken in between slides. We need to have the option to dynamically
+ *        resize these things. Optionally, we might consider redoing it so that we can have
+ *        nested forms. Also, we need to fine a way to define a point of no return, as certain
+ *        actions taken (say, submit mid-flow) and how to handle that.
+ *
+ * @NOTE  Another approach to this (needs perf testing) would be not to render the slides when
+ *        they are off-screen. This would make it easier to pass props. Also, it seems that
+ *        we're missing a good way to define state between the slides. Right now, this works
+ *        well for simple forms or for asynchronous flows, but it's fragile. So, works in best
+ *        case scenario, but not for others.
+ */
 
 // this is a real dumb function. find a better way to do this
 function getPosition(slide, index) {
@@ -21,7 +34,6 @@ function getPosition(slide, index) {
 }
 
 // temp function; @todo fix the `Form` component so that it accepts handlers
-const onSubmit = values => console.log(values);
 const chevron = (size, rotation, color = '#000') => (
   <svg
     style={{
@@ -43,26 +55,36 @@ export default class Slider extends Component {
   static propTypes = {
     height: PropTypes.string,
     current: PropTypes.number,
-    onSubmit: PropTypes.func,
+    onSubmit: PropTypes.func.isRequired,
     beforeSubmit: PropTypes.func, // eslint-disable-line
     afterSubmit: PropTypes.func, // eslint-disable-line
     slides: PropTypes.arrayOf(
       PropTypes.shape({
         key: PropTypes.string.isRequired,
-        render: PropTypes.oneOfType([PropTypes.node, PropTypes.element, PropTypes.string])
-          .isRequired,
+        render: PropTypes.oneOfType([
+          PropTypes.func,
+          PropTypes.node,
+          PropTypes.element,
+          PropTypes.string,
+        ]).isRequired,
         shouldShowIf: PropTypes.func,
       }),
     ).isRequired,
     PrevButton: PropTypes.element, // eslint-disable-line
     NextButton: PropTypes.element, // eslint-disable-line
     autoComplete: PropTypes.oneOf(['on', 'off']),
+    /**
+     * If this object exists, all slides that are functions will be passed this object.
+     * @type {Object}
+     */
+    slideProps: PropTypes.object, // eslint-disable-line
   };
 
   static defaultProps = {
     height: '500px',
     current: 0,
     autoComplete: 'off',
+    slideProps: {},
   };
 
   static childContextTypes = {
@@ -88,6 +110,8 @@ export default class Slider extends Component {
     // Cache the style object so we can reuse it to avoid rerenders.
     this.height = { height: props.height };
     this.slides = {};
+
+    // Consider caching the this.props.slideProps or something.
 
     autobind(this, [
       'getFormValues',
@@ -127,11 +151,12 @@ export default class Slider extends Component {
     return {};
   }
 
-  registerSlide({ index, isValid }) {
+  registerSlide({ index, isValid, beforeExitOnce }) {
     this.slides = {
       ...this.slides,
       [index]: {
         isValid,
+        beforeExitOnce,
       },
     };
   }
@@ -165,7 +190,19 @@ export default class Slider extends Component {
   next() {
     const slide = this.slides[this.state.current];
     if (slide && isFunction(slide.isValid) && slide.isValid()) {
-      this.moveTo(this.findNextSlide());
+      // Ill-conceived/partially finished hook implementation
+      if (isFunction(slide.beforeExitOnce)) {
+        const values = this.form ? this.form.getValues() : {};
+        slide
+          .beforeExitOnce(values)
+          .then(() => {
+            this.moveTo(this.findNextSlide());
+          })
+          // @TODO remove this and have better error handling / fewer errors
+          .catch(console.error);
+      } else {
+        this.moveTo(this.findNextSlide());
+      }
     }
   }
 
@@ -209,7 +246,16 @@ export default class Slider extends Component {
   }
 
   render() {
-    const { PrevButton, NextButton } = this.props;
+    const {
+      PrevButton,
+      NextButton,
+      slideProps,
+      onSubmit,
+      beforeSubmit,
+      afterSubmit,
+      autoComplete,
+    } = this.props;
+
     return (
       <div className="ff--slider" style={this.height}>
         <button
@@ -234,6 +280,7 @@ export default class Slider extends Component {
           onSubmit={this.props.onSubmit}
           beforeSubmit={this.props.beforeSubmit}
           afterSubmit={this.props.afterSubmit}
+          autoComplete={this.props.autoComplete}
         >
           {this.props.slides.map((slide, index) => (
             <Slide
@@ -242,8 +289,13 @@ export default class Slider extends Component {
               index={index}
               position={getPosition(this.state.current, index)}
               getFormValues={this.getFormValues}
+              slideProps={slideProps}
+              afterSlide={slide.afterSlide}
+              beforeExitOnce={slide.beforeExitOnce}
             >
-              {slide.render}
+              {isFunction(slide.render)
+                ? slide.render({ getFormValues: this.getFormValues, ...slideProps })
+                : slide.render}
             </Slide>
           ))}
         </Form>
