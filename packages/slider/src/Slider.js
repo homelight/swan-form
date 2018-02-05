@@ -244,6 +244,15 @@ export default class Slider extends Component {
     return 0;
   }
 
+  mapSlideProps(slideProps) {
+    return {
+      getFormValues: this.getFormValues,
+      nextSlide: this.next,
+      prevSlide: this.prev,
+      ...slideProps,
+    };
+  }
+
   render() {
     const {
       PrevButton,
@@ -293,7 +302,7 @@ export default class Slider extends Component {
               beforeExitOnce={slide.beforeExitOnce}
             >
               {isFunction(slide.render)
-                ? slide.render({ getFormValues: this.getFormValues, ...slideProps })
+                ? slide.render(this.mapSlideProps(slideProps))
                 : slide.render}
             </Slide>
           ))}
