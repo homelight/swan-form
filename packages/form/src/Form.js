@@ -1,9 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
-import hasOwnProperty from '@flow-form/helpers/dist/hasOwnProperty';
-import autobind from '@flow-form/helpers/dist/autobind';
-import noErrors from '@flow-form/helpers/dist/noErrors';
+import { autobind, hasOwnProperty, noErrors } from '@flow-form/helpers';
 
 /**
  * Duck-type check for a promise

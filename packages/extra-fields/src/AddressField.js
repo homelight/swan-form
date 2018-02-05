@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { asField, Field } from '@flow-form/field';
 import isFunction from 'lodash/isFunction';
-import autobind from '@flow-form/helpers/dist/autobind';
+import { autobind } from '@flow-form/helpers';
 
 const states = [
   '----',

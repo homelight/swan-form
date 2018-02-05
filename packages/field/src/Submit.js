@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
-import classes from '@flow-form/helpers/dist/classes';
+import { classes } from '@flow-form/helpers';
 import Field from './Field';
 
 export default class Submit extends Component {

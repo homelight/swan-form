@@ -1,1 +1,3 @@
-export AddressField from './AddressField';
+import AddressField from './AddressField';
+
+export { AddressField };

@@ -8,13 +8,16 @@ import isEqual from 'lodash/isEqual';
 import isFunction from 'lodash/isFunction';
 import isObject from 'lodash/isObject';
 
-import autobind from '@flow-form/helpers/dist/autobind';
-import runValidations from '@flow-form/helpers/dist/runValidations';
-import noErrors from '@flow-form/helpers/dist/noErrors';
-import hasErrors from '@flow-form/helpers/dist/hasErrors';
-import noop from '@flow-form/helpers/dist/noop';
-import moveCursorToEnd from '@flow-form/helpers/dist/moveCursor';
-import { ENTER, TAB } from '@flow-form/helpers/dist/keyCodes';
+import {
+  autobind,
+  runValidations,
+  noErrors,
+  hasErrors,
+  noop,
+  moveCursorToEnd,
+  keyCodes,
+} from '@flow-form/helpers';
+const { ENTER, TAB } = keyCodes;
 
 function getInitialValue(props) {
   if (props.type === 'checkbox' && isObject(props)) {

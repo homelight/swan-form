@@ -3,10 +3,9 @@ import PropTypes from 'prop-types';
 import clamp from 'lodash/clamp';
 import isFunction from 'lodash/isFunction';
 import { Form } from '@flow-form/form';
-import autobind from '@flow-form/helpers/dist/autobind';
-import classes from '@flow-form/helpers/dist/classes';
+import { autobind, classes, keyCodes } from '@flow-form/helpers';
 import Slide from './Slide';
-import { ENTER, TAB } from '@flow-form/helpers/dist/keyCodes';
+const { ENTER, TAB } = keyCodes;
 
 /**
  * @TODO  the slider / slides need to be thought out better in terms of nesting forms as well

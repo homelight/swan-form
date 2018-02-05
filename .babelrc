@@ -2,7 +2,7 @@
   "presets": [
     [
       "@babel/env", {
-        "targets": [ "IE 11", ">1%" ],
+        "targets": [ "IE 9", ">1%" ],
         "modules": false
       }
     ],
@@ -12,7 +12,18 @@
   "env": {
     "production": {
       "plugins": [
-      "transform-react-remove-prop-types"
+        "transform-react-remove-prop-types",
+        "transform-es2015-modules-commonjs"
+      ],
+      "presets": [
+        [
+          "@babel/env", {
+            "targets": [ "IE 9", ">1%" ],
+            "modules": false
+          }
+        ],
+        "@babel/stage-0",
+        "@babel/react"
       ]
     },
     "test": {

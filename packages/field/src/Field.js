@@ -2,10 +2,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import isObject from 'lodash/isObject';
-import hasOwnProperty from '@flow-form/helpers/dist/hasOwnProperty';
-import classes from '@flow-form/helpers/dist/classes';
+import { hasOwnProperty, classes, noop } from '@flow-form/helpers';
 import asField from './asField';
-import noop from '@flow-form/helpers/dist/noop';
 
 const INPUT_TYPES = [
   'button',
@@ -248,7 +246,11 @@ class Field extends Component {
       if (children) {
         // If there are children, use a button node rather than an input`type=button`.
         return (
-          <button ref={setRef} className={classes(['ff--field', className])} {...spreadProps}>
+          <button
+            ref={setRef}
+            className={classes(['ff--field', 'ff--type-button', className])}
+            {...spreadProps}
+          >
             {children}
           </button>
         );
@@ -258,7 +260,7 @@ class Field extends Component {
         <input
           type="button"
           ref={setRef}
-          className={classes(['ff--field', className])}
+          className={classes(['ff--field', 'ff--type-button', className])}
           {...spreadProps}
         />
       );

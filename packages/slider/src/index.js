@@ -1,2 +1,4 @@
-export Slider from './Slider';
-export Slide from './Slide';
+import Slider from './Slider';
+import Slide from './Slide';
+
+export { Slider, Slide };

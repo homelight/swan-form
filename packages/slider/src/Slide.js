@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import autobind from '@flow-form/helpers/dist/autobind';
 import isFunction from 'lodash/isFunction';
-import classes from '@flow-form/helpers/dist/classes';
+import { autobind, classes } from '@flow-form/helpers';
 
 const alwaysTrue = () => true;
 

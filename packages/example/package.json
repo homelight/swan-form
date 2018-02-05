@@ -7,7 +7,7 @@
     "url": "https://github.com/helloeave/flow-form.git"
   },
   "scripts": {
-    "build": "react-scripts build",
+    "build": "echo ignoring: react-scripts build",
     "eject": "react-scripts eject",
     "start": "PORT=1337 react-scripts start",
     "test": "react-scripts test --env=jsdom"

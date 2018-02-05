@@ -1,5 +1,7 @@
-export Field from './Field';
-export Reset from './Reset';
-export Submit from './Submit';
-export asField from './asField';
-export Radios from './Radios';
+import Field from './Field';
+import Reset from './Reset';
+import Submit from './Submit';
+import asField from './asField';
+import Radios from './Radios';
+
+export { Field, Reset, Submit, asField, Radios };

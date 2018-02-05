@@ -1,7 +1,7 @@
 /* eslint-disable react/prefer-stateless-function, jsx-a11y/label-has-for */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import classes from '@flow-form/helpers/dist/classes';
+import { classes } from '@flow-form/helpers';
 import asField from './asField';
 
 class Radios extends Component {
