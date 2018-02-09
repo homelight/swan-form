@@ -80,7 +80,7 @@ export default class Slider extends Component {
   };
 
   static defaultProps = {
-    height: '500px',
+    height: 'auto', // @todo temp fallback
     current: 0,
     autoComplete: 'off',
     slideProps: {},
@@ -104,10 +104,10 @@ export default class Slider extends Component {
     }
     this.state = {
       current: clamp(props.current, 0, props.slides.length) || 0,
+      height: props.height,
     };
 
     // Cache the style object so we can reuse it to avoid rerenders.
-    this.height = { height: props.height };
     this.slides = {};
 
     // Consider caching the this.props.slideProps or something.
@@ -132,15 +132,16 @@ export default class Slider extends Component {
     };
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    return this.props !== nextProps || this.state.current !== nextState.current;
+  componentDidMount() {
+    const slideRef = this.slides[this.state.current].getRef();
+    this.setState(prevState => ({
+      ...prevState,
+      heightZZ: `${slideRef.scrollHeight}px`,
+    }));
   }
 
-  componentWillUpdate(nextProps) {
-    // If the height changes, then we will have to change the style object
-    if (nextProps.height !== this.props.height) {
-      this.height = { height: nextProps.height };
-    }
+  shouldComponentUpdate(nextProps, nextState) {
+    return this.props !== nextProps || this.state.current !== nextState.current;
   }
 
   getFormValues() {
@@ -150,12 +151,13 @@ export default class Slider extends Component {
     return {};
   }
 
-  registerSlide({ index, isValid, beforeExitOnce }) {
+  registerSlide({ index, isValid, beforeExitOnce, getRef }) {
     this.slides = {
       ...this.slides,
       [index]: {
         isValid,
         beforeExitOnce,
+        getRef,
       },
     };
   }
@@ -176,8 +178,10 @@ export default class Slider extends Component {
   }
 
   moveTo(index) {
+    const nextSlideRef = this.slides[index].getRef();
     this.setState(prevState => ({
       ...prevState,
+      height: `${nextSlideRef.scrollHeight}px`,
       current: index,
     }));
   }
@@ -207,8 +211,8 @@ export default class Slider extends Component {
 
   findNextSlide() {
     const { current } = this.state;
-    const formValues = this.form ? this.form.getValues() : {};
-    const length = this.props.slides.length;
+    const formValues = this.form && isFunction(this.form.getValues) ? this.form.getValues() : {};
+    const length = this.props.slides.length; // eslint-disable-line
     for (let i = current + 1; i <= length - 1; i++) {
       const slide = this.props.slides[i];
       if (isFunction(slide.shouldShowIf)) {
@@ -219,7 +223,11 @@ export default class Slider extends Component {
         return i;
       }
     }
-    this.form.submit();
+    if (this && this.form) {
+      // currently, we're using this in a way that sometimes we kill the context
+      this.form.submit();
+    }
+
     // somehow, we're done.
     // so, we should do a form submit?
     // For now, we'll just move to the last slide, regardless.
@@ -264,8 +272,9 @@ export default class Slider extends Component {
       autoComplete,
     } = this.props;
 
+    // style={this.height}
     return (
-      <div className="ff--slider" style={this.height}>
+      <div className="ff--slider" style={{ height: this.state.height }}>
         <button
           onClick={this.prev}
           className={classes([

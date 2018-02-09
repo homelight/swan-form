@@ -360,13 +360,15 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         if (!['textarea', 'button', 'submit', 'reset'].includes(type)) {
           event.preventDefault();
           if (isFunction(handleKey)) {
-            handleKey(ENTER, type, name, this.fieldRef);
+            const { shiftKey, ctrlKey, altKey } = event;
+            handleKey(ENTER, { shiftKey, ctrlKey, altKey }, type, name, this.fieldRef);
           }
         }
       } else if (event.keyCode === TAB && handleTab) {
         event.preventDefault();
         if (isFunction(handleKey)) {
-          handleKey(TAB, type, name, this.fieldRef);
+          const { shiftKey, ctrlKey, altKey } = event;
+          handleKey(TAB, { shiftKey, ctrlKey, altKey }, type, name, this.fieldRef);
         }
       }
     }

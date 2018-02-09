@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
-import { autobind, classes } from '@flow-form/helpers';
+import { autobind, classes, keyCodes } from '@flow-form/helpers';
+
+const { ENTER, TAB } = keyCodes;
 
 const alwaysTrue = () => true;
 
@@ -47,7 +49,14 @@ export default class Slide extends Component {
     this.unregisterField = this.unregisterField.bind(this);
     this.fields = {};
 
-    autobind(this, ['setRef', 'isValid', 'registerField', 'unregisterField', 'handleKey']);
+    autobind(this, [
+      'setRef',
+      'getRef',
+      'isValid',
+      'registerField',
+      'unregisterField',
+      'handleKey',
+    ]);
   }
 
   getChildContext() {
@@ -64,7 +73,16 @@ export default class Slide extends Component {
   componentDidMount() {
     if (isFunction(this.context.registerSlide)) {
       const { index, beforeExitOnce } = this.props;
-      this.context.registerSlide({ index, beforeExitOnce, isValid: this.isValid });
+      this.context.registerSlide({
+        index,
+        beforeExitOnce,
+        isValid: this.isValid,
+        getRef: this.getRef,
+      });
+    }
+    if (this.props.position === 'current' && this.fields[0]) {
+      const firstField = this.fields[0].getRef();
+      firstField.focus();
     }
   }
 
@@ -96,6 +114,13 @@ export default class Slide extends Component {
     return this.props !== nextProps;
   }
 
+  componentDidUpdate() {
+    if (this.props.position === 'current' && this.fields[0]) {
+      const firstField = this.fields[0].getRef();
+      firstField.focus();
+    }
+  }
+
   componentWillUnmount() {
     if (isFunction(this.context.unregisterSlide)) {
       this.context.unregisterSlide();
@@ -103,22 +128,40 @@ export default class Slide extends Component {
   }
 
   // this is a hack for tabs/enter @TODO temp
-  handleKey(keyCode, type, name, element) {
+  handleKey(keyCode, modifiers, type, name, element) {
     const keys = Object.keys(this.fields);
     let focusNext = false;
-    for (let i = 0; i < keys.length; i++) {
-      if (keys[i] === name) {
-        focusNext = true;
-      } else if (focusNext) {
-        const nextEl = this.fields[keys[i]].getRef();
-        nextEl.focus();
-        break;
+    if (keyCode === ENTER || keyCode === TAB) {
+      if (modifiers.shiftKey) {
+        for (let i = keys.length - 1; i >= 0; i--) {
+          if (keys[i] === name) {
+            focusNext = true;
+          } else if (focusNext) {
+            const nextEl = this.fields[keys[i]].getRef();
+            nextEl.focus();
+            break;
+          }
+        }
+      } else {
+        for (let i = 0; i < keys.length; i++) {
+          if (keys[i] === name) {
+            focusNext = true;
+          } else if (focusNext) {
+            const nextEl = this.fields[keys[i]].getRef();
+            nextEl.focus();
+            break;
+          }
+        }
       }
     }
   }
 
   setRef(el) {
     this.ref = el;
+  }
+
+  getRef(el) {
+    return this.ref;
   }
 
   registerField({ name, getRef, getValue, setValue, validate, reset, isValid }) {
