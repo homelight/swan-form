@@ -105,6 +105,9 @@ export default class Slider extends Component {
     this.state = {
       current: clamp(props.current, 0, props.slides.length) || 0,
       height: props.height,
+      // Since we're exiting out of this a lot early, we need to track this internally
+      // @todo find a better way
+      isMounted: true,
     };
 
     // Cache the style object so we can reuse it to avoid rerenders.
@@ -134,9 +137,11 @@ export default class Slider extends Component {
 
   componentDidMount() {
     const slideRef = this.slides[this.state.current].getRef();
+    // need to find a better place to put this rather than CDM. Ideally, in cWillMount, but
+    // I don't think we have access to the slide refs yet.
     this.setState(prevState => ({
       ...prevState,
-      heightZZ: `${slideRef.scrollHeight}px`,
+      height: `${slideRef.scrollHeight}px`,
     }));
   }
 
@@ -144,19 +149,28 @@ export default class Slider extends Component {
     return this.props !== nextProps || this.state.current !== nextState.current;
   }
 
+  componentWillUnmount() {
+    this.setState({ isMounted: false });
+  }
+
   getFormValues() {
+    if (!this.state.isMounted) {
+      return {};
+    }
+
     if (this.form && isFunction(this.form.getValues)) {
       return this.form.getValues();
     }
+
     return {};
   }
 
-  registerSlide({ index, isValid, beforeExitOnce, getRef }) {
+  registerSlide({ index, isValid, beforeExit, getRef }) {
     this.slides = {
       ...this.slides,
       [index]: {
         isValid,
-        beforeExitOnce,
+        beforeExit,
         getRef,
       },
     };
@@ -178,6 +192,10 @@ export default class Slider extends Component {
   }
 
   moveTo(index) {
+    if (!this.state.isMounted) {
+      return;
+    }
+
     const nextSlideRef = this.slides[index].getRef();
     this.setState(prevState => ({
       ...prevState,
@@ -194,12 +212,14 @@ export default class Slider extends Component {
     const slide = this.slides[this.state.current];
     if (slide && isFunction(slide.isValid) && slide.isValid()) {
       // Ill-conceived/partially finished hook implementation
-      if (isFunction(slide.beforeExitOnce)) {
+      if (isFunction(slide.beforeExit)) {
         const values = this.form ? this.form.getValues() : {};
         slide
-          .beforeExitOnce(values)
-          .then(() => {
-            this.moveTo(this.findNextSlide());
+          .beforeExit({ values, props: this.props })
+          .then((keepGoing = true) => {
+            if (keepGoing) {
+              this.moveTo(this.findNextSlide());
+            }
           })
           // @TODO remove this and have better error handling / fewer errors
           .catch(console.error);
@@ -210,8 +230,13 @@ export default class Slider extends Component {
   }
 
   findNextSlide() {
-    const { current } = this.state;
-    const formValues = this.form && isFunction(this.form.getValues) ? this.form.getValues() : {};
+    const { current, isMounted } = this.state;
+    if (!isMounted) {
+      // @todo temp fix
+      return 0;
+    }
+
+    const formValues = isFunction(this.form.getValues) ? this.form.getValues() : {};
     const length = this.props.slides.length; // eslint-disable-line
     for (let i = current + 1; i <= length - 1; i++) {
       const slide = this.props.slides[i];
@@ -294,10 +319,10 @@ export default class Slider extends Component {
         </button>
         <Form
           name="slider-form"
-          onSubmit={this.props.onSubmit}
-          beforeSubmit={this.props.beforeSubmit}
-          afterSubmit={this.props.afterSubmit}
-          autoComplete={this.props.autoComplete}
+          onSubmit={onSubmit}
+          beforeSubmit={beforeSubmit}
+          afterSubmit={afterSubmit}
+          autoComplete={autoComplete}
         >
           {this.props.slides.map((slide, index) => (
             <Slide
@@ -308,7 +333,7 @@ export default class Slider extends Component {
               getFormValues={this.getFormValues}
               slideProps={slideProps}
               afterSlide={slide.afterSlide}
-              beforeExitOnce={slide.beforeExitOnce}
+              beforeExit={slide.beforeExit}
             >
               {isFunction(slide.render)
                 ? slide.render(this.mapSlideProps(slideProps))

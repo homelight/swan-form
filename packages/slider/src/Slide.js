@@ -72,10 +72,10 @@ export default class Slide extends Component {
 
   componentDidMount() {
     if (isFunction(this.context.registerSlide)) {
-      const { index, beforeExitOnce } = this.props;
+      const { index, beforeExit } = this.props;
       this.context.registerSlide({
         index,
-        beforeExitOnce,
+        beforeExit,
         isValid: this.isValid,
         getRef: this.getRef,
       });
