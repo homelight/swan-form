@@ -84,6 +84,7 @@ export default class Form extends Component {
 
     // Fill out with all the things
     this.state = {
+      isMounted: true,
       isSubmitting: false,
       hasSubmitted: false,
       hasSubmitError: false,
@@ -136,6 +137,9 @@ export default class Form extends Component {
     if (this.context && isFunction(this.context.unregisterForm)) {
       this.context.unregisterForm(this.props.name);
     }
+    this.setState({
+      isMounted: false,
+    });
   }
 
   setRef(el) {
@@ -178,6 +182,9 @@ export default class Form extends Component {
     }));
 
     return new Promise((res, rej) => {
+      if (!this.state.isMounted) {
+        return res({});
+      }
       // First, synchronously validate all the fields. `required` and `pattern` fields that
       // latch onto the native browser events will block the submit event, so we care only
       // about user supplied validation functions. This will also make field errors appear
