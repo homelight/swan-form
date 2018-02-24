@@ -17,6 +17,7 @@ import {
   moveCursorToEnd,
   keyCodes,
 } from '@flow-form/helpers';
+
 const { ENTER, TAB } = keyCodes;
 
 function getInitialValue(props) {
@@ -428,8 +429,8 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         let cursor;
 
         if (Array.isArray(formatted)) {
-          const [val, cursor] = formatted;
-          newValue = val;
+          newValue = val[0];
+          cursor = formatted[1];
         }
 
         // Call user supplied function if given

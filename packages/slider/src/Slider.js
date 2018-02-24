@@ -249,11 +249,8 @@ export default class Slider extends Component {
       }
     }
     if (isMounted && this.form && isFunction(this.form.submit)) {
-      console.log('trying to submit form');
       // currently, we're using this in a way that sometimes we kill the context
       this.form.submit();
-    } else {
-      console.error('Trying to submit form, but not all exists', isMounted, this.form);
     }
 
     // somehow, we're done.
