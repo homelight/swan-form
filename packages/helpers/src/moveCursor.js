@@ -8,7 +8,7 @@
  * @param  {[type]} el [description]
  * @return {[type]}    [description]
  */
-export default function moveCursorToEnd(el) {
+export default function moveCursor(el) {
   /* eslint-disable no-param-reassign */
   if (typeof el.selectionStart === 'number') {
     el.selectionStart = el.value.length;
