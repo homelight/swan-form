@@ -14,7 +14,7 @@ import {
   noErrors,
   hasErrors,
   noop,
-  moveCursorToEnd,
+  moveCursor,
   keyCodes,
 } from '@flow-form/helpers';
 
@@ -118,7 +118,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         // Actually focus on the field
         this.fieldRef.focus();
         // Move the cursor to the end of the input if there is a value
-        moveCursorToEnd(this.fieldRef);
+        moveCursor(this.fieldRef);
       }
     }
 
