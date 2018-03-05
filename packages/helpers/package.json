@@ -10,7 +10,7 @@
       "url": "https://github.com/shawnrice"
     }
   ],
-  "main": "index.js",
+  "main": "dist/index.js",
   "module": "dist/index.es.js",
   "jsnext:main": "dist/index.es.js",
   "repository": {
