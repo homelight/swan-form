@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
-import { autobind, hasOwnProperty, noErrors } from '@flow-form/helpers';
+import { hasOwnProperty, noErrors } from '@flow-form/helpers';
 
 /**
  * Duck-type check for a promise
@@ -47,7 +47,7 @@ export default class Form extends Component {
     /**
      * The form should have some fields
      */
-    children: PropTypes.any.isRequired,
+    children: PropTypes.any.isRequired, // eslint-disable-line
   };
 
   static defaultProps = {
@@ -96,19 +96,6 @@ export default class Form extends Component {
     // of these in `state` because that would cause unnecessary re-renders and be quite
     // annoying.
     this.fields = {};
-
-    autobind(this, [
-      'getValues',
-      'handleAfterSubmit',
-      'handleBeforeSubmit',
-      'handleOnSubmit',
-      'handleSubmit',
-      'resetForm',
-      'setRef',
-      'registerField',
-      'unregsiterField',
-    ]);
-
     this.isSubmitting = this.getValue.bind(this, 'isSubmitting');
   }
 
@@ -142,18 +129,18 @@ export default class Form extends Component {
     });
   }
 
-  setRef(el) {
+  setRef = el => {
     this.form = el;
-  }
+  };
 
-  getValue(key) {
+  getValue = key => {
     if (hasOwnProperty(this.state, key)) {
       return this.state[key];
     }
     return null;
-  }
+  };
 
-  getValues() {
+  getValues = () => {
     return Object.keys(this.fields)
       .filter(field => !fieldToRemove.includes(field))
       .reduce(
@@ -163,7 +150,7 @@ export default class Form extends Component {
         }),
         {},
       );
-  }
+  };
 
   getSpreadProps() {
     return ['noValidate'].reduce((acc, prop) => {
@@ -174,7 +161,7 @@ export default class Form extends Component {
     }, {});
   }
 
-  handleBeforeSubmit() {
+  handleBeforeSubmit = () => {
     // Update the state to show that we are currently submitting.
     this.setState(prevState => ({
       ...prevState,
@@ -207,9 +194,9 @@ export default class Form extends Component {
       }
       return res(values);
     });
-  }
+  };
 
-  handleAfterSubmit(values) {
+  handleAfterSubmit = values => {
     const { afterSubmit } = this.props;
     this.setState(prevState => ({
       ...prevState,
@@ -229,14 +216,14 @@ export default class Form extends Component {
     }
     // Resolve the promise with the values.
     return Promise.resolve(values);
-  }
+  };
 
-  handleSubmit(values) {
+  handleSubmit = values => {
     const result = this.props.onSubmit(values);
     return isPromise(result) ? result : Promise.resolve(result);
-  }
+  };
 
-  handleOnSubmit(event) {
+  handleOnSubmit = event => {
     // We can call this event manually, so, we might not always have an event
     if (event) {
       // Prevent the form from doing anything native
@@ -256,26 +243,26 @@ export default class Form extends Component {
           errors,
         })),
       );
-  }
+  };
 
-  registerField({ name, getRef, getValue, setValue, validate, reset }) {
+  registerField = ({ name, getRef, getValue, setValue, validate, reset }) => {
     this.fields = {
       ...this.fields,
       [name]: { getRef, getValue, validate, reset, setValue },
     };
-  }
+  };
 
-  unregsiterField(name) {
+  unregsiterField = name => {
     const { [name]: removed, ...remaining } = this.fields;
     this.fields = remaining;
-  }
+  };
 
-  resetForm() {
+  resetForm = () => {
     // @TODO not quite working for all cases
     Object.keys(this.fields).forEach(
       field => isFunction(this.fields[field].reset) && this.fields[field].reset(),
     );
-  }
+  };
 
   render() {
     const { autoComplete, children } = this.props;
