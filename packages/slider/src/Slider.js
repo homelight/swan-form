@@ -5,6 +5,7 @@ import isFunction from 'lodash/isFunction';
 import { Form } from '@flow-form/form';
 import { autobind, classes, keyCodes } from '@flow-form/helpers';
 import Slide from './Slide';
+
 const { ENTER, TAB } = keyCodes;
 
 /**
@@ -72,6 +73,7 @@ export default class Slider extends Component {
     PrevButton: PropTypes.element, // eslint-disable-line
     NextButton: PropTypes.element, // eslint-disable-line
     autoComplete: PropTypes.oneOf(['on', 'off']),
+    windowed: PropTypes.bool,
     /**
      * If this object exists, all slides that are functions will be passed this object.
      * @type {Object}
@@ -84,6 +86,7 @@ export default class Slider extends Component {
     current: 0,
     autoComplete: 'off',
     slideProps: {},
+    windowed: true,
   };
 
   static childContextTypes = {
@@ -136,12 +139,12 @@ export default class Slider extends Component {
   }
 
   componentDidMount() {
-    const slideRef = this.slides[this.state.current].getRef();
+    // const slideRef = this.slides[this.state.current].getRef();
     // need to find a better place to put this rather than CDM. Ideally, in cWillMount, but
     // I don't think we have access to the slide refs yet.
     this.setState(prevState => ({
       ...prevState,
-      height: `${slideRef.scrollHeight}px`,
+      // height: `${slideRef.scrollHeight}px`,
     }));
   }
 
@@ -196,10 +199,10 @@ export default class Slider extends Component {
       return;
     }
 
-    const nextSlideRef = this.slides[index].getRef();
+    // const nextSlideRef = this.slides[index].getRef();
     this.setState(prevState => ({
       ...prevState,
-      height: `${nextSlideRef.scrollHeight}px`,
+      // height: `${nextSlideRef.scrollHeight}px`,
       current: index,
     }));
   }
@@ -290,14 +293,67 @@ export default class Slider extends Component {
     const {
       PrevButton,
       NextButton,
-      slideProps,
-      onSubmit,
-      beforeSubmit,
       afterSubmit,
       autoComplete,
+      beforeSubmit,
+      onSubmit,
+      slideProps,
+      windowed,
+      slides,
     } = this.props;
 
-    // style={this.height}
+    const { current } = this.state;
+
+    if (windowed) {
+      const slide = slides[current];
+      const key = current;
+      const index = current;
+      return (
+        <div className="ff--slider" style={{ height: this.state.height }}>
+          <button
+            onClick={this.prev}
+            className={classes([
+              'ff--slider--control',
+              'ff--slider--control--left',
+              this.state.current === 0 && 'ff--slider--control--disabled',
+            ])}
+            disabled={this.state.current === 0}
+          >
+            {PrevButton || prevChevron}
+          </button>
+          <button
+            onClick={this.next}
+            className={classes(['ff--slider--control', 'ff--slider--control--right'])}
+          >
+            {NextButton || nextChevron}
+          </button>
+          <Form
+            name="slider-form"
+            onSubmit={onSubmit}
+            beforeSubmit={beforeSubmit}
+            afterSubmit={afterSubmit}
+            autoComplete={autoComplete}
+            keepUnmountedFieldValues={windowed}
+          >
+            <Slide
+              key={slide.key || index}
+              shouldShowIf={isFunction(slide.shouldShowIf) ? slide.shouldShowIf : alwaysTrue}
+              index={index}
+              position={getPosition(this.state.current, index)}
+              getFormValues={this.getFormValues}
+              slideProps={slideProps}
+              afterSlide={slide.afterSlide}
+              beforeExit={slide.beforeExit}
+            >
+              {isFunction(slide.render)
+                ? slide.render(this.mapSlideProps(slideProps))
+                : slide.render}
+            </Slide>
+          </Form>
+        </div>
+      );
+    }
+
     return (
       <div className="ff--slider" style={{ height: this.state.height }}>
         <button
@@ -323,6 +379,7 @@ export default class Slider extends Component {
           beforeSubmit={beforeSubmit}
           afterSubmit={afterSubmit}
           autoComplete={autoComplete}
+          keepUnmountedFieldValues={windowed}
         >
           {this.props.slides.map((slide, index) => (
             <Slide

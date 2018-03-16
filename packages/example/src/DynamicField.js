@@ -8,7 +8,7 @@ class EditableDisplay extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isEditing: false,
+      editing: false,
       value: props.value,
     };
     this.onClick = this.onClick.bind(this);
@@ -18,7 +18,7 @@ class EditableDisplay extends Component {
   onClick() {
     this.setState(prevState => ({
       ...prevState,
-      isEditing: true,
+      editing: true,
     }));
   }
 
@@ -30,14 +30,14 @@ class EditableDisplay extends Component {
     this.props.onChange({ name: this.props.name, value: target.value });
     this.setState(prevState => ({
       ...prevState,
+      editing: false,
       value: target.value,
-      isEditing: false,
     }));
   }
 
   render() {
     const { name, type } = this.props;
-    if (this.state.isEditing) {
+    if (this.state.editing) {
       return (
         <Field
           type={type || 'text'}

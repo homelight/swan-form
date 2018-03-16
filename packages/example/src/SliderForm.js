@@ -21,10 +21,11 @@ export default class SliderForm extends Component {
         <Slider
           beforeSubmit={beforeSubmit}
           onSubmit={onSubmit}
+          windowed
           slides={[
             {
               key: 'first',
-              render: (
+              render: props => (
                 <div>
                   <h1>A first question</h1>
                   <Field
@@ -32,6 +33,7 @@ export default class SliderForm extends Component {
                     name="first-question"
                     validate={required}
                     size={50}
+                    value={props.getFormValues()['first-question']}
                     placeholder="This field is required"
                   />
                   <p>
@@ -49,7 +51,7 @@ export default class SliderForm extends Component {
             },
             {
               key: 'second',
-              render: (
+              render: props => (
                 <div>
                   <h2>Decision Tree</h2>
                   <p>
@@ -64,6 +66,7 @@ export default class SliderForm extends Component {
                       { label: 'Next Slide', value: '0' },
                       { label: 'The Other One', value: '1' },
                     ]}
+                    value={props.getFormValues()['decisionTree']}
                   />
                 </div>
               ),
@@ -90,8 +93,9 @@ export default class SliderForm extends Component {
             },
             {
               key: 'fourth',
-              render: (
+              render: props => (
                 <div>
+                  <pre>{JSON.stringify(props.getFormValues(), null, 2)}</pre>
                   <h2>I will show, and I&apos;m the last slide</h2>
                   <Submit onSubmit={onSubmit} />
                 </div>

@@ -48,11 +48,14 @@ export default class Form extends Component {
      * The form should have some fields
      */
     children: PropTypes.any.isRequired, // eslint-disable-line
+
+    keepUnmountedFieldValues: PropTypes.bool,
   };
 
   static defaultProps = {
     autoComplete: 'on',
     noValidate: false,
+    keepUnmountedFieldValues: false,
   };
 
   static contextTypes = {
@@ -89,6 +92,7 @@ export default class Form extends Component {
       hasSubmitted: false,
       hasSubmitError: false,
       errors: noErrors,
+      values: {},
     };
 
     // This isn't a pure component by any means. We're going to create an object to keep track
@@ -140,17 +144,22 @@ export default class Form extends Component {
     return null;
   };
 
-  getValues = () => {
-    return Object.keys(this.fields)
+  getValues = () => ({
+    // If there are any persisted values, hold onto them
+    ...this.state.values,
+    // Get the current values from each field accesor
+    ...Object.keys(this.fields)
+      // Remove some preset fields
       .filter(field => !fieldToRemove.includes(field))
+      // Turn it into an object
       .reduce(
         (acc, field) => ({
           ...acc,
           [field]: this.fields[field].getValue(),
         }),
         {},
-      );
-  };
+      ),
+  });
 
   getSpreadProps() {
     return ['noValidate'].reduce((acc, prop) => {
@@ -255,6 +264,19 @@ export default class Form extends Component {
   unregsiterField = name => {
     const { [name]: removed, ...remaining } = this.fields;
     this.fields = remaining;
+
+    // If we were instructed to hold onto values that were being removed, then store them
+    // in the form's state for later access. Note: these can't be validated in the same way.
+    if (this.props.keepUnmountedFieldValues) {
+      const value = removed.getValue();
+      this.setState(prevState => ({
+        ...prevState,
+        values: {
+          ...prevState.values,
+          [name]: value,
+        },
+      }));
+    }
   };
 
   resetForm = () => {
