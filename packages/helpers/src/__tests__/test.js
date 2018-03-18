@@ -1,5 +1,5 @@
 /* global describe, it, expect */
-import { hasErrors, runValidations, noErrors, noop, hasOwnProperty, classes, autobind } from '../';
+import { hasErrors, runValidations, noErrors, noop, hasOwnProperty, classes } from '../';
 
 describe('Shared helper functions tests', () => {
   it('hasErrors should filter all `[false, false, false]` to be false', () => {
@@ -45,7 +45,7 @@ describe('Shared helper functions tests', () => {
   });
 
   it('runValidations with fn that returns array to pass', () => {
-    const validate = value => [!value.length > 2, !!!value];
+    const validate = value => [!value.length > 2, !value];
     expect(runValidations(validate, 'test')).toEqual(expect.arrayContaining([false, false]));
   });
 

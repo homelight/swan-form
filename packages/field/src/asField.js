@@ -9,22 +9,22 @@ import isFunction from 'lodash/isFunction';
 import isObject from 'lodash/isObject';
 
 import {
-  autobind,
-  runValidations,
-  noErrors,
   hasErrors,
-  noop,
-  moveCursor,
+  hasOwnProperty,
   keyCodes,
+  moveCursor,
+  noErrors,
+  noop,
+  runValidations,
 } from '@flow-form/helpers';
 
 const { ENTER, TAB } = keyCodes;
 
 function getInitialValue(props) {
   if (props.type === 'checkbox' && isObject(props)) {
-    if (props.hasOwnProperty('checked')) {
+    if (hasOwnProperty(props, 'checked')) {
       return !!props.checked;
-    } else if (props.hasOwnProperty('defaultChecked')) {
+    } else if (hasOwnProperty(props, 'defaultChecked')) {
       return !!props.defaultChecked;
     }
     return !!props.value;
@@ -70,30 +70,6 @@ function asField(WrappedComponent, wrapperOptions = {}) {
 
       // This is used for debouncing validate functions while typing
       this.debounceValidateTimer = null;
-
-      autobind(this, [
-        // Bind some handlers for use with events
-        'onChange',
-        'onClick',
-        'onBlur',
-        'onFocus',
-        'setRef',
-        'getRef',
-
-        'register',
-        'unregister',
-
-        // Bind these so that parental compenents can use them
-        'getValue',
-        'setValue',
-        // In case we need to reset the field
-        'reset',
-        'validate',
-        'runValidations',
-        'isValid',
-        // 'preventSubmitOnEnter',
-        'handleKey', // @TODO temp
-      ]);
     }
 
     getChildContext() {
@@ -171,7 +147,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * Use the registration function passed by context
      * @return {void}
      */
-    register() {
+    register = () => {
       if (!this.props.name) {
         // If there is no name, return early, and do not register with the form.
         return;
@@ -194,13 +170,13 @@ function asField(WrappedComponent, wrapperOptions = {}) {
           reset: this.reset,
         });
       }
-    }
+    };
 
     /**
      * Use the unregistration function passed by context
      * @return {void}
      */
-    unregister() {
+    unregister = () => {
       if (!this.props.name) {
         // If there was no name, then we never registered.
         return;
@@ -208,12 +184,13 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       if (isObject(this.context) && isFunction(this.context.unregisterField)) {
         this.context.unregisterField(this.props.name);
       }
-    }
+    };
 
     /**
      * Handlers
      */
 
+    /* eslint-disable consistent-return */
     /**
      * Handles changes in value for the component
      *
@@ -222,7 +199,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * @param  {[type]} event [description]
      * @return {[type]}       [description]
      */
-    onChange(event) {
+    onChange = event => {
       const { value } = event.target;
       const { validateWhileTyping, validateDebounceTimeout } = this.props;
 
@@ -260,25 +237,28 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         if (!isEqual(this.state.value, values)) {
           this.setValue(values);
         }
-      } else if (this.state.value !== value) {
+      }
+
+      if (this.state.value !== value) {
         // Only run the setState method if the value is actually different
         this.setValue(value);
       }
-    }
+    };
+    /* eslint-enable consistent-return */
 
-    onClick(event) {
+    onClick = event => {
       const { target } = event;
       const { onClick } = this.props;
       if (isFunction(onClick)) {
         onClick(target);
       }
-    }
+    };
 
     /**
      * Event Handlers
      */
 
-    onFocus(event) {
+    onFocus = event => {
       const { onFocus } = this.props;
       const { target } = event;
 
@@ -302,9 +282,9 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       if (isFunction(onFocus)) {
         onFocus(target);
       }
-    }
+    };
 
-    onBlur(event) {
+    onBlur = event => {
       const { onBlur, validate, asyncValidate } = this.props;
       const { target } = event;
 
@@ -323,7 +303,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       if (isFunction(onBlur)) {
         onBlur(target);
       }
-    }
+    };
 
     /**
      * [preventSubmitOnEnter description]
@@ -335,7 +315,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * @param  {[type]} event [description]
      * @return {[type]}       [description]
      */
-    preventSubmitOnEnter(event) {
+    preventSubmitOnEnter = event => {
       const { target } = event;
       if (event.keyCode === ENTER) {
         event.preventDefault();
@@ -350,10 +330,10 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         // Temporary. Consider passing a function in context or as a prop instead.
         event.preventDefault();
       }
-    }
+    };
 
     // This is a temporary solution
-    handleKey(event) {
+    handleKey = event => {
       const { name, type } = this.props;
       const { handleKey, handleTab } = this.context;
 
@@ -372,24 +352,22 @@ function asField(WrappedComponent, wrapperOptions = {}) {
           handleKey(TAB, { shiftKey, ctrlKey, altKey }, type, name, this.fieldRef);
         }
       }
-    }
+    };
 
     /**
      * Refs
      */
 
-    setRef(el) {
+    setRef = el => {
       const { setRef } = this.props;
       // If setRef was sent to to the component as a prop, then also call it with the element
       if (setRef && isFunction(setRef)) {
         setRef(el);
       }
       this.fieldRef = el;
-    }
+    };
 
-    getRef() {
-      return this.fieldRef;
-    }
+    getRef = () => this.fieldRef;
 
     /**
      * Value Functions
@@ -403,9 +381,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      *
      * @return {any} the value of the field
      */
-    getValue() {
-      return this.unformat(this.state.value);
-    }
+    getValue = () => this.unformat(this.state.value);
 
     /**
      * Set the value of the field
@@ -419,8 +395,8 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      *
      * @param {any} value the value to set
      */
-    setValue(value, resetErrors = false, resetTouched = false) {
-      const { name, type, onChange } = this.props;
+    setValue = (value, resetErrors = false, resetTouched = false) => {
+      const { name, onChange } = this.props;
 
       this.setState(prevState => {
         const formatted = this.format(value);
@@ -429,8 +405,10 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         let cursor;
 
         if (Array.isArray(formatted)) {
-          newValue = val[0];
+          /* eslint-disable prefer-destructuring */
+          newValue = formatted[0];
           cursor = formatted[1];
+          /* eslint-enable prefer-destructuring */
         }
 
         // Call user supplied function if given
@@ -447,32 +425,26 @@ function asField(WrappedComponent, wrapperOptions = {}) {
           value: newValue,
         };
       });
-    }
+    };
 
-    reset() {
+    reset = () => {
       // Clobber the state by setting back to the initialState
       this.setState(this.initialState);
       // If we were provided a change function, then call it with the initial value
       if (isFunction(this.props.onChange)) {
         this.props.onChange(this.initialState.value, this.props.name);
       }
-    }
+    };
 
     /**
      * Validation and Errors
      */
 
-    validate() {
-      return this.maybeUpdateErrors(this.runValidations());
-    }
+    validate = () => this.maybeUpdateErrors(this.runValidations());
 
-    runValidations() {
-      return runValidations(this.props.validate, this.state.value);
-    }
+    runValidations = () => runValidations(this.props.validate, this.state.value);
 
-    isValid() {
-      return !hasErrors(this.runValidations());
-    }
+    isValid = () => !hasErrors(this.runValidations());
 
     /**
      * [maybeUpdateErrors description]
@@ -482,7 +454,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * @param  {[type]} msg [description]
      * @return {[type]}     [description]
      */
-    maybeUpdateErrors(msg) {
+    maybeUpdateErrors = msg => {
       if (msg === false) {
         if (this.state.errors.length !== 0) {
           this.setState(prevState => ({
@@ -509,7 +481,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       }));
       // This means it is not valid
       return false;
-    }
+    };
 
     /**
      * Formatting
@@ -526,7 +498,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      *
      * @return {[type]} [description]
      */
-    format(value) {
+    format = value => {
       const { format } = this.props;
 
       if (isFunction(format)) {
@@ -538,9 +510,9 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       }
 
       return value;
-    }
+    };
 
-    unformat(value) {
+    unformat = value => {
       const { unformat } = this.props;
 
       if (isFunction(unformat)) {
@@ -548,7 +520,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       }
 
       return value;
-    }
+    };
 
     render() {
       // We are going to pull out the internal things that we need and call the rest `spreadProps`,
@@ -570,29 +542,19 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         ...spreadProps
       } = this.props;
 
+      // If autocomplete is `off`, then it's most likely passed to the form as `off`, so by
+      // recommendation of the spec, we're going to turn it off in the fields. But, since `off`
+      // isn't actually supported by browsers anymore, we're instead going to generate random
+      // strings and use those for the autocomplete value in order to confuse the browser's
+      // autocomplete feature. It's the best we can do for now.
+      // @see https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion
       if (this.context.autoComplete === 'off') {
-        // spreadProps.autoComplete = 'off';
-        // This spoofs autocomplete so it at least won't try to autocomplete
         spreadProps.autoComplete = Math.random()
           .toString(36)
           .slice(-5);
       } else if (this.props.autoComplete) {
         spreadProps.autoComplete = this.props.autoComplete;
       }
-
-      // Most modern browsers ignore the "off" value when trying to set a form, so we'll attempt a
-      // workaround that may not work so well (applied to Chrome only for now).
-      // See https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion
-      // for an explanation.
-      //
-      // @TODO consider taking this out and adding in a note in the README saying it won't work.
-      //
-      // If we update this condition to something other than Chrome, then we need to update the README.
-      // if (spreadProps.autoComplete === 'off') {
-      //   if (global && global.navigator && global.navigator.appVersion.includes('Chrome')) {
-      //     spreadProps.autoComplete = 'nope';
-      //   }
-      // }
 
       return (
         <WrappedComponent
@@ -642,4 +604,5 @@ function asField(WrappedComponent, wrapperOptions = {}) {
 
   return asFieldWrapper;
 }
+
 export default asField;

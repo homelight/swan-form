@@ -106,13 +106,41 @@ class Field extends Component {
     /**
      * Props shipped from the HOC
      */
+    /**
+     * An array of error messages (false means no error)
+     * @type {Array}
+     */
     errors: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([false])]))
       .isRequired,
+    /**
+     * Whether or not the field's value is valid
+     * @type {Boolean}
+     */
     isValid: PropTypes.bool.isRequired,
+    /**
+     * The onChange handler, provided by asField
+     * @type {Function}
+     */
     onChange: PropTypes.func.isRequired,
+    /**
+     * The onFocus handler, provided by asField
+     * @type {Function}
+     */
     onFocus: PropTypes.func.isRequired,
+    /**
+     * The blur handler, provided by asField
+     * @type {Function}
+     */
     onBlur: PropTypes.func.isRequired,
+    /**
+     * The onClick handler, provided by asField
+     * @type {Array}
+     */
     onClick: PropTypes.func.isRequired,
+    /**
+     * The function to set the ref, provided by asField
+     * @type {Array}
+     */
     setRef: PropTypes.func.isRequired,
 
     /**
@@ -129,14 +157,54 @@ class Field extends Component {
     /**
      * Optional User supplied props. These are handled if not shipped, so we can ignore them
      */
+
+    /**
+     * Children of the field
+     *
+     * @note this applies mostly to usage with buttons
+     * @type {React.element}
+     */
+    children: PropTypes.oneOfType([
+      PropTypes.element,
+      PropTypes.string,
+      PropTypes.arrayOf(PropTypes.element),
+    ]),
+    /**
+     * The label for the field
+     * @type {String}
+     */
     label: PropTypes.string,
+    /**
+     * A classname or set of classnames that have been joined with a space
+     * @type {String}
+     */
     className: PropTypes.string,
+    /**
+     * Whether or not a field is required.
+     * @note this is `required` in browser context. You can also pass in a `required` function as
+     *       a validator.
+     * @type {Boolean}
+     */
     required: PropTypes.bool,
+    /**
+     * An optional icon component to be merged in with the display
+     * @type {React.Element}
+     */
+    icon: PropTypes.element,
+    /**
+     * Options if this is a select field
+     * @type {Object|Array}
+     */
     options: PropTypes.oneOfType([PropTypes.object, PropTypes.array]), // eslint-disable-line
+    /**
+     * Any inline styles provided to the component
+     * @type {Object}
+     */
+    style: PropTypes.object, // eslint-disable-line
   };
 
   maybeWrapInLabel(input) {
-    const { className, icon, errors, type, label, style } = this.props;
+    const { className, icon, name, errors, type, label, style } = this.props;
     // const { className, icon, errors, type, isValid, label, required } = this.props;
 
     if (type === 'radio' || type === 'checkbox') {
@@ -282,7 +350,7 @@ class Field extends Component {
       /**
        * @TODO clean this up
        */
-      spreadProps.value = !!spreadProps.value ? 'on' : 'off';
+      spreadProps.value = spreadProps.value ? 'on' : 'off';
       spreadProps.defaultChecked = spreadProps.value === 'on';
       delete spreadProps.checked;
     }
