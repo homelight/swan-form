@@ -101,17 +101,17 @@ export default class Slide extends Component {
     }
   }
 
+  // We don't want to rerender on state change
+  shouldComponentUpdate(nextProps) {
+    return this.props !== nextProps;
+  }
+
   componentWillUpdate(nextProps, nextState) {
     if (nextState.willExitPrev) {
       if (isFunction(this.props.afterSlide)) {
         this.props.afterSlide({ values: this.props.getFormValues(), props: this.props.slideProps });
       }
     }
-  }
-
-  // We don't want to rerender on state change
-  shouldComponentUpdate(nextProps) {
-    return this.props !== nextProps;
   }
 
   componentDidUpdate() {
@@ -127,12 +127,19 @@ export default class Slide extends Component {
     }
   }
 
+  getRef = () => this.ref;
+
+  setRef(el) {
+    this.ref = el;
+  }
+
   // this is a hack for tabs/enter @TODO temp
   handleKey(keyCode, modifiers, type, name, element) {
     const keys = Object.keys(this.fields);
     let focusNext = false;
     if (keyCode === ENTER || keyCode === TAB) {
       if (modifiers.shiftKey) {
+        // Shift key means to go backwards
         for (let i = keys.length - 1; i >= 0; i--) {
           if (keys[i] === name) {
             focusNext = true;
@@ -143,6 +150,7 @@ export default class Slide extends Component {
           }
         }
       } else {
+        // No shift key means to go forwards
         for (let i = 0; i < keys.length; i++) {
           if (keys[i] === name) {
             focusNext = true;
@@ -154,14 +162,6 @@ export default class Slide extends Component {
         }
       }
     }
-  }
-
-  setRef(el) {
-    this.ref = el;
-  }
-
-  getRef(el) {
-    return this.ref;
   }
 
   registerField({ name, getRef, getValue, setValue, validate, reset, isValid }) {

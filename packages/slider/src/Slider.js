@@ -1,12 +1,21 @@
+/**
+ * @todo  find a reliable cleanup method that avoids memory leaks when the parent of this is
+ *        unmounted (e.g. render inside a modal, and call the close modal in a slide transition
+ *        hook).
+ * @todo  figure out autosizing when rendering all the slides and doing a position absolute for
+ *        dynamic resizing (or just force a windowed mode)
+ * @todo  figure out how to do slide transitions when in a windowed mode
+ * @todo  figure out the best way make it so we can write <Slider><Slide /><Slide /></Slider> and
+ *        not pass an array.
+ */
+
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import clamp from 'lodash/clamp';
 import isFunction from 'lodash/isFunction';
 import { Form } from '@flow-form/form';
-import { autobind, classes, keyCodes } from '@flow-form/helpers';
+import { classes } from '@flow-form/helpers';
 import Slide from './Slide';
-
-const { ENTER, TAB } = keyCodes;
 
 /**
  * @TODO  the slider / slides need to be thought out better in terms of nesting forms as well
@@ -53,7 +62,7 @@ const alwaysTrue = () => true;
 
 export default class Slider extends Component {
   static propTypes = {
-    height: PropTypes.string,
+    // height: PropTypes.string,
     current: PropTypes.number,
     onSubmit: PropTypes.func.isRequired,
     beforeSubmit: PropTypes.func, // eslint-disable-line
@@ -74,6 +83,7 @@ export default class Slider extends Component {
     NextButton: PropTypes.element, // eslint-disable-line
     autoComplete: PropTypes.oneOf(['on', 'off']),
     windowed: PropTypes.bool,
+    className: PropTypes.string, // eslint-disable-line
     /**
      * If this object exists, all slides that are functions will be passed this object.
      * @type {Object}
@@ -107,7 +117,7 @@ export default class Slider extends Component {
     }
     this.state = {
       current: clamp(props.current, 0, props.slides.length) || 0,
-      height: props.height,
+      // height: props.height,
       // Since we're exiting out of this a lot early, we need to track this internally
       // @todo find a better way
       isMounted: true,
@@ -117,16 +127,6 @@ export default class Slider extends Component {
     this.slides = {};
 
     // Consider caching the this.props.slideProps or something.
-
-    autobind(this, [
-      'getFormValues',
-      'registerSlide',
-      'unregisterSlide',
-      'registerForm',
-      'unregisterForm',
-      'prev',
-      'next',
-    ]);
   }
 
   getChildContext() {
@@ -138,15 +138,15 @@ export default class Slider extends Component {
     };
   }
 
-  componentDidMount() {
-    // const slideRef = this.slides[this.state.current].getRef();
-    // need to find a better place to put this rather than CDM. Ideally, in cWillMount, but
-    // I don't think we have access to the slide refs yet.
-    this.setState(prevState => ({
-      ...prevState,
-      // height: `${slideRef.scrollHeight}px`,
-    }));
-  }
+  // componentDidMount() {
+  // const slideRef = this.slides[this.state.current].getRef();
+  // need to find a better place to put this rather than CDM. Ideally, in cWillMount, but
+  // I don't think we have access to the slide refs yet.
+  // this.setState(prevState => ({
+  //   ...prevState,
+  //   // height: `${slideRef.scrollHeight}px`,
+  // }));
+  // }
 
   shouldComponentUpdate(nextProps, nextState) {
     return this.props !== nextProps || this.state.current !== nextState.current;
@@ -156,7 +156,7 @@ export default class Slider extends Component {
     this.setState({ isMounted: false });
   }
 
-  getFormValues() {
+  getFormValues = () => {
     if (!this.state.isMounted) {
       return {};
     }
@@ -166,9 +166,9 @@ export default class Slider extends Component {
     }
 
     return {};
-  }
+  };
 
-  registerSlide({ index, isValid, beforeExit, getRef }) {
+  registerSlide = ({ index, isValid, beforeExit, getRef }) => {
     this.slides = {
       ...this.slides,
       [index]: {
@@ -177,24 +177,24 @@ export default class Slider extends Component {
         getRef,
       },
     };
-  }
+  };
 
-  unregisterSlide(index) {
+  unregisterSlide = index => {
     const { [index]: remove, ...remaining } = this.slides;
     this.slides = remaining;
-  }
+  };
 
-  registerForm({ name, getValues, submit }) {
+  registerForm = ({ name, getValues, submit }) => {
     this.form = { name, getValues, submit };
-  }
+  };
 
-  unregisterForm(name) {
+  unregisterForm = name => {
     if (this.form.name === name) {
       this.form = {};
     }
-  }
+  };
 
-  moveTo(index) {
+  moveTo = index => {
     if (!this.state.isMounted) {
       return;
     }
@@ -205,13 +205,13 @@ export default class Slider extends Component {
       // height: `${nextSlideRef.scrollHeight}px`,
       current: index,
     }));
-  }
+  };
 
-  prev() {
+  prev = () => {
     this.moveTo(this.findPrevSlide());
-  }
+  };
 
-  next() {
+  next = () => {
     const slide = this.slides[this.state.current];
     if (slide && isFunction(slide.isValid) && slide.isValid()) {
       // Ill-conceived/partially finished hook implementation
@@ -230,9 +230,9 @@ export default class Slider extends Component {
         this.moveTo(this.findNextSlide());
       }
     }
-  }
+  };
 
-  findNextSlide() {
+  findNextSlide = () => {
     const { current, isMounted } = this.state;
     if (!isMounted) {
       // @todo temp fix
@@ -260,9 +260,9 @@ export default class Slider extends Component {
     // so, we should do a form submit?
     // For now, we'll just move to the last slide, regardless.
     return length - 1;
-  }
+  };
 
-  findPrevSlide() {
+  findPrevSlide = () => {
     const { current } = this.state;
     const formValues = this.form ? this.form.getValues() : {};
     for (let i = current - 1; i >= 0; i--) {
@@ -278,38 +278,36 @@ export default class Slider extends Component {
     // so, we should do a form submit?
     // For now, we'll just move to the first slide, regardless.
     return 0;
-  }
+  };
 
-  mapSlideProps(slideProps) {
-    return {
-      getFormValues: this.getFormValues,
-      nextSlide: this.next,
-      prevSlide: this.prev,
-      ...slideProps,
-    };
-  }
+  mapSlideProps = slideProps => ({
+    getFormValues: this.getFormValues,
+    nextSlide: this.next,
+    prevSlide: this.prev,
+    ...slideProps,
+  });
 
   render() {
     const {
-      PrevButton,
-      NextButton,
       afterSubmit,
       autoComplete,
       beforeSubmit,
+      className,
+      NextButton,
       onSubmit,
+      PrevButton,
       slideProps,
-      windowed,
       slides,
+      windowed,
     } = this.props;
 
     const { current } = this.state;
 
     if (windowed) {
       const slide = slides[current];
-      const key = current;
       const index = current;
       return (
-        <div className="ff--slider" style={{ height: this.state.height }}>
+        <div className={classes(['ff--slider', className])}>
           <button
             onClick={this.prev}
             className={classes([
@@ -355,7 +353,7 @@ export default class Slider extends Component {
     }
 
     return (
-      <div className="ff--slider" style={{ height: this.state.height }}>
+      <div className="ff--slider">
         <button
           onClick={this.prev}
           className={classes([

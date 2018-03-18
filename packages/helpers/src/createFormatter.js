@@ -55,9 +55,10 @@ function createMask(pattern, wildcard, unbound) {
     let pi = 0;
     for (let vi = 0, plen = p.length, vlen = v.length; pi < plen && vi < vlen; pi++) {
       if (p[pi] === wildcard) {
-        p[pi] = v[vi++]; // eslint-disable-line
+        vi += 1;
+        p[pi] = v[vi];
       } else if (vi < cursor) {
-        delta = delta++; // eslint-disable-line
+        delta += 1;
       }
     }
     return [p.slice(0, pi).join(''), cursor + delta];
