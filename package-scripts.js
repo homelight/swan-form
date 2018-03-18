@@ -1,7 +1,7 @@
 const npsUtils = require('nps-utils');
 
 const getDevCmd = project =>
-  `babel --src-type module "packages/${project}/src" --out-dir "packages/${project}/dist" --ignore "packages/${project}/src/*.test.js" --watch`;
+  `babel --src-type module "packages/${project}/src" --out-dir "packages/${project}/dist" --ignore "packages/${project}/src/**/*.test.js" --watch`;
 
 module.exports = {
   // @todo expand these scripts

@@ -86,6 +86,7 @@ export default class Slide extends Component {
     }
   }
 
+  // @todo deprecate
   componentWillReceiveProps(nextProps) {
     const { position } = this.props;
     const next = nextProps.position;
@@ -106,6 +107,7 @@ export default class Slide extends Component {
     return this.props !== nextProps;
   }
 
+  // @todo deprecate
   componentWillUpdate(nextProps, nextState) {
     if (nextState.willExitPrev) {
       if (isFunction(this.props.afterSlide)) {
@@ -129,12 +131,12 @@ export default class Slide extends Component {
 
   getRef = () => this.ref;
 
-  setRef(el) {
+  setRef = el => {
     this.ref = el;
-  }
+  };
 
   // this is a hack for tabs/enter @TODO temp
-  handleKey(keyCode, modifiers, type, name, element) {
+  handleKey = (keyCode, modifiers, type, name, element) => {
     const keys = Object.keys(this.fields);
     let focusNext = false;
     if (keyCode === ENTER || keyCode === TAB) {
@@ -162,9 +164,9 @@ export default class Slide extends Component {
         }
       }
     }
-  }
+  };
 
-  registerField({ name, getRef, getValue, setValue, validate, reset, isValid }) {
+  registerField = ({ name, getRef, getValue, setValue, validate, reset, isValid }) => {
     if (isFunction(this.context.registerField)) {
       this.context.registerField({ name, getRef, getValue, setValue, validate, reset });
     }
@@ -176,22 +178,22 @@ export default class Slide extends Component {
         getRef,
       },
     };
-  }
+  };
 
-  unregisterField(name) {
+  unregisterField = name => {
     if (isFunction(this.context.unregisterField)) {
       this.context.unregisterField(name);
     }
     const { [name]: removed, ...remaining } = this.fields;
     this.fields = remaining;
-  }
+  };
 
   /**
    * Checks whether all registered fields on the slide are valid (they pass `validate` functions).
    *
    * @return {Boolean} [description]
    */
-  isValid() {
+  isValid = () => {
     // Run through all the validations...
     return Object.keys(this.fields).every(field => {
       // Get the validity from the registered field
@@ -203,7 +205,7 @@ export default class Slide extends Component {
       // Return the slide's validity to the slider
       return fieldIsValid;
     });
-  }
+  };
 
   render() {
     const { className, position } = this.props;

@@ -7,6 +7,8 @@
  * @todo  figure out how to do slide transitions when in a windowed mode
  * @todo  figure out the best way make it so we can write <Slider><Slide /><Slide /></Slider> and
  *        not pass an array.
+ * @todo  figure out how to do the slider lifecycle transitions without calling any of the
+ *        componentWill* component lifecycle methods
  */
 
 import React, { Component } from 'react';
