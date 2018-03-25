@@ -1,6 +1,6 @@
 /* eslint-disable no-alert, react/prefer-stateless-function */
 import React, { Component } from 'react';
-import { Field, Radios, Submit } from '@flow-form/field';
+import { Field, Radios } from '@flow-form/field';
 import { Slide, Slider } from '@flow-form/slider';
 import '@flow-form/slider/dist/Slider.css';
 import '@flow-form/slider/dist/Slide.css';
@@ -45,6 +45,13 @@ export default class SliderForm extends Component {
             )}
           />
           <Slide
+            beforeExitToNext={({ getFormValues }) =>
+              new Promise(res => {
+                console.log('In beforeExitToNext hook');
+                alert(`You chose ${getFormValues().decisionTree}`);
+                res();
+              })
+            }
             render={props => (
               <div>
                 <h2>Decision Tree</h2>
@@ -84,10 +91,14 @@ export default class SliderForm extends Component {
               to use a render prop.
             </p>
           </Slide>
-          <Slide>
-            <div>Testing, one, two, three.</div>
-          </Slide>
-          <Slide render={props => <pre>{JSON.stringify(props.getFormValues(), null, 2)}</pre>} />
+          <Slide
+            render={props => (
+              <div>
+                <h2>These are all the values that were chosen</h2>
+                <pre>{JSON.stringify(props.getFormValues(), null, 2)}</pre>
+              </div>
+            )}
+          />
         </Slider>
       </div>
     );
