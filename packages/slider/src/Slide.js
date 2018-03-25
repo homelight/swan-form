@@ -24,8 +24,6 @@ export default class Slide extends PureComponent {
   static childContextTypes = {
     registerField: PropTypes.func,
     unregisterField: PropTypes.func,
-    handleKey: PropTypes.func, // @TODO temp
-    handleTab: PropTypes.bool, // @TODO temp
   };
 
   constructor(props) {
@@ -91,23 +89,19 @@ export default class Slide extends PureComponent {
    *
    * @return {Boolean} [description]
    */
-  isValid = () => {
-    // Run through all the validations...
-    return (
-      Object.keys(this.fields)
-        .map(field => {
-          // Get the validity from the registered field
-          const fieldIsValid = this.fields[field].isValid();
-          if (!fieldIsValid) {
-            // Make the errors appear
-            this.fields[field].validate();
-          }
-          // Return the slide's validity to the slider
-          return fieldIsValid;
-        })
-        .filter(x => x === false).length === 0
-    );
-  };
+  isValid = () =>
+    Object.keys(this.fields)
+      .map(field => {
+        // Get the validity from the registered field
+        const fieldIsValid = this.fields[field].isValid();
+        if (!fieldIsValid) {
+          // Make the errors appear
+          this.fields[field].validate();
+        }
+        // Return the slide's validity to the slider
+        return fieldIsValid;
+      })
+      .filter(x => x === false).length === 0;
 
   render() {
     return (
