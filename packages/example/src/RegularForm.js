@@ -64,7 +64,7 @@ export default class RegularForm extends Component {
             </div>
 
             <div>
-              <Field type="checkbox" label="Checkbox field" name="checkboxaaa" value={true} />
+              <Field type="checkbox" label="Checkbox field" name="checkboxaaa" value />
             </div>
 
             <div>

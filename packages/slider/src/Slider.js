@@ -1,402 +1,328 @@
-/**
- * @todo  find a reliable cleanup method that avoids memory leaks when the parent of this is
- *        unmounted (e.g. render inside a modal, and call the close modal in a slide transition
- *        hook).
- * @todo  figure out autosizing when rendering all the slides and doing a position absolute for
- *        dynamic resizing (or just force a windowed mode)
- * @todo  figure out how to do slide transitions when in a windowed mode
- * @todo  figure out the best way make it so we can write <Slider><Slide /><Slide /></Slider> and
- *        not pass an array.
- * @todo  figure out how to do the slider lifecycle transitions without calling any of the
- *        componentWill* component lifecycle methods
- */
-
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import clamp from 'lodash/clamp';
 import isFunction from 'lodash/isFunction';
+import invariant from 'invariant';
 import { Form } from '@flow-form/form';
 import { classes } from '@flow-form/helpers';
+
 import Slide from './Slide';
 
-/**
- * @TODO  the slider / slides need to be thought out better in terms of nesting forms as well
- *        as the actions taken in between slides. We need to have the option to dynamically
- *        resize these things. Optionally, we might consider redoing it so that we can have
- *        nested forms. Also, we need to fine a way to define a point of no return, as certain
- *        actions taken (say, submit mid-flow) and how to handle that.
- *
- * @NOTE  Another approach to this (needs perf testing) would be not to render the slides when
- *        they are off-screen. This would make it easier to pass props. Also, it seems that
- *        we're missing a good way to define state between the slides. Right now, this works
- *        well for simple forms or for asynchronous flows, but it's fragile. So, works in best
- *        case scenario, but not for others.
- */
-
-// this is a real dumb function. find a better way to do this
-function getPosition(slide, index) {
-  if (slide === index) {
-    return 'current';
-  }
-  if (slide > index) {
-    return 'prev';
-  }
-  return 'next';
-}
-
-// temp function; @todo fix the `Form` component so that it accepts handlers
-const chevron = (size, rotation, color = '#000') => (
-  <svg
-    style={{
-      width: size,
-      height: size,
-      transform: `rotate(${rotation}deg)`,
-    }}
-    viewBox="0 0 24 24"
-  >
-    <path fill={color} d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
-  </svg>
-);
-
-const nextChevron = chevron('24px', 0);
-const prevChevron = chevron('24px', 180);
-const alwaysTrue = () => true;
-
-export default class Slider extends Component {
+export default class Slider extends PureComponent {
   static propTypes = {
-    // height: PropTypes.string,
+    /**
+     * The slide to start on
+     */
     current: PropTypes.number,
-    onSubmit: PropTypes.func.isRequired,
-    beforeSubmit: PropTypes.func, // eslint-disable-line
-    afterSubmit: PropTypes.func, // eslint-disable-line
-    slides: PropTypes.arrayOf(
-      PropTypes.shape({
-        key: PropTypes.string.isRequired,
-        render: PropTypes.oneOfType([
-          PropTypes.func,
-          PropTypes.node,
-          PropTypes.element,
-          PropTypes.string,
-        ]).isRequired,
-        shouldShowIf: PropTypes.func,
-      }),
-    ).isRequired,
-    PrevButton: PropTypes.element, // eslint-disable-line
-    NextButton: PropTypes.element, // eslint-disable-line
+    /**
+     * Turn on/off autocomplete for the form
+     */
     autoComplete: PropTypes.oneOf(['on', 'off']),
-    windowed: PropTypes.bool,
+    /**
+     * A className or classNames to pass to the slider
+     */
     className: PropTypes.string, // eslint-disable-line
     /**
-     * If this object exists, all slides that are functions will be passed this object.
-     * @type {Object}
+     * The slides. These should only be of type <Slide />
      */
-    slideProps: PropTypes.object, // eslint-disable-line
+    children: PropTypes.oneOfType([PropTypes.element, PropTypes.arrayOf(PropTypes.element)])
+      .isRequired,
+    /**
+     * A button to use as a previous button
+     */
+    PrevButton: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
+    /**
+     * A button to use as a next button
+     */
+    NextButton: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
+    /**
+     * The beforSubmit hook to pass to the form
+     */
+    beforeSubmit: PropTypes.func,
+    /**
+     * The submit handler to pass to the form
+     */
+    onSubmit: PropTypes.func.isRequired,
+    /**
+     * The afterSubmit hook to pass to the form
+     */
+    afterSubmit: PropTypes.func,
+    /**
+     * Common Props are passed to every slide
+     */
+    commonProps: PropTypes.object, // eslint-disable-line
+    /**
+     * The name of the form in the slider
+     */
+    formName: PropTypes.string,
   };
 
   static defaultProps = {
-    height: 'auto', // @todo temp fallback
     current: 0,
     autoComplete: 'off',
-    slideProps: {},
-    windowed: true,
-  };
-
-  static childContextTypes = {
-    registerSlide: PropTypes.func,
-    unregisterSlide: PropTypes.func,
-    registerForm: PropTypes.func,
-    unregisterForm: PropTypes.func,
-    // @todo implement a reset method that will push the slider back to 0 and reset
-    // the forms (or call the form context) if a <input type='reset' /> is pressed
+    PrevButton: '←',
+    NextButton: '→',
+    beforeSubmit: values => Promise.resolve(values),
+    afterSubmit: values => Promise.resolve(values),
+    commonProps: {},
+    formName: 'slider-form',
   };
 
   constructor(props) {
     super(props);
-    if (!Array.isArray(props.slides) || props.slides.length < 1) {
-      /* eslint-disable no-console */
-      console.error(`You must pass an array of slides.`);
-      /* eslint-enable no-console */
-    }
+    // this.form = {};
     this.state = {
-      current: clamp(props.current, 0, props.slides.length) || 0,
-      // height: props.height,
-      // Since we're exiting out of this a lot early, we need to track this internally
-      // @todo find a better way
-      isMounted: true,
-    };
-
-    // Cache the style object so we can reuse it to avoid rerenders.
-    this.slides = {};
-
-    // Consider caching the this.props.slideProps or something.
-  }
-
-  getChildContext() {
-    return {
-      registerSlide: this.registerSlide,
-      unregisterSlide: this.unregisterSlide,
-      registerForm: this.registerForm,
-      unregisterForm: this.unregisterForm,
+      current: clamp(props.current, 0, React.Children.count(props.children)) || 0,
     };
   }
 
-  // componentDidMount() {
-  // const slideRef = this.slides[this.state.current].getRef();
-  // need to find a better place to put this rather than CDM. Ideally, in cWillMount, but
-  // I don't think we have access to the slide refs yet.
-  // this.setState(prevState => ({
-  //   ...prevState,
-  //   // height: `${slideRef.scrollHeight}px`,
-  // }));
-  // }
-
-  shouldComponentUpdate(nextProps, nextState) {
-    return this.props !== nextProps || this.state.current !== nextState.current;
+  componentDidMount() {
+    // The slider's children should be only slides... Otherwise, we're going to throw a hissy fit
+    React.Children.forEach(this.props.children, child => {
+      invariant(
+        child.type === Slide,
+        'A <Slider> component can have children only of the type Slide. Please check the render ' +
+          'method that uses Slider.',
+      );
+    });
   }
 
-  componentWillUnmount() {
-    this.setState({ isMounted: false });
+  componentDidUpdate(prevProps, prevState) {
+    // Since we're using indices to keep track of progress, we _could_ get off track if one
+    // disappears, so we're going to disallow dynamically manipulating the children
+    invariant(
+      React.Children.count(this.props.children) === React.Children.count(prevProps.children),
+      'Dynamically adding or removing slides is not supported. This may result in advancing to ' +
+        'the wrong slides. Check the render method that uses <Slider />',
+    );
+    // Run any didEnter* slide hooks here
+    const { didEnter, didEnterAsPrev, didEnterAsNext } = this.current.props;
+    if (prevState.current > this.state.current) {
+      if (isFunction(didEnterAsPrev)) {
+        didEnterAsPrev(this.mapSlideProps);
+      } else if (isFunction(didEnter)) {
+        didEnter(this.mapSlideProps);
+      }
+    } else if (prevState.current < this.state.current) {
+      if (isFunction(didEnterAsNext)) {
+        didEnterAsNext(this.mapSlideProps);
+      } else if (isFunction(didEnter)) {
+        didEnter(this.mapSlideProps);
+      }
+    }
   }
 
-  getFormValues = () => {
-    if (!this.state.isMounted) {
-      return {};
+  /**
+   * Convenience method to transform the Slider's children into an array
+   * @return array array of React elements
+   */
+  getChildren = () => React.Children.toArray(this.props.children);
+
+  /**
+   * Gets the values of the slider form
+   * @return object object of form values as { fieldName: fieldValue, ... }
+   */
+  getFormValues = () => (this.form && isFunction(this.form.getValues) ? this.form.getValues() : {});
+
+  /**
+   * Sets the current slide ref
+   *
+   * We use refs on the current slide so that we can avoid having to setup another
+   * register/unregister pattern with slides. Since slides are only direct children, this pattern
+   * will work fine.
+   *
+   * @return React.element
+   */
+  setCurrentSlideRef = el => {
+    this.current = el;
+  };
+
+  setFormRef = el => {
+    this.form = el;
+  };
+
+  moveTo = current => this.setState(prevState => ({ ...prevState, current }));
+
+  next = () => {
+    if (this.current && isFunction(this.current.isValid) && this.current.isValid()) {
+      // Find the next slide index
+      const nextSlideIndex = this.findNext();
+      if (nextSlideIndex === this.state.current) {
+        // We're not advancing, so the most likely cause is that we're at the last slide, in which
+        // case, we need to call the submit handler on the form; however, we'll double-check that
+        // we're actually on the last side first
+        if (nextSlideIndex === this.getChildren().length - 1) {
+          // Call the submit handler on the form
+          if (this.form && isFunction(this.form.handleOnSubmit)) {
+            this.form.handleOnSubmit();
+          }
+        }
+        // We don't have an else path here, for the "not-the-last-slide" scenario.
+      } else {
+        // Slider hooks that can be supplied as functions on the slide
+        // The way it works is, if there is a beforeExitToNext hook, we run that. If there
+        // is also a beforeExit hook, then we skip that one (i.e. run the most granular only).
+        // Each of these should return a promise, and, upon resolution, then transfer the slide.
+        // This creates a potential for two things to go wrong:
+        //   (1) if the function is slow, then the transition will appear laggy, so: optimize;
+        //   (2) if the function does something that would somehow unmount the slider, then you'll
+        //       open up potential memory leaks as we're still holding onto references in the
+        //       slider in the promise resolution.
+        // If there are no hooks defined on the slide, then we just transition to the next one.
+        const { beforeExit, beforeExitToNext } = this.current.props;
+        if (isFunction(beforeExitToNext)) {
+          beforeExitToNext(this.mapSlideProps).then(() => {
+            this.moveTo(nextSlideIndex);
+          });
+        } else if (isFunction(beforeExit)) {
+          beforeExit(this.mapSlideProps).then(() => {
+            this.moveTo(nextSlideIndex);
+          });
+        } else {
+          // Update the state for the new slides
+          this.moveTo(nextSlideIndex);
+        }
+      }
     }
-
-    if (this.form && isFunction(this.form.getValues)) {
-      return this.form.getValues();
-    }
-
-    return {};
-  };
-
-  registerSlide = ({ index, isValid, beforeExit, getRef }) => {
-    this.slides = {
-      ...this.slides,
-      [index]: {
-        isValid,
-        beforeExit,
-        getRef,
-      },
-    };
-  };
-
-  unregisterSlide = index => {
-    const { [index]: remove, ...remaining } = this.slides;
-    this.slides = remaining;
-  };
-
-  registerForm = ({ name, getValues, submit }) => {
-    this.form = { name, getValues, submit };
-  };
-
-  unregisterForm = name => {
-    if (this.form.name === name) {
-      this.form = {};
-    }
-  };
-
-  moveTo = index => {
-    if (!this.state.isMounted) {
-      return;
-    }
-
-    // const nextSlideRef = this.slides[index].getRef();
-    this.setState(prevState => ({
-      ...prevState,
-      // height: `${nextSlideRef.scrollHeight}px`,
-      current: index,
-    }));
+    // If we don't activate the `if` statement, then we know that the slide wasn't in a valid state,
+    // i.e. it has fields that do not fit the requirements, so, instead we'll do nothing here.
+    // (The inline field validations will appear on the fields as an effect of calling "validate"
+    // on them, so the user should get visible feedback as to what to do).
   };
 
   prev = () => {
-    this.moveTo(this.findPrevSlide());
-  };
-
-  next = () => {
-    const slide = this.slides[this.state.current];
-    if (slide && isFunction(slide.isValid) && slide.isValid()) {
-      // Ill-conceived/partially finished hook implementation
-      if (isFunction(slide.beforeExit)) {
-        const values = this.form ? this.form.getValues() : {};
-        slide
-          .beforeExit({ values, props: this.props })
-          .then((keepGoing = true) => {
-            if (keepGoing) {
-              this.moveTo(this.findNextSlide());
-            }
-          })
-          // @TODO remove this and have better error handling / fewer errors
-          .catch(console.error);
+    // The logic of the slide beforeExit slide hooks is basically the same as for the `next` method
+    // that's just above. Refer to the inline comments above for a better explanation of what is
+    // happening here.
+    const prevSlideIndex = this.findPrev();
+    if (prevSlideIndex !== this.state.current) {
+      const { beforeExit, beforeExitToPrev } = this.current.props;
+      if (isFunction(beforeExitToPrev)) {
+        beforeExitToPrev(this.mapSlideProps).then(() => this.moveTo(prevSlideIndex));
+      } else if (isFunction(beforeExit)) {
+        beforeExit(this.mapSlideProps).then(() => this.moveTo(prevSlideIndex));
       } else {
-        this.moveTo(this.findNextSlide());
+        this.moveTo(prevSlideIndex);
       }
     }
   };
 
-  findNextSlide = () => {
-    const { current, isMounted } = this.state;
-    if (!isMounted) {
-      // @todo temp fix
-      return 0;
-    }
-
-    const formValues = isFunction(this.form.getValues) ? this.form.getValues() : {};
-    const length = this.props.slides.length; // eslint-disable-line
+  /**
+   * Finds the index of the next viable previous slide
+   *
+   * @note  if nothing is available, then it defaults to `0`, i.e. the first slide declared as a
+   *        child. The first child should be able to be shown regardless of what the decision tree
+   *        is like.
+   *
+   * @memberof Slider
+   */
+  findNext = () => {
+    const { current } = this.state;
+    const children = this.getChildren();
+    const formValues = this.form && isFunction(this.form.getValues) ? this.form.getValues() : {};
+    const length = children.length; // eslint-disable-line
     for (let i = current + 1; i <= length - 1; i++) {
-      const slide = this.props.slides[i];
-      if (isFunction(slide.shouldShowIf)) {
-        if (slide.shouldShowIf(formValues)) {
-          return i;
-        }
-      } else {
+      const slide = children[i];
+      if (slide.props.shouldShowIf(formValues)) {
         return i;
       }
-    }
-    if (isMounted && this.form && isFunction(this.form.submit)) {
-      // currently, we're using this in a way that sometimes we kill the context
-      this.form.submit();
+      // No valid candidate for next slide, so we test the next
     }
 
-    // somehow, we're done.
-    // so, we should do a form submit?
-    // For now, we'll just move to the last slide, regardless.
+    // We moved through the `for` statement without finding a slide, so default to the last slide
     return length - 1;
   };
 
-  findPrevSlide = () => {
+  /**
+   * Finds the index of the next viable previous slide
+   *
+   * @note  if nothing is available, then it defaults to the last child. The last child should
+   *        either respond well to this or should be always viewable.
+   *
+   * @memberof Slider
+   */
+  findPrev = () => {
     const { current } = this.state;
-    const formValues = this.form ? this.form.getValues() : {};
+    const children = this.getChildren();
+    const formValues = this.form && isFunction(this.form.getValues) ? this.form.getValues() : {};
+    const length = children.length; // eslint-disable-line
     for (let i = current - 1; i >= 0; i--) {
-      if (isFunction(this.props.slides[i].shouldShowIf)) {
-        if (this.props.slides[i].shouldShowIf(formValues)) {
-          return i;
-        }
-      } else {
+      const slide = children[i];
+      if (slide.props.shouldShowIf(formValues)) {
         return i;
       }
+      // No valid candidate for next slide, so we test the next
     }
-    // somehow, we're done.
-    // so, we should do a form submit?
-    // For now, we'll just move to the first slide, regardless.
+
+    // If we're here, it means that we need to show the first
     return 0;
   };
 
-  mapSlideProps = slideProps => ({
+  /**
+   * These are the "Props" that get passed to each slide.
+   *
+   * We're holding this as a class property so it's reused across renders, allowing for
+   * PureComponents to rerender less often.
+   *
+   * @memberof Slider
+   */
+  mapSlideProps = {
     getFormValues: this.getFormValues,
     nextSlide: this.next,
     prevSlide: this.prev,
-    ...slideProps,
-  });
+    ref: this.setCurrentSlideRef,
+    ...this.props.commonProps,
+  };
 
   render() {
     const {
-      afterSubmit,
-      autoComplete,
-      beforeSubmit,
       className,
+      formName,
+      PrevButton,
       NextButton,
       onSubmit,
-      PrevButton,
-      slideProps,
-      slides,
-      windowed,
+      afterSubmit,
+      beforeSubmit,
+      autoComplete,
     } = this.props;
 
+    // Get the current slide that we're on
     const { current } = this.state;
-
-    if (windowed) {
-      const slide = slides[current];
-      const index = current;
-      return (
-        <div className={classes(['ff--slider', className])}>
-          <button
-            onClick={this.prev}
-            className={classes([
-              'ff--slider--control',
-              'ff--slider--control--left',
-              this.state.current === 0 && 'ff--slider--control--disabled',
-            ])}
-            disabled={this.state.current === 0}
-          >
-            {PrevButton || prevChevron}
-          </button>
-          <button
-            onClick={this.next}
-            className={classes(['ff--slider--control', 'ff--slider--control--right'])}
-          >
-            {NextButton || nextChevron}
-          </button>
-          <Form
-            name="slider-form"
-            onSubmit={onSubmit}
-            beforeSubmit={beforeSubmit}
-            afterSubmit={afterSubmit}
-            autoComplete={autoComplete}
-            keepUnmountedFieldValues={windowed}
-          >
-            <Slide
-              key={slide.key || index}
-              shouldShowIf={isFunction(slide.shouldShowIf) ? slide.shouldShowIf : alwaysTrue}
-              index={index}
-              position={getPosition(this.state.current, index)}
-              getFormValues={this.getFormValues}
-              slideProps={slideProps}
-              afterSlide={slide.afterSlide}
-              beforeExit={slide.beforeExit}
-            >
-              {isFunction(slide.render)
-                ? slide.render(this.mapSlideProps(slideProps))
-                : slide.render}
-            </Slide>
-          </Form>
-        </div>
-      );
-    }
+    // React children as an array
+    const children = this.getChildren();
+    // The current slide
+    const slide = children[current];
+    // Possible render prop on the slide
+    const { render } = slide.props;
+    // Classes applied to left control
+    const leftClasses = classes(['ff--slider-control', 'ff--slider-control-left']);
+    // Classes applied to the right control
+    const rightClasses = classes(['ff--slider-control', 'ff--slider-control-right']);
 
     return (
-      <div className="ff--slider">
-        <button
-          onClick={this.prev}
-          className={classes([
-            'ff--slider--control',
-            'ff--slider--control--left',
-            this.state.current === 0 && 'ff--slider--control--disabled',
-          ])}
-          disabled={this.state.current === 0}
-        >
-          {PrevButton || prevChevron}
+      <div className={classes(['ff--slider', className])}>
+        <button className={leftClasses} disabled={current === 0} onClick={this.prev}>
+          {PrevButton}
         </button>
-        <button
-          onClick={this.next}
-          className={classes(['ff--slider--control', 'ff--slider--control--right'])}
-        >
-          {NextButton || nextChevron}
+        <button className={rightClasses} onClick={this.next}>
+          {NextButton}
         </button>
         <Form
-          name="slider-form"
+          name={formName}
           onSubmit={onSubmit}
           beforeSubmit={beforeSubmit}
           afterSubmit={afterSubmit}
           autoComplete={autoComplete}
-          keepUnmountedFieldValues={windowed}
+          keepUnmountedFieldValues
+          ref={this.setFormRef}
         >
-          {this.props.slides.map((slide, index) => (
-            <Slide
-              key={slide.key || index}
-              shouldShowIf={isFunction(slide.shouldShowIf) ? slide.shouldShowIf : alwaysTrue}
-              index={index}
-              position={getPosition(this.state.current, index)}
-              getFormValues={this.getFormValues}
-              slideProps={slideProps}
-              afterSlide={slide.afterSlide}
-              beforeExit={slide.beforeExit}
-            >
-              {isFunction(slide.render)
-                ? slide.render(this.mapSlideProps(slideProps))
-                : slide.render}
+          {isFunction(render) ? (
+            <Slide ref={this.setCurrentSlideRef} {...slide.props}>
+              {render(this.mapSlideProps)}
             </Slide>
-          ))}
+          ) : (
+            React.cloneElement(slide, this.mapSlideProps)
+          )}
         </Form>
       </div>
     );

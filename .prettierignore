@@ -2,6 +2,6 @@
 .DS_Store
 coverage
 package/**/coverage
-packages/**/dist
+packages/**/dist/*
 packages/example/build
 packages/**/node_modules

@@ -1,22 +1,7 @@
 .ff--slide {
-  /*position: absolute;*/
-  /*will-change: transform;*/
-  /*transition: transform 0.6s ease-in-out, opacity 0.3s ease-in-out;*/
-  height: 100%;
-  width: 100%;
-  padding: 2rem;
+  padding: 2rem 4rem;
   z-index: 1;
   background-color: white;
-  /*transform: translateX(0);*/
   opacity: 1;
-}
-
-.ff--slide--prev {
-  /*transform: translateX(-100%);*/
-  opacity: 0;
-}
-
-.ff--slide--next {
-  /*transform: translateX(100%);*/
-  opacity: 0;
+  width: calc(100% - 8rem);
 }

@@ -48,7 +48,9 @@ export default class Form extends Component {
      * The form should have some fields
      */
     children: PropTypes.any.isRequired, // eslint-disable-line
-
+    /**
+     * Whether or not to keep the field values after the fields unmount
+     */
     keepUnmountedFieldValues: PropTypes.bool,
   };
 
@@ -56,11 +58,6 @@ export default class Form extends Component {
     autoComplete: 'on',
     noValidate: false,
     keepUnmountedFieldValues: false,
-  };
-
-  static contextTypes = {
-    registerForm: PropTypes.func,
-    unregisterForm: PropTypes.func,
   };
 
   static childContextTypes = {
@@ -115,19 +112,12 @@ export default class Form extends Component {
   }
 
   componentDidMount() {
-    if (this.context && isFunction(this.context.registerForm)) {
-      this.context.registerForm({
-        name: this.props.name,
-        getValues: this.getValues,
-        submit: this.handleOnSubmit,
-      });
-    }
+    this.setState({
+      isMounted: true,
+    });
   }
 
   componentWillUnmount() {
-    if (this.context && isFunction(this.context.unregisterForm)) {
-      this.context.unregisterForm(this.props.name);
-    }
     this.setState({
       isMounted: false,
     });
@@ -189,7 +179,7 @@ export default class Form extends Component {
 
       if (!isValid) {
         // Reject the promise and leave the function. We should handle this.
-        return rej({ error: 'Fields not valid.' });
+        return rej(new Error('Fields not valid.'));
       }
 
       // Grab all the field values

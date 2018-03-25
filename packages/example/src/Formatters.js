@@ -22,9 +22,7 @@ const stripNonNumeric = value => {
   return str;
 };
 
-const formatPhone = value => {
-  return new AsYouType('US').input(value);
-};
+const formatPhone = value => new AsYouType('US').input(value);
 
 const toUpperCase = value => value.toUpperCase();
 
