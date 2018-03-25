@@ -18,7 +18,7 @@ export default class SliderForm extends Component {
   render() {
     return (
       <div>
-        <Slider beforeSubmit={beforeSubmit} onSubmit={onSubmit} windowed slides={[]}>
+        <Slider beforeSubmit={beforeSubmit} onSubmit={onSubmit}>
           <Slide
             render={props => (
               <div>
@@ -44,11 +44,50 @@ export default class SliderForm extends Component {
               </div>
             )}
           />
-          <Slide>Slide One</Slide>
+          <Slide
+            render={props => (
+              <div>
+                <h2>Decision Tree</h2>
+                <p>
+                  Here are two radio buttons. If you choose the first one, you&apos;ll see the next
+                  slide and skip the one after that. If you choose the other one, you&apos;ll see
+                  the reverse.
+                </p>
+                <Radios
+                  validate={required}
+                  name="decisionTree"
+                  options={[
+                    { label: 'Next Slide', value: '0' },
+                    { label: 'The Other One', value: '1' },
+                  ]}
+                  value={props.getFormValues().decisionTree}
+                />
+              </div>
+            )}
+          />
+          <Slide shouldShowIf={values => values.decisionTree === '0'}>
+            <div>
+              <h2>You chose the first slide.</h2>
+              <p>(This is a static message, in case you&apos;re wondering).</p>
+            </div>
+          </Slide>
+          <Slide shouldShowIf={values => values.decisionTree === '1'}>
+            <div>
+              <h2>You skipped the last slide.</h2>
+              <p>(This is a static message, in case you&apos;re wondering).</p>
+            </div>
+          </Slide>
+          <Slide>
+            <h2>A static slide</h2>
+            <p>
+              This is a static slide. There is no need to set values in forms, so we don&apos;t need
+              to use a render prop.
+            </p>
+          </Slide>
           <Slide>
             <div>Testing, one, two, three.</div>
           </Slide>
-          <Slide render={props => <pre>{JSON.stringify(props, null, 2)}</pre>} />
+          <Slide render={props => <pre>{JSON.stringify(props.getFormValues(), null, 2)}</pre>} />
         </Slider>
       </div>
     );

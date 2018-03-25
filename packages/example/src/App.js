@@ -14,14 +14,13 @@ import ExtraFields from './ExtraFields';
 
 import NavBar from './NavBar';
 
-const padding = { margin: '0 2rem 0', padding: '1rem', border: '2px solid steelblue' };
 export default class App extends Component {
   render() {
     return (
       <BrowserRouter>
         <div>
           <Route path="*" component={NavBar} />
-          <div style={padding}>
+          <div>
             <Route path="/" exact component={Intro} />
             <Route path="/regular" exact component={RegularForm} />
             <Route path="/formatters" exact component={Formatters} />
