@@ -7,23 +7,42 @@
   width: 100%;
 }
 
-.ff--slider--control {
+.ff--slider form {
+  width: 100%;
+}
+
+.ff--slider-control {
   cursor: pointer;
   padding: 0.25rem;
   position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
+  top: 0;
+  bottom: 0;
+  height: 100%;
   z-index: 999;
+  background-color: rgba(0, 0, 0, 0.25);
+  color: rgba(250, 250, 250, 0.95);
+  width: 2rem;
+  transition: background-color ease-in-out 0.2s;
+  font-size: 1.25rem;
 }
 
-.ff--slider--control--disabled {
+.ff--slider-control:hover {
+  background-color: rgba(0, 0, 0, 0.75);
+}
+
+.ff--slider-control:disabled {
   cursor: not-allowed;
 }
 
-.ff--slider--control--left {
+.ff--slider-control:active,
+.ff--slider-control:focus {
+  outline: none;
+}
+
+.ff--slider-control-left {
   left: 0;
 }
 
-.ff--slider--control--right {
+.ff--slider-control-right {
   right: 0;
 }
