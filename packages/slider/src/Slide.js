@@ -7,10 +7,29 @@ const alwaysTrue = () => true;
 
 export default class Slide extends PureComponent {
   static propTypes = {
+    /**
+     * Regular react children.
+     * Note: do not use this with a `render` prop (as the children will be ignored)
+     */
     children: PropTypes.oneOfType([PropTypes.node, PropTypes.element, PropTypes.string]),
+    /**
+     * A className to put on the slide
+     */
     className: PropTypes.string,
+    /**
+     * If there is a <Field /> on the slide, then whether autoFocus the first one
+     */
     autoFocus: PropTypes.bool,
-    shouldShowIf: PropTypes.func,
+    /**
+     * Function that determines if the slide will show or be skipped; not used internally, but
+     * used by the Slider component
+     */
+    shouldShowIf: PropTypes.func, // eslint-disable-line
+    /**
+     * A render prop, which gets called by the <Slider /> component
+     * Note: do not use with children as the children will be ignored
+     */
+    render: PropTypes.func, // eslint-disable-line
   };
 
   static defaultProps = {
@@ -78,12 +97,14 @@ export default class Slide extends PureComponent {
         const firstField = this.fields[fieldNames[0]].getRef();
         // We need to push this top the next cycle in the event loop; otherwise we focus before
         // it fully renders (which means, nothing actually happens).
-        setTimeout(() => {
-          // Call `focus` on the first field that we have
-          firstField.focus();
-          // Move the cursor to the end of the field
-          moveCursor(firstField);
-        }, 0);
+        if (firstField) {
+          setTimeout(() => {
+            // Call `focus` on the first field that we have
+            firstField.focus();
+            // Move the cursor to the end of the field
+            moveCursor(firstField);
+          }, 0);
+        }
       }
     }
   };
