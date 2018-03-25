@@ -23,36 +23,36 @@ export default class Slider extends PureComponent {
      */
     current: PropTypes.number,
     /**
-     * The slide to start on
+     * Turn on/off autocomplete for the form
      */
     autoComplete: PropTypes.oneOf(['on', 'off']),
     /**
-     * The slide to start on
+     * A className or classNames to pass to the slider
      */
     className: PropTypes.string, // eslint-disable-line
     /**
-     * The slide to start on
+     * The slides. These should only be of type <Slide />
      */
     children: PropTypes.oneOfType([PropTypes.element, PropTypes.arrayOf(PropTypes.element)])
       .isRequired,
     /**
-     * The slide to start on
+     * A button to use as a previous button
      */
     PrevButton: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
     /**
-     * The slide to start on
+     * A button to use as a next button
      */
     NextButton: PropTypes.oneOfType([PropTypes.element, PropTypes.string]),
     /**
-     * The slide to start on
+     * The beforSubmit hook to pass to the form
      */
     beforeSubmit: PropTypes.func,
     /**
-     * The slide to start on
+     * The submit handler to pass to the form
      */
     onSubmit: PropTypes.func.isRequired,
     /**
-     * The slide to start on
+     * The afterSubmit hook to pass to the form
      */
     afterSubmit: PropTypes.func,
     /**
