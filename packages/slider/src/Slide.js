@@ -3,17 +3,21 @@ import PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
 import { classes, moveCursor } from '@flow-form/helpers';
 
+const alwaysTrue = () => true;
+
 export default class Slide extends PureComponent {
   static propTypes = {
     children: PropTypes.oneOfType([PropTypes.node, PropTypes.element, PropTypes.string]),
     className: PropTypes.string,
     autoFocus: PropTypes.bool,
+    shouldShowIf: PropTypes.func,
   };
 
   static defaultProps = {
     className: '',
     autoFocus: true,
     children: null,
+    shouldShowIf: alwaysTrue,
   };
 
   static contextTypes = {

@@ -191,6 +191,9 @@ export default class Slider extends PureComponent {
   };
 
   prev = () => {
+    // The logic of the slide beforeExit slide hooks is basically the same as for the `next` method
+    // that's just above. Refer to the inline comments above for a better explanation of what is
+    // happening here.
     const prevSlideIndex = this.findPrev();
     if (prevSlideIndex !== this.state.current) {
       const { beforeExit, beforeExitToPrev } = this.current.props;
@@ -220,12 +223,7 @@ export default class Slider extends PureComponent {
     const length = children.length; // eslint-disable-line
     for (let i = current + 1; i <= length - 1; i++) {
       const slide = children[i];
-      const { shouldShowIf } = slide.props;
-      if (isFunction(shouldShowIf)) {
-        if (shouldShowIf(formValues)) {
-          return i;
-        }
-      } else {
+      if (slide.props.shouldShowIf(formValues)) {
         return i;
       }
       // No valid candidate for next slide, so we test the next
@@ -250,12 +248,7 @@ export default class Slider extends PureComponent {
     const length = children.length; // eslint-disable-line
     for (let i = current - 1; i >= 0; i--) {
       const slide = children[i];
-      const { shouldShowIf } = slide.props;
-      if (isFunction(shouldShowIf)) {
-        if (shouldShowIf(formValues)) {
-          return i;
-        }
-      } else {
+      if (slide.props.shouldShowIf(formValues)) {
         return i;
       }
       // No valid candidate for next slide, so we test the next
