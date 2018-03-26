@@ -29,7 +29,7 @@
     "test:watch": "yarn run test --watch"
   },
   "dependencies": {
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.5"
   },
   "publishConfig": {
     "access": "public"
