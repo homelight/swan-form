@@ -18,9 +18,10 @@ export default class DynamicField extends Component {
     this.onSubmit = this.onSubmit.bind(this);
   }
 
-  onSubmit(values) {
+  onSubmit = values => {
+    console.log('Setting state with values', values);
     this.setState(values);
-  }
+  };
 
   render() {
     return (

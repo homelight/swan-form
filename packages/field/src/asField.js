@@ -44,11 +44,37 @@ function getInitialValue(props) {
  * This can be used to create complex fields as well
  *
  * @param  {React.Component|React.Element} WrappedComponent The component to turn into a field
- * @param  {Object} wrapperOptions   [description]
+ * @param  {Object} options   [description]
  * @return {[type]}                  [description]
  */
-function asField(WrappedComponent, wrapperOptions = {}) {
-  const asFieldWrapper = class extends PureComponent {
+function asField(WrappedComponent, options = {}) {
+  return class extends PureComponent {
+    static displayName = `asField(${WrappedComponent.displayName || 'Component'})`;
+
+    static propTypes = {
+      registerWrapped: PropTypes.bool,
+      /**
+       * Number of ms to delay asyncValidation while typing
+       * @type {Number}
+       */
+      validateDebounceTimeout: PropTypes.number,
+    };
+
+    static defaultProps = {
+      registerWrapped: true,
+      validateDebounceTimeout: 200,
+    };
+
+    static contextTypes = {
+      registerField: PropTypes.func,
+      unregisterField: PropTypes.func,
+    };
+
+    static childContextTypes = {
+      registerField: PropTypes.func,
+      unregisterField: PropTypes.func,
+    };
+
     constructor(props) {
       super(props);
 
@@ -70,18 +96,17 @@ function asField(WrappedComponent, wrapperOptions = {}) {
 
       // This is used for debouncing validate functions while typing
       this.debounceValidateTimer = null;
+
+      // We collect fields if they aren't registered with the context above, and we manipulate them
+      // that way.
+      this.fields = {};
     }
 
     getChildContext() {
-      // @todo figure out this registered wrapped thing
-      if (wrapperOptions.registerWrapped !== false) {
-        return {
-          registerField: this.props.registerWrapped === true ? this.register : noop,
-          unregisterField: this.props.registerWrapped === true ? this.unregister : noop,
-        };
-      }
-      // Pass through this context. The existence of this method somewhat messes with it.
-      return this.context;
+      return {
+        registerField: this.register,
+        unregisterField: this.unregister,
+      };
     }
 
     componentDidMount() {
@@ -126,12 +151,17 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * Use the registration function passed by context
      * @return {void}
      */
-    register = () => {
+    register = (fieldProps = null) => {
       if (!this.props.name) {
+        console.log('NO NAME FIELD');
         // If there is no name, return early, and do not register with the form.
         return;
       }
-      if (isFunction(this.context.registerField) && wrapperOptions.registerWrapper !== false) {
+
+      if (fieldProps && options.registerWrapped === false) {
+        // This is where we intercept the fields and control them.
+        this.fields[fieldProps.name] = fieldProps;
+      } else if (isFunction(this.context.registerField)) {
         this.context.registerField({
           // This should be a unique key
           name: this.props.name,
@@ -155,13 +185,20 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * Use the unregistration function passed by context
      * @return {void}
      */
-    unregister = () => {
-      if (!this.props.name) {
-        // If there was no name, then we never registered.
-        return;
-      }
-      if (isObject(this.context) && isFunction(this.context.unregisterField)) {
-        this.context.unregisterField(this.props.name);
+    unregister = name => {
+      if (name) {
+        // If this is called with a name, then that means a field is unregistering from this
+        // composed field
+        const { [name]: removed, ...rest } = this.fields;
+        this.fields = rest;
+      } else {
+        if (!this.props.name) {
+          // If there was no name, then we never registered.
+          return;
+        }
+        if (isObject(this.context) && isFunction(this.context.unregisterField)) {
+          this.context.unregisterField(this.props.name);
+        }
       }
     };
 
@@ -179,7 +216,29 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * @return {[type]}       [description]
      */
     onChange = event => {
-      const { value } = event.target;
+      // We're allowing the pattern for composed fields to call "onChange" with just a value
+      // so, we have to detect whether this method was called from an event that gives us
+      // access to a DOMElement | DOMNode in event.target or if we're just getting an object
+      // or a string...
+      let value;
+      if (event && event.target) {
+        // If we have both event and event.target, check to see if event.target is a DOMElement
+        // or DOMNode. If so, the value is just the value on the target (i.e. we're receiving)
+        // information on a field primitive.
+        if (event.target instanceof Element || event.target instanceof Node) {
+          value = event.target.value; // eslint-disable-line
+        } else {
+          // If not, then the value contained "target" as a key, so the correct value is just the
+          // entire object, or, inappropriately named here as "event"
+          value = event;
+        }
+      } else if (event) {
+        // If `target` is not on the object, then it's not a field primitive, and we should consider
+        // that the entire value is just what is now poorly named as "event"
+        value = event;
+      }
+
+      // const { value } = event.target;
       const { validateWhileTyping, validateDebounceTimeout } = this.props;
 
       if (this.props.type === 'checkbox') {
@@ -294,42 +353,28 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * @param  {[type]} event [description]
      * @return {[type]}       [description]
      */
-    preventSubmitOnEnter = event => {
-      const { target } = event;
-      if (event.keyCode === ENTER) {
-        event.preventDefault();
-        if (isFunction(this.props.handleEnterKey)) {
-          this.props.handleEnterKey(target);
-        }
-        if (isFunction(this.context.handleEnterKey)) {
-          // Can be used by the `form` component to move through fields, or for other things
-          this.context.handleEnterKey(target);
-        }
-      } else if (event.keyCode === TAB) {
-        // Temporary. Consider passing a function in context or as a prop instead.
-        event.preventDefault();
-      }
-    };
-
-    // This is a temporary solution
     handleKey = event => {
-      const { name, type } = this.props;
+      const { name, type, handleKeyPress } = this.props;
       const { handleKey, handleTab } = this.context;
+      const { shiftKey, ctrlKey, altKey } = event;
 
       if (event.keyCode === ENTER) {
         if (!['textarea', 'button', 'submit', 'reset'].includes(type)) {
           event.preventDefault();
           if (isFunction(handleKey)) {
-            const { shiftKey, ctrlKey, altKey } = event;
             handleKey(ENTER, { shiftKey, ctrlKey, altKey }, type, name, this.fieldRef);
           }
         }
       } else if (event.keyCode === TAB && handleTab) {
         event.preventDefault();
         if (isFunction(handleKey)) {
-          const { shiftKey, ctrlKey, altKey } = event;
           handleKey(TAB, { shiftKey, ctrlKey, altKey }, type, name, this.fieldRef);
         }
+      }
+
+      // Let the user supplied function take over
+      if (isFunction(handleKeyPress)) {
+        handleKeyPress(event.keyCode, { shiftKey, ctrlKey, altKey }, type, name, this.fieldRef);
       }
     };
 
@@ -338,12 +383,13 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      */
 
     setRef = el => {
+      this.fieldRef = el;
+
       const { setRef } = this.props;
       // If setRef was sent to to the component as a prop, then also call it with the element
       if (setRef && isFunction(setRef)) {
         setRef(el);
       }
-      this.fieldRef = el;
     };
 
     getRef = () => this.fieldRef;
@@ -413,17 +459,42 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       if (isFunction(this.props.onChange)) {
         this.props.onChange(this.initialState.value, this.props.name);
       }
+
+      // If this is acting as a wrapper to compose fields, then call the reset on the fields it
+      // controls
+      Object.keys(this.fields).forEach(field => {
+        if (isFunction(this.fields[field].reset)) {
+          this.fields[field].reset();
+        }
+      });
     };
 
     /**
      * Validation and Errors
      */
 
-    validate = () => this.maybeUpdateErrors(this.runValidations());
+    validate = () => {
+      // We need to get the values of the controled fields and see if they're
+      // good. Might be buggy.
+      const controlledFields = Object.keys(this.fields)
+        .reduce((acc, field) => {
+          if (isFunction(this.fields[field].validate)) {
+            return [...acc, this.fields[field].validate()];
+          }
+          return acc;
+        }, [])
+        .filter(valid => valid !== true);
+      console.log('ControlledFields', this.props.name, controlledFields);
+      return this.maybeUpdateErrors([...controlledFields, ...this.runValidations()]);
+    };
 
     runValidations = () => runValidations(this.props.validate, this.state.value);
 
     isValid = () => !hasErrors(this.runValidations());
+
+    wrappedRef = el => {
+      this.ref = el;
+    };
 
     /**
      * [maybeUpdateErrors description]
@@ -434,6 +505,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * @return {[type]}     [description]
      */
     maybeUpdateErrors = msg => {
+      console.log(this.props.name, msg);
       if (msg === false) {
         if (this.state.errors.length !== 0) {
           this.setState(prevState => ({
@@ -442,7 +514,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
             errors: emptyArray,
           }));
         }
-        // This means it is valid
+        // This means it is valid, which is non-intuitive coming from a method with this name
         return true;
       }
       if (Array.isArray(msg) && msg.every(message => message === false)) {
@@ -458,7 +530,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         isValid: false,
         errors: Array.isArray(msg) ? msg : [msg],
       }));
-      // This means it is not valid
+      // This means it is not valid, which is non-intuitive coming from a method with this name
       return false;
     };
 
@@ -541,6 +613,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
           onFocus={this.onFocus}
           onClick={this.onClick}
           setRef={this.setRef}
+          ref={this.wrappedRef}
           value={this.state.value}
           errors={this.state.errors}
           isValid={this.state.isValid}
@@ -549,36 +622,6 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       );
     }
   };
-
-  asFieldWrapper.displayName = `asField(${WrappedComponent.displayName || 'Component'})`;
-
-  asFieldWrapper.propTypes = {
-    registerWrapped: PropTypes.bool,
-    /**
-     * Number of ms to delay asyncValidation while typing
-     * @type {Number}
-     */
-    validateDebounceTimeout: PropTypes.number,
-  };
-
-  asFieldWrapper.defaultProps = {
-    registerWrapped: true,
-    validateDebounceTimeout: 200,
-  };
-
-  asFieldWrapper.contextTypes = {
-    registerField: PropTypes.func,
-    unregisterField: PropTypes.func,
-    autoComplete: PropTypes.oneOf(['on', 'off']),
-  };
-
-  asFieldWrapper.childContextTypes = {
-    registerField: PropTypes.func,
-    unregisterField: PropTypes.func,
-    autoComplete: PropTypes.oneOf(['on', 'off']),
-  };
-
-  return asFieldWrapper;
 }
 
 export default asField;
