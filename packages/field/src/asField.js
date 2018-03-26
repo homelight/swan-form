@@ -47,7 +47,7 @@ function getInitialValue(props) {
  * @param  {Object} options   [description]
  * @return {[type]}                  [description]
  */
-function asField(WrappedComponent, options = {}) {
+function asField(WrappedComponent, wrapperOptions = {}) {
   return class extends PureComponent {
     static displayName = `asField(${WrappedComponent.displayName || 'Component'})`;
 
@@ -123,6 +123,7 @@ function asField(WrappedComponent, options = {}) {
     }
 
     componentDidUpdate(prevProps, prevState) {
+      // This isn't working correctly for everything
       if (this.fieldRef && this.fieldRef.selectionStart) {
         const { cursor } = this.state;
         if (typeof cursor !== 'undefined' && cursor !== prevState.cursor) {
@@ -158,7 +159,7 @@ function asField(WrappedComponent, options = {}) {
         return;
       }
 
-      if (fieldProps && options.registerWrapped === false) {
+      if (fieldProps && wrapperOptions.registerWrapped === false) {
         // This is where we intercept the fields and control them.
         this.fields[fieldProps.name] = fieldProps;
       } else if (isFunction(this.context.registerField)) {
@@ -296,6 +297,7 @@ function asField(WrappedComponent, options = {}) {
      * Event Handlers
      */
 
+    // @todo sort of focus handlers for composed fields
     onFocus = event => {
       const { onFocus } = this.props;
       const { target } = event;
@@ -322,6 +324,7 @@ function asField(WrappedComponent, options = {}) {
       }
     };
 
+    // @todo sort out blur handlers for composed fields
     onBlur = event => {
       const { onBlur, validate, asyncValidate } = this.props;
       const { target } = event;
@@ -344,7 +347,7 @@ function asField(WrappedComponent, options = {}) {
     };
 
     /**
-     * [preventSubmitOnEnter description]
+     * [handleKey description]
      *
      * @todo maybe change the name of this function. Really, it's to prevent
      *       forms from submitting, but it can be used for other things. Maybe
@@ -416,7 +419,7 @@ function asField(WrappedComponent, options = {}) {
      * setState method. This will be sent as part of the callback in the `register` method, so that
      * anything that this registers with shall have access to update the value.
      *
-     * @todo  the
+     * @todo  make this work with controlled fields.
      *
      * @param {any} value the value to set
      */
@@ -477,19 +480,21 @@ function asField(WrappedComponent, options = {}) {
       // We need to get the values of the controled fields and see if they're
       // good. Might be buggy.
       const controlledFields = Object.keys(this.fields)
-        .reduce((acc, field) => {
-          if (isFunction(this.fields[field].validate)) {
-            return [...acc, this.fields[field].validate()];
-          }
-          return acc;
-        }, [])
+        .reduce(
+          (acc, field) =>
+            isFunction(this.fields[field].validate) ? [...acc, this.fields[field].validate()] : acc,
+          [],
+        )
+        // This filter is ugly... It sort of mixes concerns and shows how we're repurposing the
+        // method.
         .filter(valid => valid !== true);
-      console.log('ControlledFields', this.props.name, controlledFields);
       return this.maybeUpdateErrors([...controlledFields, ...this.runValidations()]);
     };
 
     runValidations = () => runValidations(this.props.validate, this.state.value);
 
+    // @todo update this to be aware of controlled fields, or merge it with the other validation
+    // functions
     isValid = () => !hasErrors(this.runValidations());
 
     wrappedRef = el => {
@@ -505,7 +510,6 @@ function asField(WrappedComponent, options = {}) {
      * @return {[type]}     [description]
      */
     maybeUpdateErrors = msg => {
-      console.log(this.props.name, msg);
       if (msg === false) {
         if (this.state.errors.length !== 0) {
           this.setState(prevState => ({
@@ -592,6 +596,9 @@ function asField(WrappedComponent, options = {}) {
         ...spreadProps
       } = this.props;
 
+      // @todo we need to do this, but we should think about caching the fake value, right now
+      // it will make any other pure components rerender because its value will change
+      //
       // If autocomplete is `off`, then it's most likely passed to the form as `off`, so by
       // recommendation of the spec, we're going to turn it off in the fields. But, since `off`
       // isn't actually supported by browsers anymore, we're instead going to generate random
