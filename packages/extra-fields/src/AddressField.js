@@ -83,13 +83,13 @@ class AddressField extends Component {
   };
 
   static contextTypes = {
-    register: PropTypes.func,
-    unregister: PropTypes.func,
+    registerField: PropTypes.func,
+    unregisterField: PropTypes.func,
   };
 
   static childContextTypes = {
-    register: PropTypes.func,
-    unregister: PropTypes.func,
+    registerField: PropTypes.func,
+    unregisterField: PropTypes.func,
   };
 
   constructor(props) {
@@ -116,8 +116,8 @@ class AddressField extends Component {
   getChildContext() {
     // Overwrite the Form register/unregister functions with these ones
     return Object.assign({}, this.context, {
-      register: this.register,
-      unregister: this.unregister,
+      registerField: this.register,
+      unregisterField: this.unregister,
     });
   }
 
@@ -147,21 +147,6 @@ class AddressField extends Component {
     console.log(...nextState);
   }
 
-  updatePart(key, value) {
-    if (
-      Object.prototype.hasOwnProperty.call(this.state.value, key) &&
-      this.state.value[key] !== value
-    ) {
-      this.setState(prevState => ({
-        ...prevState,
-        value: {
-          ...prevState.value,
-          [key]: value,
-        },
-      }));
-    }
-  }
-
   setValue(newValues) {
     this.setState(prevState => ({
       ...prevState,
@@ -177,12 +162,12 @@ class AddressField extends Component {
     }));
   }
 
-  validate(updateErrors = false) {
-    return true;
-  }
-
   getRef() {
     return this.fieldRef;
+  }
+
+  getValue() {
+    return this.state.value;
   }
 
   setRef(el) {
@@ -220,17 +205,23 @@ class AddressField extends Component {
     }
   }
 
-  getValue() {
-    return this.state.value;
+  validate() {
+    return true;
   }
 
-  isDirty() {
-    const { value } = this.state;
-    return Object.keys(value).every(key => this.props.value[key] === value[key]);
-  }
-
-  isTouched() {
-    return this.state.isTouched;
+  updatePart(key, value) {
+    if (
+      Object.prototype.hasOwnProperty.call(this.state.value, key) &&
+      this.state.value[key] !== value
+    ) {
+      this.setState(prevState => ({
+        ...prevState,
+        value: {
+          ...prevState.value,
+          [key]: value,
+        },
+      }));
+    }
   }
 
   render() {

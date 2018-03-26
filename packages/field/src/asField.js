@@ -569,8 +569,6 @@ function asField(WrappedComponent, wrapperOptions = {}) {
   asFieldWrapper.contextTypes = {
     registerField: PropTypes.func,
     unregisterField: PropTypes.func,
-    handleKey: PropTypes.func, // @TODO temp
-    handleTab: PropTypes.bool, // @TODO temp
     autoComplete: PropTypes.oneOf(['on', 'off']),
   };
 
