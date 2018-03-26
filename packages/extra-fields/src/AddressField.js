@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { asField, Field } from '@flow-form/field';
 import isFunction from 'lodash/isFunction';
-import { autobind } from '@flow-form/helpers';
 
 const states = [
   '----',
@@ -96,15 +95,11 @@ class AddressField extends Component {
     super(props);
     this.state = {
       value: props.value,
-      isTouched: false,
-      isDirty: false,
       isValid: false, // update this in case the initial value is valid
     };
     this.initialState = { ...this.state };
 
     this.fieldRefs = {};
-
-    autobind(this, ['register', 'reset', 'unregister', 'getValue', 'setValue', 'getRef', 'setRef']);
 
     this.onLine1Change = this.updatePart.bind(this, 'line1');
     this.onLine2Change = this.updatePart.bind(this, 'line2');
@@ -143,15 +138,9 @@ class AddressField extends Component {
     }
   }
 
-  componentWillUpdate(nextProps, nextState) {
-    console.log(...nextState);
-  }
-
-  setValue(newValues) {
+  setValue = newValues => {
     this.setState(prevState => ({
       ...prevState,
-      isDirty: true,
-      isTouched: true,
       value: {
         line1: newValues.line1,
         line2: newValues.line2,
@@ -160,26 +149,26 @@ class AddressField extends Component {
         zip: newValues.zip,
       },
     }));
-  }
+  };
 
-  getRef() {
+  getRef = () => {
     return this.fieldRef;
-  }
+  };
 
-  getValue() {
+  getValue = () => {
     return this.state.value;
-  }
+  };
 
-  setRef(el) {
+  setRef = el => {
     this.fieldRef = el;
-  }
+  };
 
-  reset() {
+  reset = () => {
     console.log('address field reset');
     this.setState(this.initialState);
-  }
+  };
 
-  register({ name, getRef, reset }) {
+  register = ({ name, getRef, reset }) => {
     this.fieldRefs = {
       ...this.fieldRefs,
       [name]: {
@@ -197,32 +186,34 @@ class AddressField extends Component {
         reset: this.reset,
       });
     }
-  }
+  };
 
-  unregister() {
+  unregister = () => {
     if (isFunction(this.context.unregister)) {
       this.context.unregister(this.props.name);
     }
-  }
+  };
 
-  validate() {
+  validate = () => {
     return true;
-  }
+  };
 
-  updatePart(key, value) {
+  updatePart = (key, value) => {
     if (
       Object.prototype.hasOwnProperty.call(this.state.value, key) &&
       this.state.value[key] !== value
     ) {
-      this.setState(prevState => ({
-        ...prevState,
-        value: {
-          ...prevState.value,
-          [key]: value,
-        },
-      }));
+      this.setState(prevState => {
+        return {
+          ...prevState,
+          value: {
+            ...prevState.value,
+            [key]: value,
+          },
+        };
+      });
     }
-  }
+  };
 
   render() {
     const { autoFocus, label, name, className } = this.props;

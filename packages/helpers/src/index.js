@@ -1,4 +1,3 @@
-import autobind from './autobind';
 import classes from './classes';
 import createFormatter from './createFormatter';
 import emptyArray from './emptyArray';
@@ -11,7 +10,6 @@ import noop from './noop';
 import runValidations from './runValidations';
 
 export {
-  autobind,
   classes,
   createFormatter,
   emptyArray,
