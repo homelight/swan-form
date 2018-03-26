@@ -3,19 +3,20 @@
 import React, { Component } from 'react';
 
 import { asField, Submit } from '@flow-form/field';
-import Form from '@flow-form/form/dist/Form';
+import { Form } from '@flow-form/form';
 
 /* eslint-disable no-console */
 const onSubmit = values => console.log(values);
 /* eslint-enable no-console */
 
-const toWrap = ({ name, onChange, value, placeholder }) => (
-  <input name={name} onChange={onChange} value={value} placeholder={placeholder} />
+const toWrap = ({ name, onChange, value, placeholder, setRef }) => (
+  <input name={name} onChange={onChange} ref={setRef} value={value} placeholder={placeholder} />
 );
 
 class toWrapClass extends Component {
   render() {
-    return <input {...this.props} />;
+    const { isValid, setRef, ...spreadProps } = this.props;
+    return <input ref={setRef} {...spreadProps} />;
   }
 }
 

@@ -1,5 +1,5 @@
 import isFunction from 'lodash/isFunction';
-import noErrors from './noErrors';
+import emptyArray from './emptyArray';
 
 export default function runValidations(validate, value) {
   if (Array.isArray(validate)) {
@@ -19,5 +19,5 @@ export default function runValidations(validate, value) {
     return [errors];
   }
 
-  return noErrors;
+  return emptyArray;
 }

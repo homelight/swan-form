@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
-import { hasOwnProperty, noErrors } from '@flow-form/helpers';
+import { hasOwnProperty, emptyArray, emptyObject } from '@flow-form/helpers';
 
 /**
  * Duck-type check for a promise
@@ -84,19 +84,18 @@ export default class Form extends Component {
 
     // Fill out with all the things
     this.state = {
-      isMounted: true,
       isSubmitting: false,
       hasSubmitted: false,
       hasSubmitError: false,
-      errors: noErrors,
-      values: {},
+      errors: emptyArray,
+      values: emptyObject,
     };
 
     // This isn't a pure component by any means. We're going to create an object to keep track
     // of all of the fields that get registered with this component. We're avoiding keeping track
     // of these in `state` because that would cause unnecessary re-renders and be quite
     // annoying.
-    this.fields = {};
+    this.fields = emptyObject;
     this.isSubmitting = this.getValue.bind(this, 'isSubmitting');
   }
 
@@ -109,18 +108,6 @@ export default class Form extends Component {
       reset: this.resetForm,
       unregisterField: this.unregsiterField,
     };
-  }
-
-  componentDidMount() {
-    this.setState({
-      isMounted: true,
-    });
-  }
-
-  componentWillUnmount() {
-    this.setState({
-      isMounted: false,
-    });
   }
 
   setRef = el => {
@@ -152,12 +139,10 @@ export default class Form extends Component {
   });
 
   getSpreadProps() {
-    return ['noValidate'].reduce((acc, prop) => {
-      if (hasOwnProperty(this.props, prop)) {
-        acc[prop] = this.props[prop];
-      }
-      return acc;
-    }, {});
+    // If we get more than just this one, then we'll go back to `reduce`.
+    return hasOwnProperty(this.props, 'noValidate')
+      ? { noValidate: this.props.noValidate }
+      : emptyObject;
   }
 
   handleBeforeSubmit = () => {
@@ -168,14 +153,14 @@ export default class Form extends Component {
     }));
 
     return new Promise((res, rej) => {
-      if (!this.state.isMounted) {
-        return res({});
-      }
       // First, synchronously validate all the fields. `required` and `pattern` fields that
       // latch onto the native browser events will block the submit event, so we care only
       // about user supplied validation functions. This will also make field errors appear
       // everwhere. (@TODO do something to help identify fields in slider forms)
-      const isValid = Object.keys(this.fields).every(field => this.fields[field].validate());
+      const isValid =
+        Object.keys(this.fields)
+          .map(field => this.fields[field].validate())
+          .filter(x => x !== true).length == 0;
 
       if (!isValid) {
         // Reject the promise and leave the function. We should handle this.
@@ -202,7 +187,7 @@ export default class Form extends Component {
       isSubmitting: false,
       hasSubmitted: true,
       hasSubmitError: false,
-      errors: noErrors,
+      errors: emptyArray,
     }));
 
     if (isFunction(afterSubmit)) {

@@ -1,7 +1,7 @@
 /* global document, window */
 /* eslint-disable react/prop-types, react/sort-comp */
 
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 
 import isEqual from 'lodash/isEqual';
@@ -13,7 +13,7 @@ import {
   hasOwnProperty,
   keyCodes,
   moveCursor,
-  noErrors,
+  emptyArray,
   noop,
   runValidations,
 } from '@flow-form/helpers';
@@ -48,7 +48,7 @@ function getInitialValue(props) {
  * @return {[type]}                  [description]
  */
 function asField(WrappedComponent, wrapperOptions = {}) {
-  const asFieldWrapper = class extends Component {
+  const asFieldWrapper = class extends PureComponent {
     constructor(props) {
       super(props);
 
@@ -58,7 +58,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       // Establish the initial state
       const state = {
         value: getInitialValue(props),
-        errors: noErrors,
+        errors: emptyArray,
         isValid: !hasErrors(runValidations(props.validate, props.value)),
         isDirty: false,
         isTouched: false,
@@ -78,7 +78,6 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         return {
           registerField: this.props.registerWrapped === true ? this.register : noop,
           unregisterField: this.props.registerWrapped === true ? this.unregister : noop,
-          // autoComplete: this.context.autoComplete, // this might already be passed through
         };
       }
       // Pass through this context. The existence of this method somewhat messes with it.
@@ -96,26 +95,6 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         // Move the cursor to the end of the input if there is a value
         moveCursor(this.fieldRef);
       }
-    }
-
-    shouldComponentUpdate(nextProps, nextState) {
-      if (this.props === nextProps && this.state === nextState) {
-        return false;
-      }
-
-      if (this.props.type !== nextProps.type) {
-        return true;
-      }
-
-      if (this.state.value !== nextState.value) {
-        return true;
-      }
-
-      if (!isEqual(this.state.errors, nextState.errors)) {
-        return true;
-      }
-
-      return false;
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -419,7 +398,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         return {
           ...prevState,
           cursor,
-          errors: resetErrors === false ? prevState.errors : noErrors,
+          errors: resetErrors === false ? prevState.errors : emptyArray,
           isDirty: newValue !== this.props.value,
           isTouched: resetTouched !== true,
           value: newValue,
@@ -460,7 +439,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
           this.setState(prevState => ({
             ...prevState,
             isValid: true,
-            errors: noErrors,
+            errors: emptyArray,
           }));
         }
         // This means it is valid
@@ -470,7 +449,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         this.setState(prevState => ({
           ...prevState,
           isValid: true,
-          errors: noErrors,
+          errors: emptyArray,
         }));
         return true;
       }
@@ -503,8 +482,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
 
       if (isFunction(format)) {
         if (this.fieldRef && this.fieldRef.selectionStart) {
-          const cursor = this.fieldRef.selectionEnd;
-          return format(value, cursor);
+          return format(value, this.fieldRef.selectionEnd);
         }
         return format(value);
       }
