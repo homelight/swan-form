@@ -14,7 +14,6 @@ import {
   keyCodes,
   moveCursor,
   emptyArray,
-  noop,
   runValidations,
 } from '@flow-form/helpers';
 
@@ -100,6 +99,18 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       // We collect fields if they aren't registered with the context above, and we manipulate them
       // that way.
       this.fields = {};
+
+      // If autocomplete is `off`, then it's most likely passed to the form as `off`, so by
+      // recommendation of the spec, we're going to turn it off in the fields. But, since `off`
+      // isn't actually supported by browsers anymore, we're instead going to generate random
+      // strings and use those for the autocomplete value in order to confuse the browser's
+      // autocomplete feature. It's the best we can do for now.
+      // @see https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion
+      // In order to make this play well with PureComponents, we're just going to cache the random
+      // value so it doesn't change every render. We'll use this only if context is set to `off`
+      this.autoComplete = Math.random()
+        .toString(36)
+        .slice(-5);
     }
 
     getChildContext() {
@@ -153,16 +164,11 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * @return {void}
      */
     register = (fieldProps = null) => {
-      if (!this.props.name) {
-        console.log('NO NAME FIELD');
-        // If there is no name, return early, and do not register with the form.
-        return;
-      }
-
       if (fieldProps && wrapperOptions.registerWrapped === false) {
         // This is where we intercept the fields and control them.
         this.fields[fieldProps.name] = fieldProps;
-      } else if (isFunction(this.context.registerField)) {
+        // Note, if there is no name field, then we don't register with anything in context
+      } else if (this.props.name && isFunction(this.context.registerField)) {
         this.context.registerField({
           // This should be a unique key
           name: this.props.name,
@@ -197,6 +203,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
           // If there was no name, then we never registered.
           return;
         }
+        // Unregister this field itself
         if (isObject(this.context) && isFunction(this.context.unregisterField)) {
           this.context.unregisterField(this.props.name);
         }
@@ -297,18 +304,24 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * Event Handlers
      */
 
-    // @todo sort of focus handlers for composed fields
+    /**
+     * An onFocus handler that can be user defined.
+     *
+     * By default, it maybe binds a fundtion to keyDown to prevent accidental form submission.
+     *
+     * If you're using this wrapper to compose a field out of other FF fields, then you can use this
+     * function as a prop and pass it to all the fields that are relevant if you want to supply
+     * a function as a prop.
+     *
+     */
     onFocus = event => {
       const { onFocus } = this.props;
       const { target } = event;
 
       // On most fields, add in a handler to prevent a form submit on enter
-      // if (!['textarea', 'button', 'submit', 'reset'].includes(this.props.type)) {
       if (this.fieldRef) {
         this.fieldRef.addEventListener('keydown', this.handleKey, false);
       }
-
-      // }
 
       // If this field has yet to be touched, then set it as touched
       if (this.state.isTouched === false) {
@@ -324,17 +337,17 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       }
     };
 
-    // @todo sort out blur handlers for composed fields
+    /**
+     * Blur handler that provides some async validation (if specified) and removes event listeners
+     * that are created in onFocus
+     */
     onBlur = event => {
       const { onBlur, validate, asyncValidate } = this.props;
       const { target } = event;
 
-      // if (!['textarea', 'button', 'submit', 'reset'].includes(this.props.type)) {
       if (this.fieldRef) {
         this.fieldRef.removeEventListener('keydown', this.handleKey);
       }
-
-      // }
 
       if (asyncValidate && validate) {
         this.validate();
@@ -349,10 +362,6 @@ function asField(WrappedComponent, wrapperOptions = {}) {
     /**
      * [handleKey description]
      *
-     * @todo maybe change the name of this function. Really, it's to prevent
-     *       forms from submitting, but it can be used for other things. Maybe
-     *       I can just wrap some generic keyHandlers.
-     *
      * @param  {[type]} event [description]
      * @return {[type]}       [description]
      */
@@ -362,6 +371,9 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       const { shiftKey, ctrlKey, altKey } = event;
 
       if (event.keyCode === ENTER) {
+        // Allow the enter key to function normally on textareas, buttons, submits, and resets.
+        // Otherwise, intercept (likely, this is wrapped in a form, and it will make the form
+        // submit). Note: we intercept only if there is a function in context
         if (!['textarea', 'button', 'submit', 'reset'].includes(type)) {
           event.preventDefault();
           if (isFunction(handleKey)) {
@@ -419,7 +431,8 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * setState method. This will be sent as part of the callback in the `register` method, so that
      * anything that this registers with shall have access to update the value.
      *
-     * @todo  make this work with controlled fields.
+     * If you're composing fields with this wrapper, then the best practice is to call the onChange
+     * method from the wrapped component.
      *
      * @param {any} value the value to set
      */
@@ -455,6 +468,10 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       });
     };
 
+    /**
+     * Reset method called by `reset` buttons to restore the field to its initialState
+     *
+     */
     reset = () => {
       // Clobber the state by setting back to the initialState
       this.setState(this.initialState);
@@ -477,7 +494,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      */
 
     validate = () => {
-      // We need to get the values of the controled fields and see if they're
+      // We need to get the values of the controlled fields and see if they're
       // good. Might be buggy.
       const controlledFields = Object.keys(this.fields)
         .reduce(
@@ -556,13 +573,18 @@ function asField(WrappedComponent, wrapperOptions = {}) {
     format = value => {
       const { format } = this.props;
 
+      // If the user has specified a formatter, then call it on the value
       if (isFunction(format)) {
+        // If we have a fieldRef and the fieldRef supports selectionStart, then we'll
+        // do automated cursor management.
         if (this.fieldRef && this.fieldRef.selectionStart) {
           return format(value, this.fieldRef.selectionEnd);
         }
+        // Otherwise, just call with the value
         return format(value);
       }
 
+      // If not formatting function is supplied, then return the raw value
       return value;
     };
 
@@ -596,19 +618,8 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         ...spreadProps
       } = this.props;
 
-      // @todo we need to do this, but we should think about caching the fake value, right now
-      // it will make any other pure components rerender because its value will change
-      //
-      // If autocomplete is `off`, then it's most likely passed to the form as `off`, so by
-      // recommendation of the spec, we're going to turn it off in the fields. But, since `off`
-      // isn't actually supported by browsers anymore, we're instead going to generate random
-      // strings and use those for the autocomplete value in order to confuse the browser's
-      // autocomplete feature. It's the best we can do for now.
-      // @see https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion
       if (this.context.autoComplete === 'off') {
-        spreadProps.autoComplete = Math.random()
-          .toString(36)
-          .slice(-5);
+        spreadProps.autoComplete = this.autoComplete;
       } else if (this.props.autoComplete) {
         spreadProps.autoComplete = this.props.autoComplete;
       }
@@ -620,6 +631,8 @@ function asField(WrappedComponent, wrapperOptions = {}) {
           onFocus={this.onFocus}
           onClick={this.onClick}
           setRef={this.setRef}
+          getValue={this.getValue}
+          setValue={this.setValue}
           ref={this.wrappedRef}
           value={this.state.value}
           errors={this.state.errors}

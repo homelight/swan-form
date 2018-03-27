@@ -142,6 +142,16 @@ class Field extends Component {
      * @type {Array}
      */
     setRef: PropTypes.func.isRequired,
+    /**
+     * Gets the value of the field (useful for wrapped components, but not here)
+     * @type{Function}
+     */
+    getValue: PropTypes.func.isRequired,
+    /**
+     * Sets the value of the field (useful for wrapped components, but not here)
+     * @type{Function}
+     */
+    setValue: PropTypes.func.isRequired,
 
     /**
      * Required user props
@@ -205,31 +215,28 @@ class Field extends Component {
 
   maybeWrapInLabel(input) {
     const { className, icon, name, errors, type, label, style } = this.props;
-    // const { className, icon, errors, type, isValid, label, required } = this.props;
 
-    if (type === 'radio' || type === 'checkbox') {
-      // In order to get the click targets better, we will wrap radios and checkboxes in labels
-      // and do something else for the others.
-      const spread = {};
-      if (name) {
-        spread.htmlFor = name;
-      }
-      if (style) {
-        spread.style = style;
-      }
+    const spread = {};
+    if (name) {
+      spread.htmlFor = name;
+    }
+    if (style) {
+      spread.style = style;
+    }
 
-      /* eslint-disable jsx-a11y/label-has-for */
-      return (
-        <label
-          {...spread}
-          className={classes([
-            'ff--field',
-            `ff--type-${type}`,
-            errors.length !== 0 && `ff--has-errors`,
-            icon && 'ff--has-icon',
-            className,
-          ])}
-        >
+    /* eslint-disable jsx-a11y/label-has-for */
+    return (
+      <label
+        className={classes([
+          'ff--field',
+          `ff--type-${type}`,
+          errors.length !== 0 && `ff--has-errors`,
+          icon && 'ff--has-icon',
+          className,
+        ])}
+        {...spread}
+      >
+        <span>
           <span className="ff--label">{label && label}</span>
           {input}
           <span className="ff--icon">{icon && icon}</span>
@@ -240,43 +247,11 @@ class Field extends Component {
               </span>
             ))}
           </span>
-        </label>
-      );
-    }
-    /* eslint-enable jsx-a11y/label-has-for */
-
-    const spread = {};
-    if (style) {
-      spread.style = style;
-    }
-    return (
-      <span
-        {...spread}
-        className={classes([
-          'ff--field',
-          `ff--type-${type}`,
-          errors.length !== 0 && `ff--has-errors`,
-          icon && 'ff--has-icon',
-          className,
-        ])}
-      >
-        <span>
-          <label className="ff--label" htmlFor={name}>
-            {label && label}
-          </label>
-          {input}
-          <span className="ff--icon">{icon && icon}</span>
-          <span className="ff--errors">
-            {errors.filter(err => err).map(err => (
-              <span key={err} className="ff--error">
-                {err}
-              </span>
-            ))}
-          </span>
         </span>
-      </span>
+      </label>
     );
   }
+  /* eslint-enable jsx-a11y/label-has-for */
 
   renderField() {
     const {
@@ -289,6 +264,8 @@ class Field extends Component {
       options, // valid for selects
       children,
       icon,
+      getValue, // we're just going to ignore this
+      setValue, // we're just going to ignore this
       ...spreadProps // the rest of everything that we need to send on
     } = this.props;
 
@@ -348,7 +325,7 @@ class Field extends Component {
 
     if (type === 'checkbox' || type === 'radio') {
       /**
-       * @TODO clean this up
+       * @TODO clean this up; I think it might be preventing checkboxes from resetting correctly
        */
       spreadProps.value = spreadProps.value ? 'on' : 'off';
       spreadProps.defaultChecked = spreadProps.value === 'on';
