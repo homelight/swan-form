@@ -160,7 +160,7 @@ export default class Form extends Component {
       const isValid =
         Object.keys(this.fields)
           .map(field => this.fields[field].validate())
-          .filter(x => x !== true).length == 0;
+          .filter(x => x !== true).length === 0;
 
       if (!isValid) {
         // Reject the promise and leave the function. We should handle this.
