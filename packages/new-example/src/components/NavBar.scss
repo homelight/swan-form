@@ -1,0 +1,56 @@
+.nav-bar {
+  background-color: white;
+  position: fixed;
+  padding: 1rem;
+  left: 0;
+  top: 0;
+  transition: transform .15s linear;
+  width: 200px;
+
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  li {
+    padding: .5rem .25rem;
+    width: 100%;
+
+    &:hover {
+      background-color: #dedede;
+    }
+  }
+
+  a {
+    text-decoration: none;
+    color: black;
+
+    &:visited {
+      color: black;
+    }
+  }
+}
+
+.active {
+  background-color: #dedede;
+}
+
+.toggler {
+  position: absolute;
+  right: 0px;
+  top: 0;
+  transform: rotate(90deg) translate(100vh, -100%);
+  text-align: center;
+  transform-origin: top right;
+  width: 100vh;
+  background-color: orange;
+  cursor: pointer;
+  padding: .25rem;
+}
+
+.hide {
+  transform: translate(calc(-100%), 0);
+}
+
+
