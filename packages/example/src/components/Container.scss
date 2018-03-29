@@ -1,9 +1,11 @@
 .container {
   padding: 2rem;
   transform: translate(0, 0);
-  transition: transform .15s linear;
+  transition: transform .15s linear, width .15s linear;
+  width: calc(100vw - 3rem);
 }
 
 .nav-visible {
   transform: translate(calc(200px + 2rem), 0);
+  width: calc(100vw - 200px - 5rem);  
 }

@@ -4,6 +4,7 @@ import { AsYouType } from 'libphonenumber-js';
 import SyntaxHighlighter, { registerLanguage } from 'react-syntax-highlighter/prism-light';
 import jsx from 'react-syntax-highlighter/languages/prism/jsx';
 import prism from 'react-syntax-highlighter/styles/prism/prism';
+import { hot } from 'react-hot-loader';
 
 registerLanguage('jsx', jsx);
 
@@ -26,6 +27,7 @@ const formatPhone = value => new AsYouType('US').input(value);
 
 const toUpperCase = value => value.toUpperCase();
 
+@hot(module)
 export default class Formatters extends Component {
   constructor(props) {
     super(props);

@@ -4,6 +4,7 @@ import { Field, Radios } from '@flow-form/field';
 import { Slide, Slider } from '@flow-form/slider';
 import '@flow-form/slider/dist/Slider.css';
 import '@flow-form/slider/dist/Slide.css';
+import { hot } from 'react-hot-loader';
 
 const required = value =>
   value !== null && value !== undefined && value.trim() !== '' ? false : 'Required';
@@ -14,6 +15,7 @@ const onSubmit = values => {
 const beforeSubmit = values =>
   Object.keys(values).reduce((acc, key) => ({ ...acc, [key]: values[key].toUpperCase() }), {});
 
+@hot(module)
 export default class SliderForm extends Component {
   render() {
     return (

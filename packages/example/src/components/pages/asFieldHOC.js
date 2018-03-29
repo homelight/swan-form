@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 
 import { asField, Submit } from '@flow-form/field';
 import { Form } from '@flow-form/form';
+import { hot } from 'react-hot-loader';
 
 /* eslint-disable no-console */
 const onSubmit = values => console.log(values);
@@ -15,7 +16,7 @@ const toWrap = ({ name, onChange, value, placeholder, setRef }) => (
 
 class toWrapClass extends Component {
   render() {
-    const { isValid, setRef, ...spreadProps } = this.props;
+    const { isValid, setRef, getValue, setValue, ...spreadProps } = this.props;
     return <input ref={setRef} {...spreadProps} />;
   }
 }
@@ -23,6 +24,7 @@ class toWrapClass extends Component {
 const Wrapped = asField(toWrap);
 const WrappedClass = asField(toWrapClass);
 
+@hot(module)
 export default class asFieldHOC extends Component {
   constructor(props) {
     super(props);

@@ -76,17 +76,6 @@ export default class Slider extends PureComponent {
     };
   }
 
-  componentDidMount() {
-    // The slider's children should be only slides... Otherwise, we're going to throw a hissy fit
-    React.Children.forEach(this.props.children, child => {
-      invariant(
-        child.type === Slide,
-        'A <Slider> component can have children only of the type Slide. Please check the render ' +
-          'method that uses Slider.',
-      );
-    });
-  }
-
   componentDidUpdate(prevProps, prevState) {
     // Since we're using indices to keep track of progress, we _could_ get off track if one
     // disappears, so we're going to disallow dynamically manipulating the children

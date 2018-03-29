@@ -5,6 +5,7 @@ import SyntaxHighlighter, { registerLanguage } from 'react-syntax-highlighter/pr
 import jsx from 'react-syntax-highlighter/languages/prism/jsx';
 import css from 'react-syntax-highlighter/languages/prism/css';
 import prism from 'react-syntax-highlighter/styles/prism/prism';
+import { hot } from 'react-hot-loader';
 
 import './Styling.css';
 
@@ -15,6 +16,7 @@ const minLenTen = value => (value.length > 9 ? false : 'Min len 10');
 const alphaNumeric = value => (/^[a-zA-Z0-9]{1,}$/.test(value) ? false : 'Alpha Numeric');
 const tenAndAlpha = [minLenTen, alphaNumeric];
 
+@hot(module)
 export default class Styling extends Component {
   render() {
     return (
