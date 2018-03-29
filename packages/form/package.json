@@ -2,7 +2,7 @@
   "name": "@swan-form/form",
   "version": "0.0.1",
   "description": "forms and things",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "main": "dist/index.js",
   "repository": {
     "type": "git",

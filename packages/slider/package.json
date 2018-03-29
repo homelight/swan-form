@@ -2,7 +2,7 @@
   "name": "@swan-form/slider",
   "version": "0.0.1",
   "description": "forms in sliders",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "files": ["dist"],
   "main": "dist/index.js",
   "repository": {

@@ -2,7 +2,7 @@
   "name": "@swan-form/field",
   "version": "0.0.1",
   "description": "Forms and Things",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "author": "Shawn Patrick Rice",
   "files": ["dist"],
   "main": "dist/index.js",

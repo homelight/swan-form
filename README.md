@@ -1,10 +1,10 @@
 # Swan Form
 
-Swan Form is a toolbox for creating forms with React.
+Swan Form is a toolbox for elegantly creating forms with React.
 
 ## Development Note
 
-These packages are unstable, and it's not recommended that you use them yet.
+These packages are new, so there might be a few bugs to work out.
 
 ## Install
 
@@ -18,19 +18,17 @@ Pick and choose what packages you want to use.
 npm install --save @swan-form/field
 ```
 
-The main field to use is the `Field` component.
+The main component to use is the `Field` component. If you want to compose fields, then do so with the `asField` HOC.
 
 #### Turning off autoComplete
 
 Setting the a form's autoComplete value to `off` will override all fields and have those set to `off` as well. However, you will see mixed results when trying to set 'autoComplete' to off because most modern browsers will still attmept to autocomplete the field even if the form and the field are set to 'off'.
 
-Currently, for Chrome, if the value of a field's autoComplete is set to off, we instead change it to 'nope', which will keep Chrome from guessing, but it will still remember past values of the same form.
-
 See [this MDN note](https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion) for more information.
 
 #### Formatters
 
-Not implemented yet.
+@todo write docs
 
 ### Forms
 
@@ -50,19 +48,7 @@ If you want to store your values in Redux or some other kind of state management
 npm install --save @swan-form/slider
 ```
 
-Sliders are forms.
-
-```
-import React, { Component } from 'react';
-
-import MyComponent from 'swan-form';
-
-class Example extends Component {
-  render() {
-    return <MyComponent />;
-  }
-}
-```
+@todo document
 
 ## Contributing
 
@@ -82,47 +68,12 @@ Uses AirBnB's eslint config — one shared across all packages.
 
 ### General
 
-* [ ] Make readme readable
-* [ ] Fix dependencies/peer dependencies for wider coverage
-* [ ] Expand more test coverage
-* [ ] Add in thorough documentation
-* [ ] Ship CSS separately
-* [x] ~Split everything into separate bundles lodash style~.
-* [x] Use a monorepo
-* [ ] Profile components to find penalty for context and overwriting context
-* [ ] Publish to npm
-* [ ] Publish to github
-* [ ] possibly build with webpack or go back to rollup
-* [ ] convert to typescript or create typings (https://github.com/KnisterPeter/react-to-typescript-definitions)
-
-### Generic Field
-
-* [x] Formatters in fields
-* [x] Share more code between asField and Field
-* [x] Make all field types avaiable
-* [ ] Don't bind so many functions
-* [x] Handle radio buttons appropriately
-* [ ] Put in an escape hatch not to handle state (this is possibly good for complex fields made up of multiple Field components that also use `asField`)
-
-### Generic Form
-
-* [ ] Sort out lifecycle methods on submit
-* [ ] Fix problems with reset in AddressField (as proof of concept)
-
-### Slider
-
-* [ ] Get a better slider API
-* [ ] consider React.cloneChildren for slides
-* [ ] Make slider more responsive
-* [ ] Allow for `enter` to let the slider advance to next field
-* [ ] Allow passing components for next/prev
-* [ ] implment afterSlide and beforeSlide hooks
-
-### Examples
-
-* [ ] Create withRedux example
-* [ ] Create withRouter example
+* [ ] Expand Readme
+* [ ] Better docs
+* [ ] Improve test coverage
+* [ ] Ship some esmodules
+* [ ] creating typings
 
 ## License
 
-MIT © [Eave](https://github.com/helloeave)
+Apache © [Eave](https://github.com/helloeave)

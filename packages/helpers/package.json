@@ -2,7 +2,7 @@
   "name": "@swan-form/helpers",
   "version": "0.0.1",
   "description": "helpers for swan-form",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "contributors": [
     {
       "name": "Shawn Patrick Rice",
