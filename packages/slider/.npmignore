@@ -1,0 +1,14 @@
+.*
+.DS_Store
+.env
+.env.development.local
+.env.local
+.env.production.local
+.env.test.local
+coverage/
+lerna-debug.log*
+npm-debug.log*
+rollup.config.*
+test/
+yarn-debug.log*
+yarn-error.log*
