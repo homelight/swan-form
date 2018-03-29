@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Form } from '@flow-form/form';
 import { AddressField } from '@flow-form/extra-fields';
 import { Field, Reset, Submit } from '@flow-form/field';
+import { hot } from 'react-hot-loader';
 
 const defaultAddress = {
   line1: '350 5th Ave',
@@ -11,6 +12,7 @@ const defaultAddress = {
   zip: '10118',
 };
 
+@hot(module)
 export default class DynamicField extends Component {
   constructor(props) {
     super(props);

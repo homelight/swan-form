@@ -1,9 +1,12 @@
 /* eslint-disable react/no-multi-comp */
 import React, { Component } from 'react';
 import { Field } from '@flow-form/field';
+import { hot } from 'react-hot-loader';
 
 /* @todo move this */
 const minSize = { minHeight: '1em', minWidth: '3em' };
+
+@hot(module)
 class EditableDisplay extends Component {
   constructor(props) {
     super(props);

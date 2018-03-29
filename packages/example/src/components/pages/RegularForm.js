@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 
 import { Field, Radios, Submit, Reset } from '@flow-form/field';
 import { Form } from '@flow-form/form';
+import { hot } from 'react-hot-loader';
 
 import './RegularForm.css';
 
@@ -33,6 +34,7 @@ const fieldSetStyling = `
   padding: 0;
 }`.trim();
 
+@hot(module)
 export default class RegularForm extends Component {
   constructor(props) {
     super(props);
