@@ -1,6 +1,6 @@
-# @flow-form/form
+# @swan-form/form
 
-Contains the main form component for @flow-form.
+Contains the main form component for @swan-form.
 
 ## Development Note
 

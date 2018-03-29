@@ -1,6 +1,6 @@
 /* eslint-disable react/no-multi-comp */
 import React, { Component } from 'react';
-import { Field } from '@flow-form/field';
+import { Field } from '@swan-form/field';
 import { hot } from 'react-hot-loader';
 
 /* @todo move this */
@@ -80,7 +80,7 @@ export default class DynamicField extends Component {
     const { field1, field2, field3, field4 } = this.state;
     return (
       <div>
-        <h1>Flow Form</h1>
+        <h1>Swan Form</h1>
         <p>Not really a dynamic field yet.</p>
         <div style={style}>
           <EditableDisplay name="field1" value={field1} onChange={this.update} />

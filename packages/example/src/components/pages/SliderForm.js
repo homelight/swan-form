@@ -1,9 +1,9 @@
 /* eslint-disable no-alert, react/prefer-stateless-function */
 import React, { Component } from 'react';
-import { Field, Radios } from '@flow-form/field';
-import { Slide, Slider } from '@flow-form/slider';
-import '@flow-form/slider/dist/Slider.css';
-import '@flow-form/slider/dist/Slide.css';
+import { Field, Radios } from '@swan-form/field';
+import { Slide, Slider } from '@swan-form/slider';
+import '@swan-form/slider/dist/Slider.css';
+import '@swan-form/slider/dist/Slide.css';
 import { hot } from 'react-hot-loader';
 
 const required = value =>

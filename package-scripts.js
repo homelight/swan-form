@@ -20,7 +20,7 @@ module.exports = {
       field: getDevCmd('field'),
       'extra-fields': getDevCmd('extra-fields'),
       slider: getDevCmd('slider'),
-      example: 'cd packages/example && yarn start',
+      example: 'cd packages/example && yarn run dev',
     },
   },
 };

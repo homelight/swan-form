@@ -1,5 +1,5 @@
 {
-  "name": "@flow-form/slider",
+  "name": "@swan-form/slider",
   "version": "0.0.1",
   "description": "forms in sliders",
   "license": "MIT",
@@ -9,7 +9,7 @@
   "jsnext:main": "dist/index.es.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/helloeave/flow-form.git"
+    "url": "https://github.com/helloeave/swan-form.git"
   },
   "scripts": {
     "build":
@@ -25,8 +25,8 @@
     "test:watch": "yarn run test -- --watch"
   },
   "dependencies": {
-    "@flow-form/form": "^0.0.1",
-    "@flow-form/helpers": "^0.0.1",
+    "@swan-form/form": "^0.0.1",
+    "@swan-form/helpers": "^0.0.1",
     "invariant": "^2.2.4",
     "lodash": "^4.17.5"
   },

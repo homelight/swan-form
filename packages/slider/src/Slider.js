@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import clamp from 'lodash/clamp';
 import isFunction from 'lodash/isFunction';
 import invariant from 'invariant';
-import { Form } from '@flow-form/form';
-import { classes } from '@flow-form/helpers';
+import { Form } from '@swan-form/form';
+import { classes } from '@swan-form/helpers';
 
 import Slide from './Slide';
 
@@ -284,12 +284,12 @@ export default class Slider extends PureComponent {
     // Possible render prop on the slide
     const { render } = slide.props;
     // Classes applied to left control
-    const leftClasses = classes(['ff--slider-control', 'ff--slider-control-left']);
+    const leftClasses = classes(['sf--slider-control', 'sf--slider-control-left']);
     // Classes applied to the right control
-    const rightClasses = classes(['ff--slider-control', 'ff--slider-control-right']);
+    const rightClasses = classes(['sf--slider-control', 'sf--slider-control-right']);
 
     return (
-      <div className={classes(['ff--slider', className])}>
+      <div className={classes(['sf--slider', className])}>
         <button className={leftClasses} disabled={current === 0} onClick={this.prev}>
           {PrevButton}
         </button>

@@ -1,7 +1,7 @@
 {
-  "name": "@flow-form/example",
-  "version": "1.0.0",
-  "description": "An Example for Flow Form",
+  "name": "@swan-form/example",
+  "version": "0.0.1",
+  "description": "An Example for Swan Form",
   "main": "index.js",
   "license": "MIT",
   "private": true,
@@ -12,11 +12,11 @@
     "analyze": "ANALYZE=true yarn run build"
   },
   "dependencies": {
-    "@flow-form/extra-fields": "0.0.1",
-    "@flow-form/field": "0.0.1",
-    "@flow-form/form": "0.0.1",
-    "@flow-form/helpers": "0.0.1",
-    "@flow-form/slider": "0.0.1",
+    "@swan-form/extra-fields": "0.0.1",
+    "@swan-form/field": "0.0.1",
+    "@swan-form/form": "0.0.1",
+    "@swan-form/helpers": "0.0.1",
+    "@swan-form/slider": "0.0.1",
     "foundation-sites": "^6.4.4-rc1",
     "history": "^4.7.2",
     "libphonenumber-js": "^1.1.6",

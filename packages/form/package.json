@@ -1,5 +1,5 @@
 {
-  "name": "@flow-form/form",
+  "name": "@swan-form/form",
   "version": "0.0.1",
   "description": "forms and things",
   "license": "MIT",
@@ -8,7 +8,7 @@
   "jsnext:main": "dist/index.es.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/helloeave/flow-form.git"
+    "url": "https://github.com/helloeave/swan-form.git"
   },
   "scripts": {
     "build":
@@ -24,7 +24,7 @@
     "test:watch": "yarn run test -- --watch"
   },
   "dependencies": {
-    "@flow-form/helpers": "^0.0.1",
+    "@swan-form/helpers": "^0.0.1",
     "lodash": "^4.17.5"
   },
   "devDependencies": {

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
-import { classes } from '@flow-form/helpers';
+import { classes } from '@swan-form/helpers';
 
 export default class Reset extends Component {
   static propTypes = {
@@ -13,7 +13,7 @@ export default class Reset extends Component {
 
   static defaultProps = {
     value: 'Reset',
-    name: 'ff--reset',
+    name: 'sf--reset',
     className: '',
   };
 
@@ -46,7 +46,7 @@ export default class Reset extends Component {
     const { className, name, value } = this.props;
     return (
       <input
-        className={classes(['ff--reset', className])}
+        className={classes(['sf--reset', className])}
         type="reset"
         name={name}
         value={value}

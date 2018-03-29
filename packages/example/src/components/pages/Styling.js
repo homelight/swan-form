@@ -1,6 +1,6 @@
 /* eslint-disable react/prefer-stateless-function */
 import React, { Component } from 'react';
-import { Field } from '@flow-form/field';
+import { Field } from '@swan-form/field';
 import SyntaxHighlighter, { registerLanguage } from 'react-syntax-highlighter/prism-light';
 import jsx from 'react-syntax-highlighter/languages/prism/jsx';
 import css from 'react-syntax-highlighter/languages/prism/css';
@@ -53,12 +53,12 @@ const tenAndAlpha = [minLenTen, alphaNumeric];
         <p>will create the following HTML:</p>
         <SyntaxHighlighter language="jsx" style={prism}>
           {`
-<label class="ff--field ff--field--required ff--field-has-errors">
-  <span class="ff--field--label">A Field</span>
-  <span class="ff--field--field">
+<label class="sf--field sf--field--required sf--field-has-errors">
+  <span class="sf--field--label">A Field</span>
+  <span class="sf--field--field">
     <input type="text" value="testing_" name="minTenField" placeholder="Type Something" required="">
   </span>
-  <span class="ff--field--errors">
+  <span class="sf--field--errors">
     <span class="flowform-field-error">Min len 10</span>
     <span class="flowform-field-error">Alpha Numeric</span>
   </span>

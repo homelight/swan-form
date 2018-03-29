@@ -1,7 +1,7 @@
 {
-  "name": "@flow-form/helpers",
+  "name": "@swan-form/helpers",
   "version": "0.0.1",
-  "description": "helpers for flow-form",
+  "description": "helpers for swan-form",
   "license": "MIT",
   "contributors": [
     {
@@ -15,7 +15,7 @@
   "jsnext:main": "dist/index.es.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/helloeave/flow-form.git"
+    "url": "https://github.com/helloeave/swan-form.git"
   },
   "scripts": {
     "build":

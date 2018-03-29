@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
-import { hasOwnProperty, emptyArray, emptyObject } from '@flow-form/helpers';
+import { hasOwnProperty, emptyArray, emptyObject } from '@swan-form/helpers';
 
 /**
  * Duck-type check for a promise
@@ -16,7 +16,7 @@ const isPromise = obj =>
 
 // These are fields that we will automatically pull out of the form as they are just the
 // automatically generated names for the submit and reset buttons
-const fieldToRemove = ['ff--reset', 'ff--submit'];
+const fieldToRemove = ['sf--reset', 'sf--submit'];
 
 export default class Form extends Component {
   static propTypes = {

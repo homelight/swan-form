@@ -2,8 +2,8 @@
 
 import React, { Component } from 'react';
 
-import { asField, Submit } from '@flow-form/field';
-import { Form } from '@flow-form/form';
+import { asField, Submit } from '@swan-form/field';
+import { Form } from '@swan-form/form';
 import { hot } from 'react-hot-loader';
 
 /* eslint-disable no-console */

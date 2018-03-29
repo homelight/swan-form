@@ -1,6 +1,6 @@
-# @flow-form/helpers
+# @swan-form/helpers
 
-Contains some helper functions and objects that are used across @flow-form.
+Contains some helper functions and objects that are used across @swan-form.
 
 ## Development Note
 

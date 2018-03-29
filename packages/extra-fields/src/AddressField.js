@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { asField, Field } from '@flow-form/field';
+import { asField, Field } from '@swan-form/field';
 
 const states = [
   '----',

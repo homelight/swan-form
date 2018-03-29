@@ -1,7 +1,7 @@
 /* eslint-disable react/prefer-stateless-function, jsx-a11y/label-has-for */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { classes } from '@flow-form/helpers';
+import { classes } from '@swan-form/helpers';
 import asField from './asField';
 
 class Radios extends Component {
@@ -47,9 +47,9 @@ class Radios extends Component {
     return (
       <fieldset
         className={classes([
-          'ff--radios',
-          'ff--fieldset',
-          required && 'ff--field--required',
+          'sf--radios',
+          'sf--fieldset',
+          required && 'sf--field--required',
           className,
         ])}
       >
@@ -58,8 +58,8 @@ class Radios extends Component {
           // right now, I'm spreading this
           <label
             className={classes([
-              'ff--radio--field',
-              value === option.value && 'ff--radio--checked',
+              'sf--radio--field',
+              value === option.value && 'sf--radio--checked',
             ])}
             key={option.value}
           >
@@ -75,9 +75,9 @@ class Radios extends Component {
             />
           </label>
         ))}
-        <span className="ff--field--errors">
+        <span className="sf--field--errors">
           {errors.filter(err => err).map(err => (
-            <span key={err} className="ff--field--error">
+            <span key={err} className="sf--field--error">
               {err}
             </span>
           ))}

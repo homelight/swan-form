@@ -15,7 +15,7 @@ import {
   moveCursor,
   emptyArray,
   runValidations,
-} from '@flow-form/helpers';
+} from '@swan-form/helpers';
 
 const { ENTER, TAB } = keyCodes;
 

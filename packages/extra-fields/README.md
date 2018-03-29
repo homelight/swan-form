@@ -1,4 +1,4 @@
-# @flow-form/extra-fields
+# @swan-form/extra-fields
 
 This package contains more bespoke fields and has a few heavier peerDependencies.
 

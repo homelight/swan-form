@@ -8,7 +8,7 @@
   position: relative;
 }
 
-.styled-reverse .ff--field--label {
+.styled-reverse .sf--field--label {
   font: 400 12px / 1.618 'Open Sans', sans-serif;
   font-style: italic;
   float: right;
@@ -16,15 +16,15 @@
   margin-left: 6em;
 }
 
-.styled-reverse.ff--field--required::after {
+.styled-reverse.sf--field--required::after {
   content: '';
 }
 
-.styled-reverse.ff--field-has-errors {
+.styled-reverse.sf--field-has-errors {
   margin-top: 1em;
 }
 
-.styled-reverse.ff--field-has-errors::before {
+.styled-reverse.sf--field-has-errors::before {
   content: 'Please fix the following field:';
   position: absolute;
   bottom: 1em;
@@ -48,7 +48,7 @@
   background-color: red;
 }
 
-.styled-reverse .ff--field--error {
+.styled-reverse .sf--field--error {
   content: ' ' !important;
   display: block;
   font: 600 24px / 1 sans-serif;

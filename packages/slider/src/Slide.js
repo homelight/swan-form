@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
-import { classes, moveCursor } from '@flow-form/helpers';
+import { classes, moveCursor } from '@swan-form/helpers';
 
 const alwaysTrue = () => true;
 
@@ -130,7 +130,7 @@ export default class Slide extends PureComponent {
 
   render() {
     return (
-      <div className={classes([this.props.className, 'ff--slide'])}>{this.props.children}</div>
+      <div className={classes([this.props.className, 'sf--slide'])}>{this.props.children}</div>
     );
   }
 }

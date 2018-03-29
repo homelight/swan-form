@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { Form } from '@flow-form/form';
-import { AddressField } from '@flow-form/extra-fields';
-import { Field, Reset, Submit } from '@flow-form/field';
+import { Form } from '@swan-form/form';
+import { AddressField } from '@swan-form/extra-fields';
+import { Field, Reset, Submit } from '@swan-form/field';
 import { hot } from 'react-hot-loader';
 
 const defaultAddress = {
@@ -28,9 +28,9 @@ export default class DynamicField extends Component {
   render() {
     return (
       <div>
-        <h1>Flow Form</h1>
+        <h1>Swan Form</h1>
         <p>
-          Here are some fields from the <code>@flow-form/extra-fields</code> package.
+          Here are some fields from the <code>@swan-form/extra-fields</code> package.
         </p>
         <Form name="extraFields" onSubmit={this.onSubmit}>
           <Field name="testfield" type="text" value="test" />

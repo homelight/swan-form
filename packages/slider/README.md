@@ -1,6 +1,6 @@
-# @flow-form/slider
+# @swan-form/slider
 
-Contains the slider forms for @flow-form.
+Contains the slider forms for @swan-form.
 
 ## <Slide /> component
 

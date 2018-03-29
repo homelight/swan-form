@@ -17,7 +17,7 @@ if (process.env.NODE_ENV == 'production') {
   config.externals = {
     react: 'react',
     'react-dom': 'react-dom',
-    '@flow-form/helpers': '@flow-form/helpers',
+    '@swan-form/helpers': '@swan-form/helpers',
   };
 }
 

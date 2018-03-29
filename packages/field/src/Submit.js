@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { classes } from '@flow-form/helpers';
+import { classes } from '@swan-form/helpers';
 import Field from './Field';
 
 export default class Submit extends Component {
@@ -11,7 +11,7 @@ export default class Submit extends Component {
   };
 
   static defaultProps = {
-    name: 'ff--submit',
+    name: 'sf--submit',
     className: '',
     value: 'Submit',
   };
@@ -20,7 +20,7 @@ export default class Submit extends Component {
     const { className, name, value } = this.props;
     return (
       <Field
-        className={classes(['ff--submit', className])}
+        className={classes(['sf--submit', className])}
         type="submit"
         name={name}
         value={value}

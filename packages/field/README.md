@@ -1,6 +1,6 @@
-# @flow-form/field
+# @swan-form/field
 
-Contains the main Field react component for @flow-form.
+Contains the main Field react component for @swan-form.
 
 ## Development Note
 

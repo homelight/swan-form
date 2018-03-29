@@ -2,7 +2,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import isObject from 'lodash/isObject';
-import { hasOwnProperty, classes, noop } from '@flow-form/helpers';
+import { hasOwnProperty, classes, noop } from '@swan-form/helpers';
 import asField from './asField';
 
 const INPUT_TYPES = [
@@ -228,21 +228,21 @@ class Field extends Component {
     return (
       <label
         className={classes([
-          'ff--field',
-          `ff--type-${type}`,
-          errors.length !== 0 && `ff--has-errors`,
-          icon && 'ff--has-icon',
+          'sf--field',
+          `sf--type-${type}`,
+          errors.length !== 0 && `sf--has-errors`,
+          icon && 'sf--has-icon',
           className,
         ])}
         {...spread}
       >
         <span>
-          <span className="ff--label">{label && label}</span>
+          <span className="sf--label">{label && label}</span>
           {input}
-          <span className="ff--icon">{icon && icon}</span>
-          <span className="ff--errors">
+          <span className="sf--icon">{icon && icon}</span>
+          <span className="sf--errors">
             {errors.filter(err => err).map(err => (
-              <span key={err} className="ff--error">
+              <span key={err} className="sf--error">
                 {err}
               </span>
             ))}
@@ -293,7 +293,7 @@ class Field extends Component {
         return (
           <button
             ref={setRef}
-            className={classes(['ff--field', 'ff--type-button', className])}
+            className={classes(['sf--field', 'sf--type-button', className])}
             {...spreadProps}
           >
             {children}
@@ -305,7 +305,7 @@ class Field extends Component {
         <input
           type="button"
           ref={setRef}
-          className={classes(['ff--field', 'ff--type-button', className])}
+          className={classes(['sf--field', 'sf--type-button', className])}
           {...spreadProps}
         />
       );
@@ -317,7 +317,7 @@ class Field extends Component {
         <input
           type={type}
           ref={setRef}
-          className={classes(['ff--field', className])}
+          className={classes(['sf--field', className])}
           {...spreadProps}
         />
       );

@@ -1,6 +1,6 @@
-# Flow Form
+# Swan Form
 
-Flow Form is a toolbox for creating forms with React.
+Swan Form is a toolbox for creating forms with React.
 
 ## Development Note
 
@@ -15,7 +15,7 @@ Pick and choose what packages you want to use.
 ### Fields
 
 ```bash
-npm install --save @flow-form/field
+npm install --save @swan-form/field
 ```
 
 The main field to use is the `Field` component.
@@ -35,7 +35,7 @@ Not implemented yet.
 ### Forms
 
 ```bash
-npm install --save @flow-form/form
+npm install --save @swan-form/form
 ```
 
 You must pass an `onSubmit` handler to the form. This should be a function that will just run.
@@ -47,7 +47,7 @@ If you want to store your values in Redux or some other kind of state management
 ### Sliders
 
 ```bash
-npm install --save @flow-form/slider
+npm install --save @swan-form/slider
 ```
 
 Sliders are forms.
@@ -55,7 +55,7 @@ Sliders are forms.
 ```
 import React, { Component } from 'react';
 
-import MyComponent from 'flow-form';
+import MyComponent from 'swan-form';
 
 class Example extends Component {
   render() {

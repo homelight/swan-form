@@ -1,4 +1,4 @@
-.ff--slider {
+.sf--slider {
   display: flex;
   flex: 1;
   height: auto;
@@ -7,11 +7,11 @@
   width: 100%;
 }
 
-.ff--slider form {
+.sf--slider form {
   width: 100%;
 }
 
-.ff--slider-control {
+.sf--slider-control {
   cursor: pointer;
   padding: 0.25rem;
   position: absolute;
@@ -26,23 +26,23 @@
   font-size: 1.25rem;
 }
 
-.ff--slider-control:hover {
+.sf--slider-control:hover {
   background-color: rgba(0, 0, 0, 0.75);
 }
 
-.ff--slider-control:disabled {
+.sf--slider-control:disabled {
   cursor: not-allowed;
 }
 
-.ff--slider-control:active,
-.ff--slider-control:focus {
+.sf--slider-control:active,
+.sf--slider-control:focus {
   outline: none;
 }
 
-.ff--slider-control-left {
+.sf--slider-control-left {
   left: 0;
 }
 
-.ff--slider-control-right {
+.sf--slider-control-right {
   right: 0;
 }
