@@ -1,16 +1,17 @@
 {
   "name": "@swan-form/extra-fields",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "license": "Apache-2.0",
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/helloeave/swan-form.git"
   },
   "scripts": {
-    "build":
-      "NODE_ENV='production' babel --src-type module src --out-dir dist --source-maps --no-comments --ignore 'src/__tests__/*,*.test.js'",
+    "build": "NODE_ENV='production' babel --src-type module src --out-dir dist --source-maps --no-comments --ignore 'src/__tests__/*,*.test.js'",
     "precommit": "lint-staged",
     "predeploy": "cd example && yarn && yarn run build",
     "deploy": "gh-pages -d example/build",
@@ -22,8 +23,8 @@
     "test:watch": "yarn run test -- --watch"
   },
   "dependencies": {
-    "@swan-form/field": "^0.0.2",
-    "@swan-form/helpers": "^0.0.2",
+    "@swan-form/field": "^0.1.0",
+    "@swan-form/helpers": "^0.1.0",
     "lodash": "^4.17.4"
   },
   "devDependencies": {
