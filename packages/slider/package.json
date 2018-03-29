@@ -5,21 +5,19 @@
   "license": "MIT",
   "files": ["dist"],
   "main": "dist/index.js",
-  "module": "dist/index.es.js",
-  "jsnext:main": "dist/index.es.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/helloeave/swan-form.git"
   },
   "scripts": {
     "build":
-      "NODE_ENV='production' babel --src-type module src --out-dir dist --source-maps --compact=true --no-comments --ignore src/__tests__/*,*.test.js && cp src/*.css dist/",
+      "NODE_ENV='production' babel --src-type module src --out-dir dist --source-maps --compact=true --no-comments --ignore 'src/__tests__/*,*.test.js' && cp src/*.css dist/",
     "precommit": "lint-staged",
-    "predeploy": "cd example && npm install && npm run build",
+    "predeploy": "cd example && yarn && yarn run build",
     "deploy": "gh-pages -d example/build",
     "format": "prettier --write '**/*.{json,js,css,md}'",
     "lint": "eslint src",
-    "prepublish": "npm run build",
+    "prepublish": "yarn run build",
     "start": "yarn run build --watch",
     "test": "jest --env=jsdom",
     "test:watch": "yarn run test -- --watch"
@@ -28,7 +26,8 @@
     "@swan-form/form": "^0.0.1",
     "@swan-form/helpers": "^0.0.1",
     "invariant": "^2.2.4",
-    "lodash": "^4.17.5"
+    "lodash": "^4.17.5",
+    "prop-types": "^15.6.1"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.42",
@@ -56,7 +55,6 @@
     "jest": "^22.4.2",
     "jest-enzyme": "^6.0.0",
     "prettier": "^1.10.2",
-    "prop-types": "^15.6.1",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "react-test-renderer": "^16.2.0",
@@ -64,7 +62,6 @@
     "uglify-es": "^3.3.9"
   },
   "peerDependencies": {
-    "prop-types": "^15.6.1",
     "react": "^15.0.0 || ^16.0.0",
     "react-dom": "^15.0.0 || ^16.0.0"
   },

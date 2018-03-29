@@ -8,7 +8,7 @@
     "dev": "nps dev.all",
     "dev:form": "nps dev.form",
     "format": "prettier --write '**/*.{json,js,css,md}'",
-    "lint": "eslint -c .eslintrc.js packages/**/src/**/*.js",
+    "lint": "nps lint.all",
     "test": "jest --env=jsdom",
     "test:watch": "yarn run test -- --watch"
   },
@@ -32,6 +32,7 @@
     "eslint-import-resolver-lerna": "^1.0.0",
     "eslint-plugin-import": "^2.7.0",
     "eslint-plugin-jsx-a11y": "^6.0.2",
+    "eslint-plugin-monorepo": "^0.2.0",
     "eslint-plugin-react": "^7.4.0",
     "husky": "^0.14.3",
     "jest": "^22.1.1",
@@ -66,14 +67,14 @@
     "moduleNameMapper": {
       "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$":
         "<rootDir>/__mocks__/fileMock.js",
-      "\\.(css|less)$": "<rootDir>/__mocks__/styleMock.js"
+      "\\.(css|scss)$": "<rootDir>/__mocks__/styleMock.js"
     },
     "collectCoverage": true,
     "collectCoverageFrom": ["src/**/*.{js,jsx}", "!**/node_modules/**"],
     "coveragePathIgnorePatterns": [
       "<rootDir>/dist/",
       "<rootDir>/node_modules/",
-      "<rootDir>/exmaple/"
+      "<rootDir>/example/"
     ]
   },
   "lint-staged": {

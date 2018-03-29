@@ -57,11 +57,14 @@ function asField(WrappedComponent, wrapperOptions = {}) {
        * @type {Number}
        */
       validateDebounceTimeout: PropTypes.number,
+      doNotRegister: PropTypes.bool,
+      name: PropTypes.string.isRequired,
     };
 
     static defaultProps = {
       registerWrapped: true,
       validateDebounceTimeout: 200,
+      doNotRegister: false,
     };
 
     static contextTypes = {
@@ -111,6 +114,8 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       this.autoComplete = Math.random()
         .toString(36)
         .slice(-5);
+
+      this.mounted = false;
     }
 
     getChildContext() {
@@ -131,6 +136,8 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         // Move the cursor to the end of the input if there is a value
         moveCursor(this.fieldRef);
       }
+
+      this.mounted = true;
     }
 
     componentDidUpdate(prevProps, prevState) {
@@ -148,6 +155,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       // Since we're unmounting, unregister from any higher components — this
       // means that the value will no longer be available
       this.unregister();
+      this.mounted = false;
     }
 
     /** **************************************************************************
@@ -164,14 +172,15 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * @return {void}
      */
     register = (fieldProps = null) => {
+      const { name, doNotRegister } = this.props;
       if (fieldProps && wrapperOptions.registerWrapped === false) {
         // This is where we intercept the fields and control them.
         this.fields[fieldProps.name] = fieldProps;
         // Note, if there is no name field, then we don't register with anything in context
-      } else if (this.props.name && isFunction(this.context.registerField)) {
+      } else if (name && isFunction(this.context.registerField) && !doNotRegister) {
         this.context.registerField({
           // This should be a unique key
-          name: this.props.name,
+          name,
           // In case we need to grab the ref @TODO maybe remove
           getRef: this.getRef,
           // Gets the value from the field
@@ -199,8 +208,8 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         const { [name]: removed, ...rest } = this.fields;
         this.fields = rest;
       } else {
-        if (!this.props.name) {
-          // If there was no name, then we never registered.
+        if (!this.props.name || this.props.doNotRegister) {
+          // We never registered
           return;
         }
         // Unregister this field itself
@@ -324,7 +333,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       }
 
       // If this field has yet to be touched, then set it as touched
-      if (this.state.isTouched === false) {
+      if (this.state.isTouched === false && this.mounted) {
         this.setState(prevState => ({
           ...prevState,
           isTouched: true,
@@ -437,35 +446,37 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * @param {any} value the value to set
      */
     setValue = (value, resetErrors = false, resetTouched = false) => {
-      const { name, onChange } = this.props;
+      if (this.mounted) {
+        const { name, onChange } = this.props;
 
-      this.setState(prevState => {
-        const formatted = this.format(value);
+        this.setState(prevState => {
+          const formatted = this.format(value);
 
-        let newValue = formatted;
-        let cursor;
+          let newValue = formatted;
+          let cursor;
 
-        if (Array.isArray(formatted)) {
-          /* eslint-disable prefer-destructuring */
-          newValue = formatted[0];
-          cursor = formatted[1];
-          /* eslint-enable prefer-destructuring */
-        }
+          if (Array.isArray(formatted)) {
+            /* eslint-disable prefer-destructuring */
+            newValue = formatted[0];
+            cursor = formatted[1];
+            /* eslint-enable prefer-destructuring */
+          }
 
-        // Call user supplied function if given
-        if (isFunction(onChange)) {
-          onChange(newValue, name);
-        }
+          // Call user supplied function if given
+          if (isFunction(onChange)) {
+            onChange(newValue, name);
+          }
 
-        return {
-          ...prevState,
-          cursor,
-          errors: resetErrors === false ? prevState.errors : emptyArray,
-          isDirty: newValue !== this.props.value,
-          isTouched: resetTouched !== true,
-          value: newValue,
-        };
-      });
+          return {
+            ...prevState,
+            cursor,
+            errors: resetErrors === false ? prevState.errors : emptyArray,
+            isDirty: newValue !== this.props.value,
+            isTouched: resetTouched !== true,
+            value: newValue,
+          };
+        });
+      }
     };
 
     /**
@@ -473,20 +484,22 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      *
      */
     reset = () => {
-      // Clobber the state by setting back to the initialState
-      this.setState(this.initialState);
-      // If we were provided a change function, then call it with the initial value
-      if (isFunction(this.props.onChange)) {
-        this.props.onChange(this.initialState.value, this.props.name);
-      }
-
-      // If this is acting as a wrapper to compose fields, then call the reset on the fields it
-      // controls
-      Object.keys(this.fields).forEach(field => {
-        if (isFunction(this.fields[field].reset)) {
-          this.fields[field].reset();
+      if (this.mounted) {
+        // Clobber the state by setting back to the initialState
+        this.setState(this.initialState);
+        // If we were provided a change function, then call it with the initial value
+        if (isFunction(this.props.onChange)) {
+          this.props.onChange(this.initialState.value, this.props.name);
         }
-      });
+
+        // If this is acting as a wrapper to compose fields, then call the reset on the fields it
+        // controls
+        Object.keys(this.fields).forEach(field => {
+          if (isFunction(this.fields[field].reset)) {
+            this.fields[field].reset();
+          }
+        });
+      }
     };
 
     /**
@@ -494,6 +507,9 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      */
 
     validate = () => {
+      if (!this.mounted) {
+        return false;
+      }
       // We need to get the values of the controlled fields and see if they're
       // good. Might be buggy.
       const controlledFields = Object.keys(this.fields)
@@ -614,7 +630,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         format,
         unformat,
         handleEnterKey,
-        // children,
+        doNotRegister,
         ...spreadProps
       } = this.props;
 

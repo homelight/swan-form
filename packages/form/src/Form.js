@@ -66,7 +66,6 @@ export default class Form extends Component {
     autoComplete: PropTypes.oneOf(['on', 'off']),
     reset: PropTypes.func,
     onSubmit: PropTypes.func,
-    isSubmitting: PropTypes.func,
   };
 
   constructor(props) {
@@ -84,25 +83,21 @@ export default class Form extends Component {
 
     // Fill out with all the things
     this.state = {
-      isSubmitting: false,
-      hasSubmitted: false,
-      hasSubmitError: false,
-      errors: emptyArray,
+      // isSubmitting: false,
+      // hasSubmitted: false,
+      // hasSubmitError: false,
+      // errors: emptyArray,
       values: emptyObject,
     };
 
-    // This isn't a pure component by any means. We're going to create an object to keep track
-    // of all of the fields that get registered with this component. We're avoiding keeping track
-    // of these in `state` because that would cause unnecessary re-renders and be quite
-    // annoying.
+    // We're going to keep track of accessors on a class property to avoid rerenders
     this.fields = emptyObject;
-    this.isSubmitting = this.getValue.bind(this, 'isSubmitting');
+    this.mounted = false;
   }
 
   getChildContext() {
     return {
       autoComplete: this.props.autoComplete,
-      isSubmitting: this.isSubmitting,
       onSubmit: this.handleOnSubmit,
       registerField: this.registerField,
       reset: this.resetForm,
@@ -110,15 +105,16 @@ export default class Form extends Component {
     };
   }
 
+  componentDidMount() {
+    this.mounted = true;
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
+  }
+
   setRef = el => {
     this.form = el;
-  };
-
-  getValue = key => {
-    if (hasOwnProperty(this.state, key)) {
-      return this.state[key];
-    }
-    return null;
   };
 
   getValues = () => ({
@@ -147,10 +143,12 @@ export default class Form extends Component {
 
   handleBeforeSubmit = () => {
     // Update the state to show that we are currently submitting.
-    this.setState(prevState => ({
-      ...prevState,
-      isSubmitting: true,
-    }));
+    if (this.mounted) {
+      this.setState(prevState => ({
+        ...prevState,
+        isSubmitting: true,
+      }));
+    }
 
     return new Promise((res, rej) => {
       // First, synchronously validate all the fields. `required` and `pattern` fields that
@@ -182,13 +180,15 @@ export default class Form extends Component {
 
   handleAfterSubmit = values => {
     const { afterSubmit } = this.props;
-    this.setState(prevState => ({
-      ...prevState,
-      isSubmitting: false,
-      hasSubmitted: true,
-      hasSubmitError: false,
-      errors: emptyArray,
-    }));
+    if (this.mounted) {
+      this.setState(prevState => ({
+        ...prevState,
+        isSubmitting: false,
+        hasSubmitted: true,
+        hasSubmitError: false,
+        errors: emptyArray,
+      }));
+    }
 
     if (isFunction(afterSubmit)) {
       // If after submit is a promise, then execute and return
@@ -218,15 +218,17 @@ export default class Form extends Component {
     this.handleBeforeSubmit()
       .then(values => this.handleSubmit(values))
       .then(values => this.handleAfterSubmit(values))
-      .catch(errors =>
-        this.setState(prevState => ({
-          ...prevState,
-          isSubmitting: false,
-          hasSubmitError: true,
-          hasSubmitted: true,
-          errors,
-        })),
-      );
+      .catch(errors => {
+        if (this.mounted) {
+          this.setState(prevState => ({
+            ...prevState,
+            isSubmitting: false,
+            hasSubmitError: true,
+            hasSubmitted: true,
+            errors,
+          }));
+        }
+      });
   };
 
   registerField = ({ name, getRef, getValue, setValue, validate, reset }) => {
@@ -244,13 +246,15 @@ export default class Form extends Component {
     // in the form's state for later access. Note: these can't be validated in the same way.
     if (this.props.keepUnmountedFieldValues) {
       const value = removed.getValue();
-      this.setState(prevState => ({
-        ...prevState,
-        values: {
-          ...prevState.values,
-          [name]: value,
-        },
-      }));
+      if (this.mounted) {
+        this.setState(prevState => ({
+          ...prevState,
+          values: {
+            ...prevState.values,
+            [name]: value,
+          },
+        }));
+      }
     }
   };
 

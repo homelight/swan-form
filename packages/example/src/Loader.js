@@ -10,7 +10,7 @@ const loader = (function helper() {
   };
 })();
 
-const getResolve = x => (typeof x.default !== 'undefined' ? x.default : x);
+const getResolve = x => (x && typeof x.default !== 'undefined' ? x.default : x);
 
 export default function Loadable(importer, Loading = null) {
   return class Load extends PureComponent {

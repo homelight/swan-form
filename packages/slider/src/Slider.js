@@ -74,6 +74,12 @@ export default class Slider extends PureComponent {
     this.state = {
       current: clamp(props.current, 0, React.Children.count(props.children)) || 0,
     };
+
+    this.mounted = false;
+  }
+
+  componentDidMount() {
+    this.mounted = true;
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -99,6 +105,10 @@ export default class Slider extends PureComponent {
         didEnter(this.mapSlideProps);
       }
     }
+  }
+
+  componentWillUnmount() {
+    this.mounted = false;
   }
 
   /**
@@ -130,7 +140,11 @@ export default class Slider extends PureComponent {
     this.form = el;
   };
 
-  moveTo = current => this.setState(prevState => ({ ...prevState, current }));
+  moveTo = current => {
+    if (this.mounted) {
+      this.setState(prevState => ({ ...prevState, current }));
+    }
+  };
 
   next = () => {
     if (this.current && isFunction(this.current.isValid) && this.current.isValid()) {
@@ -142,7 +156,7 @@ export default class Slider extends PureComponent {
         // we're actually on the last side first
         if (nextSlideIndex === this.getChildren().length - 1) {
           // Call the submit handler on the form
-          if (this.form && isFunction(this.form.handleOnSubmit)) {
+          if (this.form && isFunction(this.form.handleOnSubmit) && this.mounted) {
             this.form.handleOnSubmit();
           }
         }

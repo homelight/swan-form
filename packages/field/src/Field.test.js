@@ -34,11 +34,6 @@ describe('Text Field Input Suite', () => {
     expect(testTextField.find('input').attr('value')).toBe('');
   });
 
-  it('should render a component without a `name` prop correctly', () => {
-    const w = render(<Field type="text" onChange={console.log} />);
-    expect(w.find('input').attr('name')).toBe(undefined);
-  });
-
   const multipleSelect = render(
     <Field
       name="selectField"

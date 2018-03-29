@@ -2,7 +2,7 @@
   "presets": [
     [
       "@babel/env", {
-        "targets": [ "IE 9", ">1%" ],
+        "targets": [ "IE 11", ">1%" ],
         "modules": false
       }
     ],
@@ -18,7 +18,7 @@
       "presets": [
         [
           "@babel/env", {
-            "targets": [ "IE 9", ">1%" ],
+            "targets": [ "IE 11", ">1%" ],
             "modules": false
           }
         ],
