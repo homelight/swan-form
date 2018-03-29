@@ -1,7 +1,7 @@
 {
   "name": "@swan-form/helpers",
   "version": "0.0.1",
-  "description": "helpers for swan-form",
+  "description": "Helpers functions for swan-form",
   "license": "Apache-2.0",
   "contributors": [
     {

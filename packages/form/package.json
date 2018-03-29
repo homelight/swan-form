@@ -1,7 +1,7 @@
 {
   "name": "@swan-form/form",
   "version": "0.0.1",
-  "description": "forms and things",
+  "description": "Elegant form handling for React -- contains forms",
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "repository": {
