@@ -10,9 +10,9 @@ module.exports = {
     '@babel/stage-0',
     '@babel/react',
   ],
-  ignore: ['**/*.test.js'],
   env: {
     production: {
+      ignore: ['**/*.test.js'],
       plugins: ['transform-react-remove-prop-types', 'transform-es2015-modules-commonjs'],
       presets: [
         [
