@@ -37,6 +37,10 @@ function getInitialValue(props) {
   return '';
 }
 
+function canAccessSelectionStart(type) {
+  return ['text', 'search', 'password', 'tel', 'url'].includes(type);
+}
+
 /**
  * Wraps a component to treat it like a field (a controlled input)
  *
@@ -133,14 +137,22 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       if (this.props.autoFocus && this.fieldRef) {
         // Actually focus on the field
         this.fieldRef.focus();
-        // Move the cursor to the end of the input if there is a value
-        moveCursor(this.fieldRef);
+        // Safari will freak out if we try to access selectionStart on an `<input/>` with many different
+        // `types` set.
+        if (canAccessSelectionStart(this.props.type)) {
+          moveCursor(this.fieldRef);
+        }
       }
 
       this.mounted = true;
     }
 
     componentDidUpdate(prevProps, prevState) {
+      // Safari will freak out if we try to access selectionStart on an `<input/>` with many different
+      // `types` set.
+      if (!canAccessSelectionStart(this.props.type)) {
+        return;
+      }
       // This isn't working correctly for everything
       if (this.fieldRef && this.fieldRef.selectionStart) {
         const { cursor } = this.state;
@@ -588,6 +600,12 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      */
     format = value => {
       const { format } = this.props;
+
+      // Safari will freak out if we try to access selectionStart on an `<input/>` with many different
+      // `types` set.
+      if (!canAccessSelectionStart(this.props.type)) {
+        return value;
+      }
 
       // If the user has specified a formatter, then call it on the value
       if (isFunction(format)) {
