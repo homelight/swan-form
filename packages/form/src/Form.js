@@ -8,15 +8,17 @@ import { hasOwnProperty, emptyArray, emptyObject } from '@swan-form/helpers';
  *
  * @todo  we might consider doing something better than this
  *
- * @param  {[type]} obj [description]
- * @return {[type]}     [description]
+ * @param  {object} obj [description]
+ * @return {boolean}     [description]
  */
 const isPromise = obj =>
-  !!obj && ['function', 'object'].includes(typeof obj) && typeof obj.then === 'function';
+  !!obj && ['function', 'object'].includes(typeof obj) && isFunction(obj.then);
+
+const maybePromisify = obj => (isPromise(obj) ? obj : Promise.resolve(obj));
 
 // These are fields that we will automatically pull out of the form as they are just the
 // automatically generated names for the submit and reset buttons
-const fieldToRemove = ['sf--reset', 'sf--submit'];
+const fieldsToRemove = ['sf--reset', 'sf--submit'];
 
 export default class Form extends Component {
   static propTypes = {
@@ -51,13 +53,13 @@ export default class Form extends Component {
     /**
      * Whether or not to keep the field values after the fields unmount
      */
-    keepUnmountedFieldValues: PropTypes.bool,
+    persist: PropTypes.bool,
   };
 
   static defaultProps = {
     autoComplete: 'on',
     noValidate: false,
-    keepUnmountedFieldValues: false,
+    persist: false,
   };
 
   static childContextTypes = {
@@ -123,15 +125,9 @@ export default class Form extends Component {
     // Get the current values from each field accesor
     ...Object.keys(this.fields)
       // Remove some preset fields
-      .filter(field => !fieldToRemove.includes(field))
+      .filter(field => !fieldsToRemove.includes(field))
       // Turn it into an object
-      .reduce(
-        (acc, field) => ({
-          ...acc,
-          [field]: this.fields[field].getValue(),
-        }),
-        {},
-      ),
+      .reduce((acc, field) => ({ ...acc, [field]: this.fields[field].getValue() }), {}),
   });
 
   getSpreadProps() {
@@ -149,6 +145,8 @@ export default class Form extends Component {
         isSubmitting: true,
       }));
     }
+
+    const { beforeSubmit } = this.props;
 
     return new Promise((res, rej) => {
       // First, synchronously validate all the fields. `required` and `pattern` fields that
@@ -168,13 +166,10 @@ export default class Form extends Component {
       // Grab all the field values
       const values = this.getValues();
 
-      if (isFunction(this.props.beforeSubmit)) {
-        // If there a user supplied callback, then run it and resolve on its return.
-        // However, we should probably check to see if it's a promise, or do some
-        // other things here to make the hook better.
-        return res(this.props.beforeSubmit(values));
-      }
-      return res(values);
+      // If there a user supplied callback, then run it and resolve on its return.
+      // However, we should probably check to see if it's a promise, or do some
+      // other things here to make the hook better.
+      return isFunction(beforeSubmit) ? res(beforeSubmit(values)) : res(values);
     });
   };
 
@@ -192,11 +187,7 @@ export default class Form extends Component {
 
     if (isFunction(afterSubmit)) {
       // If after submit is a promise, then execute and return
-      if (isPromise(afterSubmit)) {
-        return afterSubmit(values);
-      }
-      // If it's not a promise, then wrap in a promise.resolve
-      return Promise.resolve(afterSubmit(values));
+      return maybePromisify(afterSubmit(values));
     }
     // Resolve the promise with the values.
     return Promise.resolve(values);
@@ -204,7 +195,7 @@ export default class Form extends Component {
 
   handleSubmit = values => {
     const result = this.props.onSubmit(values);
-    return isPromise(result) ? result : Promise.resolve(result);
+    return maybePromisify(result);
   };
 
   handleOnSubmit = event => {
@@ -216,8 +207,8 @@ export default class Form extends Component {
     }
 
     this.handleBeforeSubmit()
-      .then(values => this.handleSubmit(values))
-      .then(values => this.handleAfterSubmit(values))
+      .then(this.handleSubmit)
+      .then(this.handleAfterSubmit)
       .catch(errors => {
         if (this.mounted) {
           this.setState(prevState => ({
@@ -244,7 +235,7 @@ export default class Form extends Component {
 
     // If we were instructed to hold onto values that were being removed, then store them
     // in the form's state for later access. Note: these can't be validated in the same way.
-    if (this.props.keepUnmountedFieldValues) {
+    if (this.props.persist) {
       const value = removed.getValue();
       if (this.mounted) {
         this.setState(prevState => ({
