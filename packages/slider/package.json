@@ -3,16 +3,15 @@
   "version": "0.1.0",
   "description": "Decompose forms into sliders",
   "license": "Apache-2.0",
-  "files": [
-    "dist"
-  ],
+  "files": ["dist"],
   "main": "dist/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/helloeave/swan-form.git"
   },
   "scripts": {
-    "build": "NODE_ENV='production' babel --src-type module src --out-dir dist --source-maps --compact=true --no-comments --ignore 'src/__tests__/*,*.test.js' && cp src/*.css dist/",
+    "build":
+      "NODE_ENV='production' babel --src-type module src --out-dir dist --source-maps --compact=true --no-comments --ignore 'src/__tests__/*,*.test.js' && cp src/*.css dist/",
     "precommit": "lint-staged",
     "predeploy": "cd example && yarn && yarn run build",
     "deploy": "gh-pages -d example/build",

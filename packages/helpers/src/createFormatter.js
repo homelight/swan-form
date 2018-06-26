@@ -1,10 +1,10 @@
 // functionally equivalent to String.repeat(int);
 function repeat(str, count) {
-  let out = '';
+  const out = new Array(count);
   for (let i = 0; i < count; i++) {
-    out += str;
+    out[i] = str;
   }
-  return out;
+  return out.join('');
 }
 
 // functionally equivalent to String.padStart(length, str);
@@ -32,14 +32,11 @@ function createTransformer(transformer) {
   };
 }
 
-function getPattern(pattern, wildcard, valueRawLength) {
-  const patternRawLength = pattern.match(new RegExp(wildcard, 'g')).length || 0;
-  const patternFormattingChars = pattern.length - patternRawLength;
-  return padStart(
-    '',
-    valueRawLength + (Math.ceil(valueRawLength / patternRawLength) - patternFormattingChars),
-    pattern,
-  )
+function getPattern(pattern, wildcard, valueRawLen) {
+  const patternRawLen = pattern.match(new RegExp(wildcard, 'g')).length || 0;
+  const pFormattingChars = pattern.length - patternRawLen;
+  const targetLength = valueRawLen + (Math.ceil(valueRawLen / patternRawLen) - pFormattingChars);
+  return padStart('', targetLength, pattern)
     .split('')
     .reverse()
     .join('');
@@ -68,7 +65,5 @@ function createMask(pattern, wildcard, unbound) {
 export default function createFormatter(transformer, pattern, unbound = false, wildcard = '_') {
   const transform = createTransformer(transformer);
   const mask = createMask(pattern, wildcard, unbound);
-  return function format(value, cursor) {
-    return mask(transform(value, cursor));
-  };
+  return (value, cursor) => mask(transform(value, cursor));
 }

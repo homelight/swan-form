@@ -316,7 +316,7 @@ export default class Slider extends PureComponent {
           beforeSubmit={beforeSubmit}
           afterSubmit={afterSubmit}
           autoComplete={autoComplete}
-          keepUnmountedFieldValues
+          persist
           ref={this.setFormRef}
         >
           {isFunction(render) ? (
