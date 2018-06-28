@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
 import { hasOwnProperty, emptyArray, emptyObject } from '@swan-form/helpers';
+import { FieldInterface } from '@swan-form/field';
 
 /**
  * Duck-type check for a promise
@@ -11,15 +12,23 @@ import { hasOwnProperty, emptyArray, emptyObject } from '@swan-form/helpers';
  * @param  {object} obj [description]
  * @return {boolean}     [description]
  */
-const isPromise = obj => !!obj && ['function', 'object'].includes(typeof obj) && isFunction(obj.then);
+const isPromise = (obj: any): boolean => !!obj && ['function', 'object'].includes(typeof obj) && isFunction(obj.then);
 
-const maybePromisify = obj => (isPromise(obj) ? obj : Promise.resolve(obj));
+const maybePromisify = (obj: any) => (isPromise(obj) ? obj : Promise.resolve(obj));
 
 // These are fields that we will automatically pull out of the form as they are just the
 // automatically generated names for the submit and reset buttons
 const fieldsToRemove = ['sf--reset', 'sf--submit'];
 
-export default class Form extends Component {
+export interface FormProps {
+  values?: object;
+}
+
+export interface FormState {
+  values: object;
+}
+
+export default class Form extends Component<FormProps, FormState> {
   static propTypes = {
     /**
      * The name of the form
@@ -69,7 +78,9 @@ export default class Form extends Component {
     onSubmit: PropTypes.func,
   };
 
-  constructor(props) {
+  mounted: boolean;
+
+  constructor(props: FormProps) {
     super(props);
 
     ['acceptCharset', 'action', 'target'].forEach(prop => {
@@ -83,13 +94,14 @@ export default class Form extends Component {
     });
 
     // Fill out with all the things
+    // @ts-ignore: typescript, this is a valid way of assigning initial state.
     this.state = {
       // isSubmitting: false,
       // hasSubmitted: false,
       // hasSubmitError: false,
       // errors: emptyArray,
-      values: emptyObject,
-    };
+      values: props.values || emptyObject,
+    } as FormState;
 
     // We're going to keep track of accessors on a class property to avoid rerenders
     this.fields = emptyObject;

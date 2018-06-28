@@ -55,12 +55,14 @@ module.exports = {
       example: 'cd packages/example && yarn run dev',
     },
     type: {
-      all: npsUtils.concurrent.nps('type.helpers'),
+      all: npsUtils.concurrent.nps('type.helpers', 'type.field', 'type.form'),
       dev: {
         helpers: getDevTypeCmd('helpers'),
         field: getDevTypeCmd('field'),
       },
       helpers: getTypeCmd('helpers'),
+      field: getTypeCmd('field'),
+      form: getTypeCmd('form'),
     },
   },
 };

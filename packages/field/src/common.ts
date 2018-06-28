@@ -35,3 +35,13 @@ export interface FieldProps {
   onFocus?(): any;
   onBlur?(): any;
 }
+
+export interface FieldInterface {
+  name: string;
+  getRef(): HTMLElement;
+  getValue(): any;
+  setValue(value: any): void;
+  validate(): StrFalseArr;
+  isValid(): boolean;
+  reset(): void;
+}

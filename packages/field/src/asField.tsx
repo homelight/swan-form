@@ -10,7 +10,14 @@ import isObject from 'lodash/isObject';
 
 import { hasErrors, hasOwnProperty, keyCodes, moveCursor, emptyArray, runValidations } from '@swan-form/helpers';
 
-import { StrFalseArr, FieldElement, FieldKeyboardEvent, GenericClickEvent, GenericFocusEvent } from './common';
+import {
+  StrFalseArr,
+  FieldInterface,
+  FieldElement,
+  FieldKeyboardEvent,
+  GenericClickEvent,
+  GenericFocusEvent,
+} from './common';
 
 export interface AsFieldProps {
   name: string;
@@ -61,16 +68,6 @@ export interface AsFieldState {
 
 export interface WrapperOptions {
   registerWrapped?: boolean;
-}
-
-export interface FieldInterface {
-  name: string;
-  getRef(): HTMLElement;
-  getValue(): any;
-  setValue(value: any): void;
-  validate(): StrFalseArr;
-  isValid(): boolean;
-  reset(): void;
 }
 
 const { ENTER, TAB } = keyCodes;
