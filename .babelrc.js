@@ -3,12 +3,17 @@ module.exports = {
     [
       '@babel/env',
       {
-        targets: ['IE 11', '>1%'],
+        targets: {
+          browsers: ['ie 11', '>1%'],
+        },
         modules: false,
       },
     ],
-    '@babel/stage-0',
     '@babel/react',
+  ],
+  plugins: [
+    '@babel/plugin-proposal-export-default-from',
+    '@babel/plugin-proposal-class-properties',
   ],
   env: {
     production: {
@@ -18,11 +23,12 @@ module.exports = {
         [
           '@babel/env',
           {
-            targets: ['IE 11', '>1%'],
+            targets: {
+              browsers: ['ie 11', '>1%'],
+            },
             modules: false,
           },
         ],
-        '@babel/stage-0',
         '@babel/react',
       ],
     },
@@ -34,7 +40,6 @@ module.exports = {
             modules: 'commonjs',
           },
         ],
-        '@babel/stage-0',
         '@babel/react',
       ],
     },
