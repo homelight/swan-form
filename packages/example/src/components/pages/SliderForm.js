@@ -6,8 +6,7 @@ import '@swan-form/slider/dist/Slider.css';
 import '@swan-form/slider/dist/Slide.css';
 import { hot } from 'react-hot-loader';
 
-const required = value =>
-  value !== null && value !== undefined && value.trim() !== '' ? false : 'Required';
+const required = value => (value !== null && value !== undefined && value.trim() !== '' ? false : 'Required');
 const onSubmit = values => {
   alert(JSON.stringify(values));
   return values;
@@ -34,14 +33,11 @@ export default class SliderForm extends Component {
                   placeholder="This field is required"
                 />
                 <p>
-                  This slider has four slides. This one, two that we skip, and one with a submit
-                  button. After we <em>press</em> submit, we transform the value in the first to an
-                  uppercase string (<code>beforeSubmit</code>) that is passed to the actual submit (<code
-                  >
-                    onSubmit
-                  </code>) that is then logged to the console in the after submit method (<code>
-                    afterSubmit
-                  </code>).
+                  This slider has four slides. This one, two that we skip, and one with a submit button. After we{' '}
+                  <em>press</em> submit, we transform the value in the first to an uppercase string (<code>
+                    beforeSubmit
+                  </code>) that is passed to the actual submit (<code>onSubmit</code>) that is then logged to the
+                  console in the after submit method (<code>afterSubmit</code>).
                 </p>
               </div>
             )}
@@ -58,17 +54,13 @@ export default class SliderForm extends Component {
               <div>
                 <h2>Decision Tree</h2>
                 <p>
-                  Here are two radio buttons. If you choose the first one, you&apos;ll see the next
-                  slide and skip the one after that. If you choose the other one, you&apos;ll see
-                  the reverse.
+                  Here are two radio buttons. If you choose the first one, you&apos;ll see the next slide and skip the
+                  one after that. If you choose the other one, you&apos;ll see the reverse.
                 </p>
                 <Radios
                   validate={required}
                   name="decisionTree"
-                  options={[
-                    { label: 'Next Slide', value: '0' },
-                    { label: 'The Other One', value: '1' },
-                  ]}
+                  options={[{ label: 'Next Slide', value: '0' }, { label: 'The Other One', value: '1' }]}
                   value={props.getFormValues().decisionTree}
                 />
               </div>
@@ -89,8 +81,8 @@ export default class SliderForm extends Component {
           <Slide>
             <h2>A static slide</h2>
             <p>
-              This is a static slide. There is no need to set values in forms, so we don&apos;t need
-              to use a render prop.
+              This is a static slide. There is no need to set values in forms, so we don&apos;t need to use a render
+              prop.
             </p>
           </Slide>
           <Slide

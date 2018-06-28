@@ -1,9 +1,15 @@
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { classes } from '@swan-form/helpers';
-import Field from './Field';
+import { default as Field } from './Field';
 
-export default class Submit extends Component {
+export interface SubmitProps {
+  className?: string;
+  name?: string;
+  value?: string;
+}
+
+export default class Submit extends PureComponent<SubmitProps, {}> {
   static propTypes = {
     name: PropTypes.string,
     value: PropTypes.string,
@@ -18,13 +24,6 @@ export default class Submit extends Component {
 
   render() {
     const { className, name, value } = this.props;
-    return (
-      <Field
-        className={classes(['sf--submit', className])}
-        type="submit"
-        name={name}
-        value={value}
-      />
-    );
+    return <Field className={classes(['sf--submit', className])} type="submit" name={name} value={value} />;
   }
 }

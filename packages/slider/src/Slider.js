@@ -25,8 +25,7 @@ export default class Slider extends PureComponent {
     /**
      * The slides. These should only be of type <Slide />
      */
-    children: PropTypes.oneOfType([PropTypes.element, PropTypes.arrayOf(PropTypes.element)])
-      .isRequired,
+    children: PropTypes.oneOfType([PropTypes.element, PropTypes.arrayOf(PropTypes.element)]).isRequired,
     /**
      * A button to use as a previous button
      */

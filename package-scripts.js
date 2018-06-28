@@ -10,8 +10,9 @@ const getDevCmd = project => `NODE_ENV="development" babel \
 --watch \
 "packages/${project}/src"`;
 
-const getTypeCommand = project =>
-  `cd packages/${project}; NODE_ENV="production" tsc -p "./tsconfig.json"`;
+const getTypeCmd = project => `cd packages/${project}; NODE_ENV="production" tsc -p "./tsconfig.json"`;
+
+const getDevTypeCmd = project => `cd packages/${project} && NODE_ENV="production" tsc -p "./tsconfig.json" --watch`;
 
 // const getBuildCmd = project => `NODE_ENV="production" babel \
 // "packages/${project}/src" \
@@ -27,13 +28,7 @@ module.exports = {
   // @todo expand these scripts
   scripts: {
     lint: {
-      all: npsUtils.concurrent.nps(
-        'lint.helpers',
-        'lint.field',
-        'lint.form',
-        'lint.slider',
-        'lint.extra-fields',
-      ),
+      all: npsUtils.concurrent.nps('lint.helpers', 'lint.field', 'lint.form', 'lint.slider', 'lint.extra-fields'),
       helpers: getLintCmd('helpers'),
       field: getLintCmd('field'),
       form: getLintCmd('form'),
@@ -49,6 +44,8 @@ module.exports = {
         'dev.extra-fields',
         'dev.slider',
         'dev.example',
+        'type.dev.helpers',
+        'type.dev.field',
       ),
       helpers: getDevCmd('helpers'),
       form: getDevCmd('form'),
@@ -59,7 +56,11 @@ module.exports = {
     },
     type: {
       all: npsUtils.concurrent.nps('type.helpers'),
-      helpers: getTypeCommand('helpers'),
+      dev: {
+        helpers: getDevTypeCmd('helpers'),
+        field: getDevTypeCmd('field'),
+      },
+      helpers: getTypeCmd('helpers'),
     },
   },
 };

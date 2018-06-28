@@ -39,13 +39,7 @@ describe('Text Field Input Suite', () => {
       name="selectField"
       type="select"
       multiple
-      options={[
-        'one',
-        'two',
-        'three',
-        { label: 'four', value: 'four' },
-        { OptGroup: ['abc', 'def', 'hij'] },
-      ]}
+      options={['one', 'two', 'three', { label: 'four', value: 'four' }, { OptGroup: ['abc', 'def', 'hij'] }]}
     />,
   );
   it('renders weird multiple select correctly', () => {

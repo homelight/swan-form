@@ -11,8 +11,7 @@ import { hasOwnProperty, emptyArray, emptyObject } from '@swan-form/helpers';
  * @param  {object} obj [description]
  * @return {boolean}     [description]
  */
-const isPromise = obj =>
-  !!obj && ['function', 'object'].includes(typeof obj) && isFunction(obj.then);
+const isPromise = obj => !!obj && ['function', 'object'].includes(typeof obj) && isFunction(obj.then);
 
 const maybePromisify = obj => (isPromise(obj) ? obj : Promise.resolve(obj));
 
@@ -132,9 +131,7 @@ export default class Form extends Component {
 
   getSpreadProps() {
     // If we get more than just this one, then we'll go back to `reduce`.
-    return hasOwnProperty(this.props, 'noValidate')
-      ? { noValidate: this.props.noValidate }
-      : emptyObject;
+    return hasOwnProperty(this.props, 'noValidate') ? { noValidate: this.props.noValidate } : emptyObject;
   }
 
   handleBeforeSubmit = () => {
@@ -251,9 +248,7 @@ export default class Form extends Component {
 
   resetForm = () => {
     // @TODO not quite working for all cases
-    Object.keys(this.fields).forEach(
-      field => isFunction(this.fields[field].reset) && this.fields[field].reset(),
-    );
+    Object.keys(this.fields).forEach(field => isFunction(this.fields[field].reset) && this.fields[field].reset());
   };
 
   render() {

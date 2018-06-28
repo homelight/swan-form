@@ -9,11 +9,7 @@ export default class Container extends PureComponent {
     return (
       <div>
         <NavBar />
-        <div
-          className={[styles.container, this.props.navVisible && styles.navVisible]
-            .filter(O => O)
-            .join(' ')}
-        >
+        <div className={[styles.container, this.props.navVisible && styles.navVisible].filter(O => O).join(' ')}>
           {this.props.children}
         </div>
       </div>

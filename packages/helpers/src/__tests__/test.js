@@ -20,13 +20,8 @@ describe('Shared helper functions tests', () => {
   });
 
   it('runValidations should fail on array of functions that return messages', () => {
-    const validate = [
-      () => 'strings indicate failure',
-      value => (value === true ? 'error' : false),
-    ];
-    expect(runValidations(validate, true)).toEqual(
-      expect.arrayContaining(['strings indicate failure', 'error']),
-    );
+    const validate = [() => 'strings indicate failure', value => (value === true ? 'error' : false)];
+    expect(runValidations(validate, true)).toEqual(expect.arrayContaining(['strings indicate failure', 'error']));
   });
 
   it('runValidations should fail', () => {
@@ -39,9 +34,7 @@ describe('Shared helper functions tests', () => {
   });
 
   it('runValidations on ["string", fn => false] shoud be [false,false]', () => {
-    expect(runValidations([false, () => false], false)).toEqual(
-      expect.arrayContaining([false, false]),
-    );
+    expect(runValidations([false, () => false], false)).toEqual(expect.arrayContaining([false, false]));
   });
 
   it('runValidations with fn that returns array to pass', () => {

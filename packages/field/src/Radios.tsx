@@ -4,7 +4,9 @@ import PropTypes from 'prop-types';
 import { classes } from '@swan-form/helpers';
 import asField from './asField';
 
-class Radios extends Component {
+import { FieldProps } from './common';
+
+class Radios extends Component<FieldProps> {
   static displayName = 'Radios';
 
   static propTypes = {
@@ -31,36 +33,15 @@ class Radios extends Component {
   };
 
   render() {
-    const {
-      errors,
-      className,
-      required,
-      label,
-      options,
-      name,
-      onChange,
-      onFocus,
-      onBlur,
-      value,
-    } = this.props;
+    const { errors, className, required, label, options, name, onChange, onFocus, onBlur, value } = this.props;
 
     return (
-      <fieldset
-        className={classes([
-          'sf--radios',
-          'sf--fieldset',
-          required && 'sf--field--required',
-          className,
-        ])}
-      >
+      <fieldset className={classes(['sf--radios', 'sf--fieldset', required && 'sf--field--required', className])}>
         {label && <legend>{label}</legend>}
         {options.map(option => (
           // right now, I'm spreading this
           <label
-            className={classes([
-              'sf--radio--field',
-              value === option.value && 'sf--radio--checked',
-            ])}
+            className={classes(['sf--radio--field', value === option.value && 'sf--radio--checked'])}
             key={option.value}
           >
             <span>{option.label}</span>
@@ -76,7 +57,7 @@ class Radios extends Component {
           </label>
         ))}
         <span className="sf--field--errors">
-          {errors.filter(err => err).map(err => (
+          {errors.filter(Boolean).map((err: string) => (
             <span key={err} className="sf--field--error">
               {err}
             </span>

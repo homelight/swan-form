@@ -34,12 +34,7 @@ export default class DynamicField extends Component {
         </p>
         <Form name="extraFields" onSubmit={this.onSubmit}>
           <Field name="testfield" type="text" value="test" />
-          <AddressField
-            name="addressField"
-            label="Address Field"
-            value={defaultAddress}
-            autoFocus
-          />
+          <AddressField name="addressField" label="Address Field" value={defaultAddress} autoFocus />
           <hr />
           <Submit />
           <Reset />

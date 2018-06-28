@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import isObject from 'lodash/isObject';
 import { hasOwnProperty, classes, noop } from '@swan-form/helpers';
 import asField from './asField';
+import { FieldProps } from './common';
 
 const INPUT_TYPES = [
   'button',
@@ -34,7 +35,7 @@ const INPUT_TYPES = [
 const noWrap = ['button', 'hidden', 'reset', 'submit'];
 
 /* eslint-disable no-use-before-define */
-function renderOption(option) {
+function renderOption(option: any): React.ReactNode {
   // If the option is either a string or a number, then we'll use it for both the key and value.
   if (['string', 'number'].includes(typeof option)) {
     return (
@@ -66,7 +67,7 @@ function renderOption(option) {
   return null;
 }
 
-function renderOptions(options) {
+function renderOptions(options: any | any[]): React.ReactNode {
   if (Array.isArray(options)) {
     // An array can be mapped to the render option method
     return options.map(renderOption);
@@ -100,7 +101,7 @@ function renderOptions(options) {
 }
 /* eslint-enable no-use-before-define */
 
-class Field extends Component {
+class Field extends Component<FieldProps> {
   static displayName = 'Field';
 
   static propTypes = {
@@ -212,7 +213,7 @@ class Field extends Component {
   maybeWrapInLabel(input) {
     const { className, icon, name, errors, type, label, style } = this.props;
 
-    const spread = {};
+    const spread = {} as { htmlFor?: string; style?: React.CSSProperties };
     if (name) {
       spread.htmlFor = name;
     }
@@ -233,15 +234,11 @@ class Field extends Component {
         {...spread}
       >
         <span>
-          <span className="sf--label">
-{label && label}
-</span>
+          <span className="sf--label">{label && label}</span>
           {input}
-          <span className="sf--icon">
-{icon && icon}
-</span>
+          <span className="sf--icon">{icon && icon}</span>
           <span className="sf--errors">
-            {errors.filter(err => err).map(err => (
+            {errors.filter(Boolean).map((err: string) => (
               <span key={err} className="sf--error">
                 {err}
               </span>

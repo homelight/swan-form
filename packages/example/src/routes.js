@@ -9,21 +9,12 @@ import store from './store';
 // import Container from './components/Container';
 import Loader from './Loader';
 
-const Intro = Loader(
-  () => import(/* webpackChunkName: "intro" */ './components/pages/Intro'),
-  <div>Loading...</div>,
-);
-const Container = Loader(() =>
-  import(/* webpackChunkName: "container" */ './components/Container'),
-);
+const Intro = Loader(() => import(/* webpackChunkName: "intro" */ './components/pages/Intro'), <div>Loading...</div>);
+const Container = Loader(() => import(/* webpackChunkName: "container" */ './components/Container'));
 
-const SliderForm = Loader(() =>
-  import(/* webpackChunkName: "sliderForm" */ './components/pages/SliderForm'),
-);
+const SliderForm = Loader(() => import(/* webpackChunkName: "sliderForm" */ './components/pages/SliderForm'));
 
-const Formatters = Loader(() =>
-  import(/* webpackChunkName: "formatters-example" */ './components/pages/Formatters'),
-);
+const Formatters = Loader(() => import(/* webpackChunkName: "formatters-example" */ './components/pages/Formatters'));
 
 const DependentField = Loader(() => import('./components/pages/DependentField'));
 
@@ -60,9 +51,7 @@ class Routes extends PureComponent {
         <Router history={this.props.history}>
           <Switch>
             <Container>
-              {pages.map(([path, name, component]) => (
-                <Route key={name} path={path} component={component} exact />
-              ))}
+              {pages.map(([path, name, component]) => <Route key={name} path={path} component={component} exact />)}
             </Container>
           </Switch>
         </Router>

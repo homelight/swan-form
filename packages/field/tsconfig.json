@@ -2,7 +2,10 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist/typings",
-    "baseDir": ".",
+    "jsx": "react",
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "baseUrl": ".",
     "paths": {
       "@swan-form/*": ["../../*"]
     },
