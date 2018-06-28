@@ -68,11 +68,11 @@ Uses AirBnB's eslint config — one shared across all packages.
 
 ### General
 
-* [ ] Expand Readme
-* [ ] Better docs
-* [ ] Improve test coverage
-* [ ] Ship some esmodules
-* [ ] creating typings
+- [ ] Expand Readme
+- [ ] Better docs
+- [ ] Improve test coverage
+- [ ] Ship some esmodules
+- [ ] creating typings
 
 ## License
 

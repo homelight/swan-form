@@ -4,8 +4,7 @@
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "build": "lerna run build",
-    "clean":
-      "rm -fR packages/slider/dist; rm -fR packages/field/dist; rm -fR packages/form/dist; rm -fR packages/helpers/dist",
+    "clean": "rm -fR packages/slider/dist; rm -fR packages/field/dist; rm -fR packages/form/dist; rm -fR packages/helpers/dist",
     "postinstall": "yarn run build",
     "precommit": "lint-staged",
     "dev": "nps dev.all",
@@ -16,21 +15,21 @@
     "test:watch": "yarn run test -- --watch"
   },
   "devDependencies": {
-    "@babel/cli": "^7.0.0-beta.38",
-    "@babel/core": "^7.0.0-beta.38",
-    "@babel/preset-env": "^7.0.0-beta.38",
-    "@babel/preset-react": "^7.0.0-beta.38",
-    "@babel/preset-stage-0": "^7.0.0-beta.38",
-    "@babel/preset-stage-1": "^7.0.0-beta.38",
+    "@babel/cli": "^7.0.0-beta.51",
+    "@babel/core": "^7.0.0-beta.51",
+    "@babel/preset-env": "^7.0.0-beta.51",
+    "@babel/preset-react": "^7.0.0-beta.51",
+    "@babel/preset-stage-0": "^7.0.0-beta.51",
+    "@babel/preset-stage-1": "^7.0.0-beta.51",
     "autoprefixer": "^8.1.0",
     "babel-core": "^7.0.0-0",
     "babel-eslint": "^8.0.2",
-    "babel-jest": "^23.0.0-alpha.0",
+    "babel-jest": "^23.2.0",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.12",
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
-    "eslint": "^4.9.0",
-    "eslint-config-airbnb": "^16.1.0",
+    "eslint": "^5.0.1",
+    "eslint-config-airbnb": "^17.0.0",
     "eslint-config-prettier": "^2.9.0",
     "eslint-import-resolver-lerna": "^1.0.0",
     "eslint-plugin-import": "^2.7.0",
@@ -38,50 +37,35 @@
     "eslint-plugin-monorepo": "^0.2.0",
     "eslint-plugin-react": "^7.4.0",
     "husky": "^0.14.3",
-    "jest": "^22.1.1",
-    "jest-environment-jsdom": "23.0.0-alpha.0",
+    "jest": "^23.2.0",
+    "jest-environment-jsdom": "23.2.0",
     "jest-enzyme": "^6.0.0",
-    "lerna": "2.9.0",
+    "lerna": "2.11.0",
     "lint-staged": "^7.0.0",
     "nps": "^5.7.1",
     "nps-utils": "^1.5.0",
     "prettier": "^1.10.2",
     "react-test-renderer": "^16.2.0",
-    "regenerator-runtime": "^0.11.1"
+    "regenerator-runtime": "^0.12.0"
   },
   "browserslist": {
-    "development": ["last 2 chrome versions", "last 2 firefox versions", "last 2 edge versions"],
-    "production": [">1%", "last 4 versions", "Firefox ESR", "ie > 9"]
-  },
-  "jest": {
-    "projects": [
-      "<rootDir>/packages/extra-fields",
-      "<rootDir>/packages/field",
-      "<rootDir>/packages/form",
-      "<rootDir>/packages/helpers",
-      "<rootDir>/packages/slider"
+    "development": [
+      "last 2 chrome versions",
+      "last 2 firefox versions",
+      "last 2 edge versions"
     ],
-    "transform": {
-      "^.+\\.jsx?$": "babel-jest"
-    },
-    "setupTestFrameworkScriptFile": "./node_modules/jest-enzyme/lib/index.js",
-    "unmockedModulePathPatterns": ["react", "enzyme", "jest-enzyme"],
-    "testMatch": ["*.test.js", "**/?(*.)(spec|test).js?(x)"],
-    "moduleNameMapper": {
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$":
-        "<rootDir>/__mocks__/fileMock.js",
-      "\\.(css|scss)$": "<rootDir>/__mocks__/styleMock.js"
-    },
-    "collectCoverage": true,
-    "collectCoverageFrom": ["src/**/*.{js,jsx}", "!**/node_modules/**"],
-    "coveragePathIgnorePatterns": [
-      "<rootDir>/dist/",
-      "<rootDir>/node_modules/",
-      "<rootDir>/example/"
+    "production": [
+      ">1%",
+      "last 4 versions",
+      "Firefox ESR",
+      "ie > 9"
     ]
   },
   "lint-staged": {
-    "*.{js,json,css,md}": ["yarn run format", "git add"]
+    "*.{js,json,css,md}": [
+      "yarn run format",
+      "git add"
+    ]
   },
   "prettier": {
     "printWidth": 100,
@@ -89,5 +73,7 @@
     "trailingComma": "all",
     "arrowParens": "avoid"
   },
-  "workspaces": ["packages/*"]
+  "workspaces": [
+    "packages/*"
+  ]
 }
