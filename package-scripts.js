@@ -10,6 +10,9 @@ const getDevCmd = project => `NODE_ENV="development" babel \
 --watch \
 "packages/${project}/src"`;
 
+const getTypeCommand = project =>
+  `cd packages/${project}; NODE_ENV="production" tsc -p "./tsconfig.json"`;
+
 // const getBuildCmd = project => `NODE_ENV="production" babel \
 // "packages/${project}/src" \
 // --config-file="packages/${project}/.babelrc.js"
@@ -53,6 +56,10 @@ module.exports = {
       'extra-fields': getDevCmd('extra-fields'),
       slider: getDevCmd('slider'),
       example: 'cd packages/example && yarn run dev',
+    },
+    type: {
+      all: npsUtils.concurrent.nps('type.helpers'),
+      helpers: getTypeCommand('helpers'),
     },
   },
 };

@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "lib": ["dom", "esnext"],
+    "emitDeclarationOnly": true,
+    "module": "esnext",
+    "jsx": "react",
+    "target": "es5",
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "declaration": true,
+    "baseUrl": ".",
+    "allowSyntheticDefaultImports": true,
+    "paths": {
+      "@swan-form/*": ["packages/*"]
+    }
+  }
+}

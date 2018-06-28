@@ -12,7 +12,8 @@
     "format": "prettier --write '**/*.{json,js,css,md}'",
     "lint": "nps lint.all",
     "test": "jest --env=jsdom",
-    "test:watch": "yarn run test -- --watch"
+    "test:watch": "yarn run test -- --watch",
+    "type": "nps type.all"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.51",
@@ -22,11 +23,15 @@
     "@babel/preset-stage-0": "^7.0.0-beta.51",
     "@babel/preset-stage-1": "^7.0.0-beta.51",
     "@babel/preset-typescript": "^7.0.0-beta.51",
+    "@types/lodash": "^4.14.110",
+    "@types/react": "^16.4.4",
+    "@types/react-dom": "^16.0.6",
     "autoprefixer": "^8.1.0",
     "babel-core": "^7.0.0-0",
     "babel-eslint": "^8.0.2",
     "babel-jest": "^23.2.0",
     "babel-plugin-transform-react-remove-prop-types": "^0.4.12",
+    "csstype": "^2.5.5",
     "enzyme": "^3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
     "eslint": "^5.0.1",

@@ -1,1 +1,1 @@
-export default errors => errors.filter(x => x).length !== 0;
+export default (errors: (string | false)[]) => errors.filter(Boolean).length !== 0;
