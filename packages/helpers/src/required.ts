@@ -1,5 +1,5 @@
-export function createRequired(message) {
-  return function required(value) {
+export function createRequired(message: string) {
+  return function required(value: any): string | false {
     switch (typeof value) {
       case 'number':
         return !value && value !== 0 ? message : false;

@@ -8,14 +8,7 @@ import isEqual from 'lodash/isEqual';
 import isFunction from 'lodash/isFunction';
 import isObject from 'lodash/isObject';
 
-import {
-  hasErrors,
-  hasOwnProperty,
-  keyCodes,
-  moveCursor,
-  emptyArray,
-  runValidations,
-} from '@swan-form/helpers';
+import { hasErrors, hasOwnProperty, keyCodes, moveCursor, emptyArray, runValidations } from '@swan-form/helpers';
 
 const { ENTER, TAB } = keyCodes;
 
@@ -23,7 +16,7 @@ function getInitialValue(props) {
   if (props.type === 'checkbox' && isObject(props)) {
     if (hasOwnProperty(props, 'checked')) {
       return !!props.checked;
-    } else if (hasOwnProperty(props, 'defaultChecked')) {
+    } if (hasOwnProperty(props, 'defaultChecked')) {
       return !!props.defaultChecked;
     }
     return !!props.value;
@@ -526,8 +519,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       // good. Might be buggy.
       const controlledFields = Object.keys(this.fields)
         .reduce(
-          (acc, field) =>
-            isFunction(this.fields[field].validate) ? [...acc, this.fields[field].validate()] : acc,
+          (acc, field) => (isFunction(this.fields[field].validate) ? [...acc, this.fields[field].validate()] : acc),
           [],
         )
         // This filter is ugly... It sort of mixes concerns and shows how we're repurposing the

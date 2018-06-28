@@ -70,7 +70,8 @@ function renderOptions(options) {
   if (Array.isArray(options)) {
     // An array can be mapped to the render option method
     return options.map(renderOption);
-  } else if (isObject(options)) {
+  }
+  if (isObject(options)) {
     // If it's an object, then we have to figure out if they're passing options or optgroups
     return Object.keys(options).map(option => {
       // If the value of a key is either a string or number, then key:value :: label:value, so
@@ -110,8 +111,7 @@ class Field extends Component {
      * An array of error messages (false means no error)
      * @type {Array}
      */
-    errors: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([false])]))
-      .isRequired,
+    errors: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([false])])).isRequired,
     /**
      * Whether or not the field's value is valid
      * @type {Boolean}
@@ -172,13 +172,9 @@ class Field extends Component {
      * Children of the field
      *
      * @note this applies mostly to usage with buttons
-     * @type {React.element}
+     * @type {React.ReactNode}
      */
-    children: PropTypes.oneOfType([
-      PropTypes.element,
-      PropTypes.string,
-      PropTypes.arrayOf(PropTypes.element),
-    ]),
+    children: PropTypes.oneOfType([PropTypes.element, PropTypes.string, PropTypes.arrayOf(PropTypes.element)]),
     /**
      * The label for the field
      * @type {String}
@@ -198,7 +194,7 @@ class Field extends Component {
     required: PropTypes.bool,
     /**
      * An optional icon component to be merged in with the display
-     * @type {React.Element}
+     * @type {React.ReactNode}
      */
     icon: PropTypes.element,
     /**
@@ -237,9 +233,13 @@ class Field extends Component {
         {...spread}
       >
         <span>
-          <span className="sf--label">{label && label}</span>
+          <span className="sf--label">
+{label && label}
+</span>
           {input}
-          <span className="sf--icon">{icon && icon}</span>
+          <span className="sf--icon">
+{icon && icon}
+</span>
           <span className="sf--errors">
             {errors.filter(err => err).map(err => (
               <span key={err} className="sf--error">
@@ -291,11 +291,7 @@ class Field extends Component {
       if (children) {
         // If there are children, use a button node rather than an input`type=button`.
         return (
-          <button
-            ref={setRef}
-            className={classes(['sf--field', 'sf--type-button', className])}
-            {...spreadProps}
-          >
+          <button ref={setRef} className={classes(['sf--field', 'sf--type-button', className])} {...spreadProps}>
             {children}
           </button>
         );
@@ -313,14 +309,7 @@ class Field extends Component {
 
     // Make sure we add a ref and a className to the unwrapped element
     if (type === 'submit' || type === 'reset') {
-      return (
-        <input
-          type={type}
-          ref={setRef}
-          className={classes(['sf--field', className])}
-          {...spreadProps}
-        />
-      );
+      return <input type={type} ref={setRef} className={classes(['sf--field', className])} {...spreadProps} />;
     }
 
     if (type === 'checkbox' || type === 'radio') {
@@ -353,9 +342,7 @@ class Field extends Component {
     }
 
     /* eslint-disable react/no-danger */
-    return (
-      <span dangerouslySetInnerHTML={{ __html: `<!-- Unsupported Field Type (${type}) -->` }} />
-    );
+    return <span dangerouslySetInnerHTML={{ __html: `<!-- Unsupported Field Type (${type}) -->` }} />;
     /* eslint-disable react/no-danger */
   }
 

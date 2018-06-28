@@ -24,6 +24,7 @@
     "@babel/preset-stage-1": "^7.0.0-beta.51",
     "@babel/preset-typescript": "^7.0.0-beta.51",
     "@types/lodash": "^4.14.110",
+    "@types/prop-types": "^15.5.3",
     "@types/react": "^16.4.4",
     "@types/react-dom": "^16.0.6",
     "autoprefixer": "^8.1.0",
@@ -75,7 +76,7 @@
     ]
   },
   "prettier": {
-    "printWidth": 100,
+    "printWidth": 120,
     "singleQuote": true,
     "trailingComma": "all",
     "arrowParens": "avoid"

@@ -129,8 +129,6 @@ export default class Slide extends PureComponent {
       .filter(x => x === false).length === 0;
 
   render() {
-    return (
-      <div className={classes([this.props.className, 'sf--slide'])}>{this.props.children}</div>
-    );
+    return <div className={classes([this.props.className, 'sf--slide'])}>{this.props.children}</div>;
   }
 }

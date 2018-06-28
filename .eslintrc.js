@@ -18,8 +18,8 @@ module.exports = {
     'react/prefer-stateless-function': 0,
     'import/extensions': 0, // this seemed to be broken, so we're turning it off
     'monorepo/no-internal-import': 'error',
-    'monorepo/no-relative-import': 'error',
-    'import/no-extraneous-dependencies': ['error', { packageDir: './' }],
+    'monorepo/no-relative-import': 0, // this does a false postive on scoped packages
+    'import/no-extraneous-dependencies': 0, //['error', { packageDir: ['./packages/**/.', './'] }],
   },
   settings: {
     'import/resolver': {

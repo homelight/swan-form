@@ -1,17 +1,25 @@
 import isObject from 'lodash/isObject';
 
-export default function classes(obj) {
+type ClassesArgs = (string | false)[] | { [key: string]: boolean } | string;
+
+export default function classes(obj: ClassesArgs) {
   if (Array.isArray(obj)) {
-    return obj.filter(x => x).join(' ');
+    return obj.filter(Boolean).join(' ');
   }
+
   if (isObject(obj)) {
-    return Object.keys(obj)
-      .map(k => !!obj[k] && k)
-      .filter(x => x)
-      .join(' ');
+    return (
+      Object.keys(obj)
+        // @ts-ignore: this is an object
+        .map(k => Boolean(obj[k]) && k)
+        .filter(Boolean)
+        .join(' ')
+    );
   }
+
   if (typeof obj === 'string') {
     return obj;
   }
+
   return '';
 }
