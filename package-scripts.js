@@ -1,7 +1,21 @@
 const npsUtils = require('nps-utils');
+const path = require('path');
 
-const getDevCmd = project =>
-  `babel --src-type module "packages/${project}/src" --out-dir "packages/${project}/dist" --ignore "packages/${project}/src/**/*.test.js" --watch`;
+const getDevCmd = project => `NODE_ENV="development" babel \
+--config-file "${path.resolve(__dirname)}/packages/${project}/.babelrc.js" \
+--src-type module \
+--out-dir "packages/${project}/dist" \
+--ignore "packages/${project}/src/**/*.test.js" \
+--watch \
+"packages/${project}/src"`;
+
+const getBuildCmd = project => `NODE_ENV="production" babel \
+"packages/${project}/src" \
+--config-file="packages/${project}/.babelrc.js"
+--src-type module \
+--out-dir "packages/${project}/dist" \
+--ignore "packages/${project}/src/**/*.test.js" \
+--watch`;
 
 const getLintCmd = project => `eslint --config .eslintrc.js packages/${project}/src`;
 

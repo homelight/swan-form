@@ -9,8 +9,7 @@
     "url": "https://github.com/helloeave/swan-form.git"
   },
   "scripts": {
-    "build":
-      "NODE_ENV='production' babel --src-type module src --out-dir dist --source-maps --compact=true --no-comments --ignore 'src/__tests__/*,*.test.js'",
+    "build": "NODE_ENV='production' babel --src-type module src --out-dir dist --source-maps --compact=true --no-comments --ignore 'src/__tests__/*,*.test.js'",
     "precommit": "lint-staged",
     "predeploy": "cd example && yarn && yarn run build",
     "deploy": "gh-pages -d example/build",
@@ -27,12 +26,12 @@
     "prop-types": "^15.6.1"
   },
   "devDependencies": {
-    "@babel/cli": "^7.0.0-beta.42",
-    "@babel/core": "^7.0.0-beta.42",
-    "@babel/preset-env": "^7.0.0-beta.42",
-    "@babel/preset-react": "^7.0.0-beta.42",
-    "@babel/preset-stage-0": "^7.0.0-beta.42",
-    "@babel/preset-stage-1": "^7.0.0-beta.42",
+    "@babel/cli": "^7.0.0-beta.51",
+    "@babel/core": "^7.0.0-beta.51",
+    "@babel/plugin-proposal-class-properties": "^7.0.0-beta.51",
+    "@babel/plugin-proposal-export-default-from": "^7.0.0-beta.51",
+    "@babel/preset-env": "^7.0.0-beta.51",
+    "@babel/preset-react": "^7.0.0-beta.51",
     "autoprefixer": "^8.1.0",
     "babel-eslint": "^8.2.2",
     "babel-jest": "^23.0.0-alpha.0",
