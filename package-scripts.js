@@ -6,16 +6,17 @@ const getDevCmd = project => `NODE_ENV="development" babel \
 --src-type module \
 --out-dir "packages/${project}/dist" \
 --ignore "packages/${project}/src/**/*.test.js" \
+--extensions ".js,.jsx,.ts,.tsx" \
 --watch \
 "packages/${project}/src"`;
 
-const getBuildCmd = project => `NODE_ENV="production" babel \
-"packages/${project}/src" \
---config-file="packages/${project}/.babelrc.js"
---src-type module \
---out-dir "packages/${project}/dist" \
---ignore "packages/${project}/src/**/*.test.js" \
---watch`;
+// const getBuildCmd = project => `NODE_ENV="production" babel \
+// "packages/${project}/src" \
+// --config-file="packages/${project}/.babelrc.js"
+// --src-type module \
+// --out-dir "packages/${project}/dist" \
+// --ignore "packages/${project}/src/**/*.test.js" \
+// --watch`;
 
 const getLintCmd = project => `eslint --config .eslintrc.js packages/${project}/src`;
 

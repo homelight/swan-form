@@ -11,7 +11,11 @@ module.exports = function(api) {
 
   api.cache(true);
 
-  const presets = [env(NODE_ENV === 'test' ? 'commonjs' : false), '@babel/preset-react'];
+  const presets = [
+    env(NODE_ENV === 'test' ? 'commonjs' : false),
+    '@babel/preset-typescript',
+    '@babel/preset-react',
+  ];
 
   const plugins = [
     '@babel/plugin-proposal-export-default-from',
