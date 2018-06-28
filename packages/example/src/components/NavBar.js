@@ -16,7 +16,10 @@ function createLink(path, name, pathname) {
   );
 }
 
-@connect(state => ({ isShowing: state.nav.show }), { hide, show })
+@connect(
+  state => ({ isShowing: state.nav.show }),
+  { hide, show },
+)
 export default class NavBar extends Component {
   static propTypes = {
     isShowing: PropTypes.bool.isRequired,
