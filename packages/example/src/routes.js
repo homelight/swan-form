@@ -10,19 +10,46 @@ import store from './store';
 import Loader from './Loader';
 
 const Intro = Loader(() => import(/* webpackChunkName: "intro" */ './components/pages/Intro'), <div>Loading...</div>);
-const Container = Loader(() => import(/* webpackChunkName: "container" */ './components/Container'));
+const Container = Loader(
+  () => import(/* webpackChunkName: "container" */ './components/Container'),
+  <div>Loading...</div>,
+);
 
-const SliderForm = Loader(() => import(/* webpackChunkName: "sliderForm" */ './components/pages/SliderForm'));
+const SliderForm = Loader(
+  () => import(/* webpackChunkName: "sliderForm" */ './components/pages/SliderForm'),
+  <div>Loading...</div>,
+);
 
-const Formatters = Loader(() => import(/* webpackChunkName: "formatters-example" */ './components/pages/Formatters'));
+const Formatters = Loader(
+  () => import(/* webpackChunkName: "formatters-example" */ './components/pages/Formatters'),
+  <div>Loading...</div>,
+);
 
-const DependentField = Loader(() => import('./components/pages/DependentField'));
+const DependentField = Loader(
+  () => import(/* webpackChunkName: "dependent-field" */ './components/pages/DependentField'),
+  <div>Loading...</div>,
+);
 
-const DynamicField = Loader(() => import('./components/pages/DynamicField'));
-const ExtraFields = Loader(() => import('./components/pages/ExtraFields'));
-const RegularForm = Loader(() => import('./components/pages/RegularForm'));
-const Styling = Loader(() => import('./components/pages/Styling'));
-const AsFieldHoc = Loader(() => import('./components/pages/asFieldHOC'));
+const DynamicField = Loader(
+  () => import(/* webpackChunkName: "dynamic-field" */ './components/pages/DynamicField'),
+  <div>Loading...</div>,
+);
+const ExtraFields = Loader(
+  () => import(/* webpackChunkName: "extra-field" */ './components/pages/ExtraFields'),
+  <div>Loading...</div>,
+);
+const RegularForm = Loader(
+  () => import(/* webpackChunkName: "regular-form" */ './components/pages/RegularForm'),
+  <div>Loading...</div>,
+);
+const Styling = Loader(
+  () => import(/* webpackChunkName: "styling" */ './components/pages/Styling'),
+  <div>Loading...</div>,
+);
+const AsFieldHoc = Loader(
+  () => import(/* webpackChunkName: "asfield-hoc" */ './components/pages/asFieldHOC'),
+  <div>Loading...</div>,
+);
 
 const Dummy = () => <div>@TODO</div>;
 

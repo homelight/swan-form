@@ -64,12 +64,6 @@ export default class Form extends Component<FormProps, FormState> {
     persist: PropTypes.bool,
   };
 
-  static defaultProps = {
-    autoComplete: 'on',
-    noValidate: false,
-    persist: false,
-  };
-
   static childContextTypes = {
     registerField: PropTypes.func,
     unregisterField: PropTypes.func,
@@ -80,7 +74,13 @@ export default class Form extends Component<FormProps, FormState> {
 
   mounted: boolean;
 
-  constructor(props: FormProps) {
+  static defaultProps = {
+    autoComplete: 'on',
+    noValidate: false,
+    persist: false,
+  };
+
+  constructor(props) {
     super(props);
 
     ['acceptCharset', 'action', 'target'].forEach(prop => {
@@ -96,10 +96,10 @@ export default class Form extends Component<FormProps, FormState> {
     // Fill out with all the things
     // @ts-ignore: typescript, this is a valid way of assigning initial state.
     this.state = {
-      // isSubmitting: false,
-      // hasSubmitted: false,
-      // hasSubmitError: false,
-      // errors: emptyArray,
+      isSubmitting: false,
+      hasSubmitted: false,
+      hasSubmitError: false,
+      errors: emptyArray,
       values: props.values || emptyObject,
     } as FormState;
 

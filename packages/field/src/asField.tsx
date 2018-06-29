@@ -77,17 +77,22 @@ function getInitialValue(props: AsFieldProps & { [key: string]: any }): any {
     if (hasOwnProperty(props, 'checked')) {
       return !!props.checked;
     }
+
     if (hasOwnProperty(props, 'defaultChecked')) {
       return !!props.defaultChecked;
     }
+
     return !!props.value;
   }
+
   if (props.value) {
     return props.value;
   }
+
   if (props.type === 'select' && props.multiple === true) {
     return [''];
   }
+
   return '';
 }
 

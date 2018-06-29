@@ -72,6 +72,7 @@ function renderOptions(options: any | any[]): React.ReactNode {
     // An array can be mapped to the render option method
     return options.map(renderOption);
   }
+
   if (isObject(options)) {
     // If it's an object, then we have to figure out if they're passing options or optgroups
     return Object.keys(options).map(option => {
@@ -97,6 +98,7 @@ function renderOptions(options: any | any[]): React.ReactNode {
       return null;
     });
   }
+
   return null;
 }
 /* eslint-enable no-use-before-define */
@@ -288,7 +290,12 @@ class Field extends Component<FieldProps> {
       if (children) {
         // If there are children, use a button node rather than an input`type=button`.
         return (
-          <button ref={setRef} className={classes(['sf--field', 'sf--type-button', className])} {...spreadProps}>
+          <button
+            ref={setRef}
+            type="button"
+            className={classes(['sf--field', 'sf--type-button', className])}
+            {...spreadProps}
+          >
             {children}
           </button>
         );

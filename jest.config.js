@@ -8,7 +8,6 @@ module.exports = {
   ],
   transform: {
     '^.+\\.(t|j)sx?$': './babel-jest.transformer.js',
-    // '^.+\\.(t|j)sx?$': 'babel-jest',
   },
   setupTestFrameworkScriptFile: './node_modules/jest-enzyme/lib/index.js',
   unmockedModulePathPatterns: ['react', 'enzyme', 'jest-enzyme'],
