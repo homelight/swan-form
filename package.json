@@ -12,7 +12,8 @@
     "format": "prettier --write '**/*.{json,js,css,md}'",
     "lint": "nps lint.all",
     "test": "jest --env=jsdom",
-    "test:watch": "yarn run test -- --watch"
+    "test:watch": "yarn run test --watch",
+    "rollup": "lerna exec -- rollup -c=../../rollup.config.js"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.51",
@@ -42,6 +43,7 @@
     "jest-environment-jsdom": "23.2.0",
     "jest-enzyme": "^6.0.0",
     "lerna": "2.11.0",
+    "lerna-get-packages": "^1.0.0",
     "lint-staged": "^7.0.0",
     "nps": "^5.7.1",
     "nps-utils": "^1.5.0",
@@ -51,7 +53,10 @@
     "rollup": "^0.62.0",
     "rollup-plugin-babel": "^4.0.0-beta.6",
     "rollup-plugin-commonjs": "^9.1.3",
-    "rollup-plugin-node-resolve": "^3.3.0"
+    "rollup-plugin-filesize": "^2.0.0",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "rollup-plugin-terser": "^1.0.1",
+    "rollup-plugin-uglify": "^4.0.0"
   },
   "browserslist": {
     "development": [

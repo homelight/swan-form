@@ -1,6 +1,9 @@
 /* eslint-disable */
 function env(modules, browsers) {
-  return ['@babel/preset-env', { targets: { browsers: browsers || ['ie 11', '>1%'] }, modules }];
+  return [
+    '@babel/preset-env',
+    { targets: { browsers: browsers || ['ie 11', '>1%'] }, modules, useBuiltIns: 'entry' },
+  ];
 }
 
 module.exports = function(api) {
@@ -9,7 +12,9 @@ module.exports = function(api) {
   const isTest = NODE_ENV === 'test' || NODE_ENV === 'ci';
   // const isDev = !isProd && !isTest;
 
-  api.cache(true);
+  if (api) {
+    api.cache(true);
+  }
 
   const presets = [env(NODE_ENV === 'test' ? 'commonjs' : false), '@babel/preset-react'];
 
@@ -20,9 +25,12 @@ module.exports = function(api) {
     isProd && 'transform-es2015-modules-commonjs',
   ].filter(Boolean);
 
-  const ignore = [isProd && '**/*.test.*', isProd && '**/__tests__/**/*', '**/dist/**/*'].filter(
-    Boolean,
-  );
+  // prettier-ignore
+  const ignore = [
+    isProd && '**/*.test.*', 
+    isProd && '**/__tests__/**/*', 
+    '**/dist/**/*',
+  ].filter(Boolean);
 
   return { presets, plugins, ignore };
 };

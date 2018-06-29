@@ -17,7 +17,10 @@ function createLink(path, name, pathname) {
 }
 
 @connect(
-  state => ({ isShowing: state.nav.show }),
+  state => {
+    console.log(state);
+    return { isShowing: state.nav.show };
+  },
   { hide, show },
 )
 export default class NavBar extends Component {
@@ -28,7 +31,8 @@ export default class NavBar extends Component {
   };
 
   toggle = () => {
-    (this.props.isShowing ? this.props.hide : this.props.show)();
+    const { isShowing, hide, show } = this.props;
+    (isShowing ? hide : show)();
   };
 
   render() {

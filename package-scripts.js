@@ -4,7 +4,7 @@ const path = require('path');
 const getDevCmd = project => `NODE_ENV="development" babel \
 --config-file "${path.resolve(__dirname)}/packages/${project}/.babelrc.js" \
 --src-type module \
---out-dir "packages/${project}/dist" \
+--out-dir "packages/${project}/dist/cjs" \
 --ignore "packages/${project}/src/**/*.test.js" \
 --watch \
 "packages/${project}/src"`;
@@ -13,7 +13,7 @@ const getBuildCmd = project => `NODE_ENV="production" babel \
 "packages/${project}/src" \
 --config-file="packages/${project}/.babelrc.js"
 --src-type module \
---out-dir "packages/${project}/dist" \
+--out-dir "packages/${project}/dist/cjs" \
 --ignore "packages/${project}/src/**/*.test.js" \
 --watch`;
 
