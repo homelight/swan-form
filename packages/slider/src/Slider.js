@@ -9,15 +9,6 @@ import { classes } from '@swan-form/helpers';
 import Slide from './Slide';
 
 export default class Slider extends PureComponent {
-  /**
-   * These are the "Props" that get passed to each slide.
-   *
-   * We're holding this as a class property so it's reused across renders, allowing for
-   * PureComponents to rerender less often.
-   *
-   * @memberof Slider
-   */
-
   static propTypes = {
     /**
      * The slide to start on
@@ -86,6 +77,12 @@ export default class Slider extends PureComponent {
 
     this.mounted = false;
 
+    /**
+     * These are the "Props" that get passed to each slide.
+     *
+     * We're holding this as a class property so it's reused across renders, allowing for
+     * PureComponents to rerender less often.
+     */
     this.mapSlideProps = {
       getFormValues: this.getFormValues,
       nextSlide: this.next,
