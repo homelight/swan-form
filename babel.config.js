@@ -1,10 +1,8 @@
 /* eslint-disable */
-function env(modules, browsers) {
-  return [
-    '@babel/preset-env',
-    { targets: { browsers: browsers || ['ie 11', '>1%'] }, modules, useBuiltIns: 'entry' },
-  ];
-}
+const env = (modules, browsers) => [
+  '@babel/preset-env',
+  { targets: { browsers: browsers || ['ie 11', '>1%'] }, modules, useBuiltIns: 'entry' },
+];
 
 module.exports = function(api) {
   const { NODE_ENV } = process.env;
