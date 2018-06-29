@@ -1,12 +1,14 @@
-# master
+# Changelog
+
+## master
 
 - [field] fix TypeError on Safari when accessing `selectionStart` on non-text fields
-- [field] upgrade babel packages
-- [form] upgrade babel packages
-- [helpers] upgrade babel packages
-- [slider] upgrade babel packages
+- [all] upgrade babel packages
+- [all] move devDependencies to root package.json
+- [all] upgrade eslint
+- [all] fix lint errors
 
-# 0.1.0
+## 0.1.0
 
 Initial Release for:
 
