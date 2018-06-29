@@ -8,7 +8,7 @@
     "postinstall": "yarn run build",
     "precommit": "lint-staged",
     "dev": "nps dev.all",
-    "format": "prettier --write '**/*.{json,js,css,md}'",
+    "format": "prettier --write '**/*.{json,js,css,md,ts,tsx}'",
     "lint": "nps lint.all",
     "test": "jest --env=jsdom",
     "test:watch": "yarn run test -- --watch",

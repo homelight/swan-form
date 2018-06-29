@@ -18,7 +18,7 @@ const config = (pkg, format) => {
   const pkgJSON = require(path.resolve(__dirname, `packages/${pkg}/package.json`));
   /* eslint-enable */
   return {
-    input: `packages/${pkg}/src/index.js`,
+    input: `packages/${pkg}/src/index.ts`,
     output: {
       name: camelCase(`swanForm-${pkg}`),
       file: format === 'cjs' ? `packages/${pkg}/${pkgJSON.main}` : `packages/${pkg}/${pkgJSON.module}`,
@@ -34,6 +34,7 @@ const config = (pkg, format) => {
       resolve({
         browser: true,
         main: true,
+        extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
       }),
       commonjs({
         include: 'node_modules/**',
