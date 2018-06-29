@@ -6,9 +6,27 @@ import invariant from 'invariant';
 import { Form } from '@swan-form/form';
 import { classes } from '@swan-form/helpers';
 
-import Slide from './Slide';
+import Slide, { SlideProps } from './Slide';
 
-export default class Slider extends PureComponent {
+export interface SliderProps {
+  formName: string;
+  current?: number;
+  autoComplete?: 'on' | 'off';
+  className?: string;
+  children: React.ReactNode;
+  PrevButton?: React.ReactNode;
+  NextButton?: React.ReactNode;
+  beforeSubmit(values: object): Promise<object>;
+  onSubmit(values: object): Promise<object>;
+  afterSubmit(values: object): Promise<object>;
+  commonProps?: object;
+}
+
+export interface SliderState {
+  current: number;
+}
+
+export default class Slider extends PureComponent<SliderProps, SliderState> {
   static propTypes = {
     /**
      * The slide to start on
@@ -61,13 +79,16 @@ export default class Slider extends PureComponent {
     autoComplete: 'off',
     PrevButton: '←',
     NextButton: '→',
-    beforeSubmit: values => Promise.resolve(values),
-    afterSubmit: values => Promise.resolve(values),
+    beforeSubmit: (values: object | Promise<object>) => Promise.resolve(values),
+    afterSubmit: (values: object | Promise<object>) => Promise.resolve(values),
     commonProps: {},
     formName: 'slider-form',
   };
 
-  constructor(props) {
+  mounted: boolean;
+  mapSlideProps: object; // @todo expand
+
+  constructor(props: SliderProps) {
     super(props);
     // this.form = {};
     this.state = {
@@ -95,7 +116,7 @@ export default class Slider extends PureComponent {
     this.mounted = true;
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps: SliderProps, prevState: SliderState) {
     // Since we're using indices to keep track of progress, we _could_ get off track if one
     // disappears, so we're going to disallow dynamically manipulating the children
     invariant(
@@ -153,7 +174,7 @@ export default class Slider extends PureComponent {
     this.form = el;
   };
 
-  moveTo = current => {
+  moveTo = (current: number) => {
     if (this.mounted) {
       this.setState(prevState => ({ ...prevState, current }));
     }

@@ -5,7 +5,27 @@ import { classes, moveCursor } from '@swan-form/helpers';
 
 const alwaysTrue = () => true;
 
-export default class Slide extends PureComponent {
+export interface SlideProps {
+  shouldShowIf(formValues: { [key: string]: any }): boolean;
+  className?: string;
+  children?: React.ReactNode;
+  autoFocus?: boolean;
+}
+
+// @TODO pull these from a common source rather than redeclaring them
+type StrFalseArr = (string | false)[];
+
+interface FieldInterface {
+  name: string;
+  getRef(): HTMLElement;
+  getValue(): any;
+  setValue(value: any): void;
+  validate(): StrFalseArr;
+  isValid(): boolean;
+  reset(): void;
+}
+
+export default class Slide extends PureComponent<SlideProps> {
   static propTypes = {
     /**
      * Regular react children.
@@ -42,17 +62,19 @@ export default class Slide extends PureComponent {
     unregisterField: PropTypes.func,
   };
 
-  static defaultProps = {
+  static defaultProps: Partial<SlideProps> = {
     className: '',
     autoFocus: true,
     children: null,
     shouldShowIf: alwaysTrue,
   };
 
-  constructor(props) {
+  constructor(props: SlideProps) {
     super(props);
     this.fields = {};
   }
+
+  fields: { [key: string]: FieldInterface } = {}; // @todo get the FieldInterface
 
   getChildContext() {
     // We need to intercept the register field context hook that the Form component so that we can
@@ -67,21 +89,25 @@ export default class Slide extends PureComponent {
     this.maybeAutoFocus();
   }
 
-  registerField = ({ name, getRef, getValue, setValue, validate, reset, isValid }) => {
+  registerField = ({ name, getRef, getValue, setValue, validate, reset, isValid }: FieldInterface) => {
     if (isFunction(this.context.registerField)) {
       this.context.registerField({ name, getRef, getValue, setValue, validate, reset });
     }
     this.fields = {
       ...this.fields,
       [name]: {
-        isValid,
-        validate,
+        name,
         getRef,
+        getValue,
+        isValid,
+        reset,
+        setValue,
+        validate,
       },
     };
   };
 
-  unregisterField = name => {
+  unregisterField = (name: string) => {
     if (isFunction(this.context.unregisterField)) {
       this.context.unregisterField(name);
     }

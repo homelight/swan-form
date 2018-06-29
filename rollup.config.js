@@ -6,12 +6,15 @@ import path from 'path';
 import filesize from 'rollup-plugin-filesize';
 import { uglify } from 'rollup-plugin-uglify';
 import { terser } from 'rollup-plugin-terser';
+import typescript from 'rollup-plugin-typescript2';
 
 const packages = ['helpers', 'field', 'slider', 'form'];
 // NOTE: if we add other formats, we need to change the `config` function
 const formats = ['cjs', 'es'];
 
 const babelConfig = require('./babel.config');
+
+const tsconfig = pkg => path.resolve(__dirname, 'packages', pkg, 'tsconfig.json');
 
 const config = (pkg, format) => {
   /* eslint-disable */
@@ -43,6 +46,11 @@ const config = (pkg, format) => {
         },
       }),
       babel(babelConfig()),
+      // This typescript plugin might be the wrong direction
+      typescript({
+        tsconfig: tsconfig(pkg),
+        typescript: require('typescript'),
+      }),
       format === 'cjs' ? uglify() : terser(),
       filesize(),
     ].filter(Boolean),

@@ -35,9 +35,7 @@ export default class Reset extends Component {
       this.context.reset();
     } else {
       /* eslint-disable no-console */
-      console.error(
-        'There was no reset function supplied to the reset input on either props or context.',
-      );
+      console.error('There was no reset function supplied to the reset input on either props or context.');
       /* eslint-enable no-console */
     }
   }

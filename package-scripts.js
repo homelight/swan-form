@@ -10,9 +10,10 @@ const getDevCmd = project => `NODE_ENV="development" babel \
 --watch \
 "packages/${project}/src"`;
 
-const getTypeCmd = project => `cd packages/${project}; NODE_ENV="production" tsc -p "./tsconfig.json"`;
+const getTypeCmd = project => `cd ${__dirname}/packages/${project}; NODE_ENV="production" tsc -p "./tsconfig.json"`;
 
-const getDevTypeCmd = project => `cd packages/${project} && NODE_ENV="production" tsc -p "./tsconfig.json" --watch`;
+const getDevTypeCmd = project =>
+  `cd ${__dirname}packages/${project} && NODE_ENV="production" tsc -p "./tsconfig.json" --watch`;
 
 // const getBuildCmd = project => `NODE_ENV="production" babel \
 // "packages/${project}/src" \
@@ -63,7 +64,13 @@ module.exports = {
       example: 'cd packages/example && yarn run dev',
     },
     type: {
-      all: npsUtils.concurrent.nps('type.helpers', 'type.field', 'type.form'),
+      // prettier-ignore
+      all: npsUtils.concurrent.nps(...[
+        'type.helpers', 
+        'type.field', 
+        'type.form', 
+        'type.slider',
+      ]),
       dev: {
         helpers: getDevTypeCmd('helpers'),
         field: getDevTypeCmd('field'),
@@ -71,6 +78,7 @@ module.exports = {
       helpers: getTypeCmd('helpers'),
       field: getTypeCmd('field'),
       form: getTypeCmd('form'),
+      slider: getTypeCmd('slider'),
     },
   },
 };
