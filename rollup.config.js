@@ -28,6 +28,7 @@ const config = (pkg, format) => {
         react: 'React',
       },
       exports: 'named',
+      sourcemap: true,
     },
     external: [
       '@swan-form/helpers',
