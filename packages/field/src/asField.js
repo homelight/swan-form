@@ -23,17 +23,23 @@ function getInitialValue(props) {
   if (props.type === 'checkbox' && isObject(props)) {
     if (hasOwnProperty(props, 'checked')) {
       return !!props.checked;
-    } else if (hasOwnProperty(props, 'defaultChecked')) {
+    }
+
+    if (hasOwnProperty(props, 'defaultChecked')) {
       return !!props.defaultChecked;
     }
+
     return !!props.value;
   }
+
   if (props.value) {
     return props.value;
   }
+
   if (props.type === 'select' && props.multiple === true) {
     return [''];
   }
+
   return '';
 }
 

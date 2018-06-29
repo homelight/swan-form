@@ -6,6 +6,7 @@ module.exports = {
   root: true,
   plugins: ['monorepo'],
   parserOptions: {
+    ecmaVersion: 9,
     sourceType: 'module',
     allowImportExportEverywhere: true,
   },
@@ -18,8 +19,10 @@ module.exports = {
     'react/prefer-stateless-function': 0,
     'import/extensions': 0, // this seemed to be broken, so we're turning it off
     'monorepo/no-internal-import': 'error',
-    'monorepo/no-relative-import': 'error',
-    'import/no-extraneous-dependencies': ['error', { packageDir: './' }],
+    'monorepo/no-relative-import': 0,
+    'import/no-extraneous-dependencies': 0, // ['error', { packageDir: './' }],
+    'react/jsx-one-expression-per-line': 0,
+    'react/destructuring-assignment': 0,
   },
   settings: {
     'import/resolver': {

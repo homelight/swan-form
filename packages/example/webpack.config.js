@@ -129,6 +129,7 @@ function factory(environment, analyze = false) {
             loader: 'sass-loader',
             options: {
               sourceMap: true,
+              includePaths: ['node_modules', 'src'],
             },
           },
         ],
