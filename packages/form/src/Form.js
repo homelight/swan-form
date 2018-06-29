@@ -85,10 +85,10 @@ export default class Form extends Component {
 
     // Fill out with all the things
     this.state = {
-      // isSubmitting: false,
-      // hasSubmitted: false,
-      // hasSubmitError: false,
-      // errors: emptyArray,
+      isSubmitting: false,
+      hasSubmitted: false,
+      hasSubmitError: false,
+      errors: emptyArray,
       values: emptyObject,
     };
 

@@ -3,17 +3,15 @@
   "license": "Apache-2.0",
   "scripts": {
     "bootstrap": "lerna bootstrap",
-    "build": "lerna run build",
+    "build": "NODE_ENV=production rollup -c",
     "clean": "rm -fR packages/slider/dist; rm -fR packages/field/dist; rm -fR packages/form/dist; rm -fR packages/helpers/dist",
     "postinstall": "yarn run build",
     "precommit": "lint-staged",
     "dev": "nps dev.all",
-    "dev:form": "nps dev.form",
     "format": "prettier --write '**/*.{json,js,css,md}'",
     "lint": "nps lint.all",
     "test": "jest --env=jsdom",
-    "test:watch": "yarn run test --watch",
-    "rollup": "lerna exec -- rollup -c=../../rollup.config.js"
+    "test:watch": "yarn run test --watch"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.51",
@@ -43,7 +41,6 @@
     "jest-environment-jsdom": "23.2.0",
     "jest-enzyme": "^6.0.0",
     "lerna": "2.11.0",
-    "lerna-get-packages": "^1.0.0",
     "lint-staged": "^7.0.0",
     "nps": "^5.7.1",
     "nps-utils": "^1.5.0",

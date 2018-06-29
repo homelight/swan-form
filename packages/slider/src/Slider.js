@@ -17,13 +17,6 @@ export default class Slider extends PureComponent {
    *
    * @memberof Slider
    */
-  mapSlideProps = {
-    getFormValues: this.getFormValues,
-    nextSlide: this.next,
-    prevSlide: this.prev,
-    ref: this.setCurrentSlideRef,
-    ...this.props.commonProps,
-  };
 
   static propTypes = {
     /**
@@ -92,6 +85,14 @@ export default class Slider extends PureComponent {
     };
 
     this.mounted = false;
+
+    this.mapSlideProps = {
+      getFormValues: this.getFormValues,
+      nextSlide: this.next,
+      prevSlide: this.prev,
+      ref: this.setCurrentSlideRef,
+      ...this.props.commonProps,
+    };
   }
 
   componentDidMount() {

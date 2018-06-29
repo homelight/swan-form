@@ -22,7 +22,6 @@ module.exports = function(api) {
     '@babel/plugin-proposal-export-default-from',
     '@babel/plugin-proposal-class-properties',
     isProd && 'transform-react-remove-prop-types',
-    isProd && 'transform-es2015-modules-commonjs',
   ].filter(Boolean);
 
   // prettier-ignore
