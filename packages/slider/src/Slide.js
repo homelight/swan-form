@@ -32,13 +32,6 @@ export default class Slide extends PureComponent {
     render: PropTypes.func, // eslint-disable-line
   };
 
-  static defaultProps = {
-    className: '',
-    autoFocus: true,
-    children: null,
-    shouldShowIf: alwaysTrue,
-  };
-
   static contextTypes = {
     registerField: PropTypes.func,
     unregisterField: PropTypes.func,
@@ -47,6 +40,13 @@ export default class Slide extends PureComponent {
   static childContextTypes = {
     registerField: PropTypes.func,
     unregisterField: PropTypes.func,
+  };
+
+  static defaultProps = {
+    className: '',
+    autoFocus: true,
+    children: null,
+    shouldShowIf: alwaysTrue,
   };
 
   constructor(props) {

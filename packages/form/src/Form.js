@@ -56,18 +56,18 @@ export default class Form extends Component {
     persist: PropTypes.bool,
   };
 
-  static defaultProps = {
-    autoComplete: 'on',
-    noValidate: false,
-    persist: false,
-  };
-
   static childContextTypes = {
     registerField: PropTypes.func,
     unregisterField: PropTypes.func,
     autoComplete: PropTypes.oneOf(['on', 'off']),
     reset: PropTypes.func,
     onSubmit: PropTypes.func,
+  };
+
+  static defaultProps = {
+    autoComplete: 'on',
+    noValidate: false,
+    persist: false,
   };
 
   constructor(props) {

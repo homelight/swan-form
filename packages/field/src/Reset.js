@@ -11,14 +11,14 @@ export default class Reset extends Component {
     className: PropTypes.string,
   };
 
+  static contextTypes = {
+    reset: PropTypes.func.isRequired,
+  };
+
   static defaultProps = {
     value: 'Reset',
     name: 'sf--reset',
     className: '',
-  };
-
-  static contextTypes = {
-    reset: PropTypes.func.isRequired,
   };
 
   constructor(props) {

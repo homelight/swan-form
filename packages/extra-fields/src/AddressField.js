@@ -57,6 +57,8 @@ const states = [
 ];
 
 class AddressField extends Component {
+  static displayName = 'ComposedAddressField';
+
   static propTypes = {
     autoFocus: PropTypes.bool,
     value: PropTypes.shape({
@@ -67,6 +69,9 @@ class AddressField extends Component {
       zip: PropTypes.string,
     }),
     name: PropTypes.string.isRequired,
+    onChange: PropTypes.func.isRequired,
+    label: PropTypes.string, // eslint-disable-line
+    className: PropTypes.string,
   };
 
   static defaultProps = {
@@ -78,12 +83,11 @@ class AddressField extends Component {
       state: '',
       zip: '',
     },
+    className: '',
   };
 
-  static displayName = 'ComposedAddressField';
-
   updatePart = (partValue, name) => {
-    const fieldName = name.replace(`${this.props.name}-`, '');
+    const fieldName = name.replace(`${this.props.name}-`, ''); // eslint-disable-line
     const { value, onChange } = this.props;
     if (Object.keys(value).includes(fieldName) && value[fieldName] !== partValue) {
       onChange({
@@ -94,7 +98,7 @@ class AddressField extends Component {
   };
 
   render() {
-    const { autoFocus, label, name, className } = this.props;
+    const { autoFocus, label, name, className, value } = this.props;
     return (
       <fieldset className={className}>
         {label && <legend>{label}</legend>}
@@ -104,7 +108,7 @@ class AddressField extends Component {
           placeholder="Line 1"
           autoComplete="address-line1"
           onChange={this.updatePart}
-          value={this.props.value.line1}
+          value={value.line1}
           required
           autoFocus={autoFocus}
         />
@@ -114,7 +118,7 @@ class AddressField extends Component {
           onChange={this.updatePart}
           autoComplete="address-line2"
           placeholder="Line 2"
-          value={this.props.value.line2}
+          value={value.line2}
         />
         <br />
         <Field
@@ -123,7 +127,7 @@ class AddressField extends Component {
           autoComplete="address-level2"
           onChange={this.updatePart}
           placeholder="City"
-          value={this.props.value.city}
+          value={value.city}
           required
         />
         <Field
@@ -132,7 +136,7 @@ class AddressField extends Component {
           options={states}
           onChange={this.updatePart}
           autoComplete="address-level1"
-          value={this.props.value.state}
+          value={value.state}
           required
         />
         <br />
@@ -142,8 +146,8 @@ class AddressField extends Component {
           autoComplete="postal-code"
           onChange={this.updatePart}
           placeholder="Zip"
-          value={this.props.value.zip}
-          validate={value => (!value.trim() ? 'This field is required' : false)}
+          value={value.zip}
+          validate={v => (!v.trim() ? 'This field is required' : false)}
         />
       </fieldset>
     );

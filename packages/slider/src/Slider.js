@@ -9,6 +9,22 @@ import { classes } from '@swan-form/helpers';
 import Slide from './Slide';
 
 export default class Slider extends PureComponent {
+  /**
+   * These are the "Props" that get passed to each slide.
+   *
+   * We're holding this as a class property so it's reused across renders, allowing for
+   * PureComponents to rerender less often.
+   *
+   * @memberof Slider
+   */
+  mapSlideProps = {
+    getFormValues: this.getFormValues,
+    nextSlide: this.next,
+    prevSlide: this.prev,
+    ref: this.setCurrentSlideRef,
+    ...this.props.commonProps,
+  };
+
   static propTypes = {
     /**
      * The slide to start on
@@ -261,22 +277,6 @@ export default class Slider extends PureComponent {
     return 0;
   };
 
-  /**
-   * These are the "Props" that get passed to each slide.
-   *
-   * We're holding this as a class property so it's reused across renders, allowing for
-   * PureComponents to rerender less often.
-   *
-   * @memberof Slider
-   */
-  mapSlideProps = {
-    getFormValues: this.getFormValues,
-    nextSlide: this.next,
-    prevSlide: this.prev,
-    ref: this.setCurrentSlideRef,
-    ...this.props.commonProps,
-  };
-
   render() {
     const {
       className,
@@ -304,10 +304,10 @@ export default class Slider extends PureComponent {
 
     return (
       <div className={classes(['sf--slider', className])}>
-        <button className={leftClasses} disabled={current === 0} onClick={this.prev}>
+        <button type="button" className={leftClasses} disabled={current === 0} onClick={this.prev}>
           {PrevButton}
         </button>
-        <button className={rightClasses} onClick={this.next}>
+        <button type="button" className={rightClasses} onClick={this.next}>
           {NextButton}
         </button>
         <Form
