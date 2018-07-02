@@ -1,10 +1,10 @@
 /* eslint-disable react/require-default-props */
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
+import * as PropTypes from 'prop-types';
 import isObject from 'lodash/isObject';
 import { hasOwnProperty, classes, noop } from '@swan-form/helpers';
 import asField from './asField';
-import { FieldProps } from './common';
+import { FieldProps } from '../common.d';
 
 const INPUT_TYPES = [
   'button',
@@ -103,7 +103,7 @@ function renderOptions(options: any | any[]): React.ReactNode {
 }
 /* eslint-enable no-use-before-define */
 
-class Field extends PureComponent<FieldProps> {
+class Field extends React.PureComponent<FieldProps> {
   static displayName = 'Field';
 
   static propTypes = {

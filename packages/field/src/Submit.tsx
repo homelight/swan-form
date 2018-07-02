@@ -1,5 +1,5 @@
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
+import * as PropTypes from 'prop-types';
 import { classes } from '@swan-form/helpers';
 import Field from './Field';
 
@@ -9,7 +9,7 @@ export interface SubmitProps {
   value?: string;
 }
 
-export default class Submit extends PureComponent<SubmitProps, {}> {
+export default class Submit extends React.PureComponent<SubmitProps, {}> {
   static propTypes = {
     name: PropTypes.string,
     value: PropTypes.string,

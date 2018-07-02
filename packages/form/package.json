@@ -3,9 +3,9 @@
   "version": "0.2.0",
   "description": "Elegant form handling for React -- contains forms",
   "license": "Apache-2.0",
-  "main": "dist/cjs/index.js",
-  "module": "dist/es/index.js",
-  "typings": "dist/typings/index.d.ts",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.es.js",
+  "typings": "dist/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/helloeave/swan-form.git"

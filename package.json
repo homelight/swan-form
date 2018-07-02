@@ -3,13 +3,14 @@
   "license": "Apache-2.0",
   "scripts": {
     "bootstrap": "lerna bootstrap",
-    "build": "NODE_ENV=production rollup -c && yarn run type",
+    "build": "NODE_ENV=production yarn run type && rollup -c",
     "clean": "rm -fR packages/slider/dist; rm -fR packages/field/dist; rm -fR packages/form/dist; rm -fR packages/helpers/dist",
     "postinstall": "yarn run build",
     "precommit": "lint-staged",
     "dev": "nps dev.all",
     "format": "prettier --write '**/*.{json,js,css,md,ts,tsx}'",
     "lint": "nps lint.all",
+    "rollup": "rollup -c",
     "test": "jest --env=jsdom",
     "test:watch": "yarn run test -- --watch",
     "type": "lerna run type"

@@ -1,12 +1,12 @@
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
+import * as PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
 import { classes, moveCursor } from '@swan-form/helpers';
 
 const alwaysTrue = () => true;
 
 export interface SlideProps {
-  shouldShowIf(formValues: { [key: string]: any }): boolean;
+  shouldShowIf?(formValues: { [key: string]: any }): boolean;
   className?: string;
   children?: React.ReactNode;
   autoFocus?: boolean;
@@ -16,6 +16,7 @@ export interface SlideProps {
   beforeExit?(props: object): Promise<boolean>;
   beforeExitToPrev?(props: object): Promise<boolean>;
   beforeExitToNext?(props: object): Promise<boolean>;
+  render?(slideProps: any): React.ReactNode | null;
 }
 
 // @TODO pull these from a common source rather than redeclaring them
@@ -31,7 +32,7 @@ interface FieldInterface {
   reset(): void;
 }
 
-export default class Slide extends PureComponent<SlideProps> {
+export default class Slide extends React.PureComponent<SlideProps> {
   static propTypes = {
     /**
      * Regular react children.

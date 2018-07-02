@@ -1,5 +1,5 @@
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
+import * as PropTypes from 'prop-types';
 import clamp from 'lodash/clamp';
 import isFunction from 'lodash/isFunction';
 import invariant from 'invariant';
@@ -16,9 +16,9 @@ export interface SliderProps {
   children: React.ReactNode;
   PrevButton?: React.ReactNode;
   NextButton?: React.ReactNode;
-  beforeSubmit(values: object): Promise<object>;
+  beforeSubmit?(values: object): Promise<object>;
   onSubmit(values: object): Promise<object>;
-  afterSubmit(values: object): Promise<object>;
+  afterSubmit?(values: object): Promise<object>;
   commonProps?: object;
 }
 
@@ -26,7 +26,7 @@ export interface SliderState {
   current: number;
 }
 
-export default class Slider extends PureComponent<SliderProps, SliderState> {
+export default class Slider extends React.PureComponent<SliderProps, SliderState> {
   static propTypes = {
     /**
      * The slide to start on
@@ -151,7 +151,8 @@ export default class Slider extends PureComponent<SliderProps, SliderState> {
    * Convenience method to transform the Slider's children into an array
    * @return array array of React elements
    */
-  getChildren = () => React.Children.toArray(this.props.children);
+  // by design, this can be only `Slide` components, but typescript complains, so I'm casting it to any
+  getChildren = (): any => React.Children.toArray(this.props.children);
 
   /**
    * Gets the values of the slider form
@@ -282,7 +283,6 @@ export default class Slider extends PureComponent<SliderProps, SliderState> {
     const { current } = this.state;
     const children = this.getChildren();
     const formValues = this.form && isFunction(this.form.getValues) ? this.form.getValues() : {};
-    const length = children.length; // eslint-disable-line
     for (let i = current - 1; i >= 0; i--) {
       const slide = children[i] as Slide;
       if (slide.props.shouldShowIf(formValues)) {
@@ -342,7 +342,7 @@ export default class Slider extends PureComponent<SliderProps, SliderState> {
               {render(this.mapSlideProps)}
             </Slide>
           ) : (
-            React.cloneElement(slide, this.mapSlideProps)
+            React.cloneElement(slide as any, this.mapSlideProps)
           )}
         </Form>
       </div>

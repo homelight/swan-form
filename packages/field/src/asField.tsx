@@ -1,8 +1,8 @@
 /* global document, window */
 /* eslint-disable react/prop-types, react/sort-comp */
 
-import React, { PureComponent } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
+import * as PropTypes from 'prop-types';
 
 import isEqual from 'lodash/isEqual';
 import isFunction from 'lodash/isFunction';
@@ -17,7 +17,7 @@ import {
   AsFieldProps,
   WrappedComponentProps,
   AsFieldState,
-} from './common';
+} from '../common.d';
 
 export interface WrapperOptions {
   registerWrapped?: boolean;
@@ -65,7 +65,7 @@ function canAccessSelectionStart(type: string): boolean {
  * @return {FieldWrapper}                  [description]
  */
 const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, wrapperOptions: WrapperOptions = {}) =>
-  class FieldWrapper extends PureComponent<AsFieldProps, AsFieldState> {
+  class FieldWrapper extends React.PureComponent<AsFieldProps, AsFieldState> {
     static displayName = `asField(${WrappedComponent.displayName || 'Component'})`;
 
     static propTypes = {

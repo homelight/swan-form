@@ -10,9 +10,9 @@
       "url": "https://github.com/shawnrice"
     }
   ],
-  "main": "dist/cjs/index.js",
-  "module": "dist/es/index.js",
-  "typings": "dist/typings/index.d.ts",
+  "main": "dist/index.cjs.js",
+  "module": "dist/index.es.js",
+  "typings": "dist/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/helloeave/swan-form.git"

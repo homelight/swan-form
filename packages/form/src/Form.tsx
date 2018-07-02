@@ -1,9 +1,19 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
+import * as PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
 import { hasOwnProperty, emptyArray, emptyObject } from '@swan-form/helpers';
 
-import { FieldInterface } from '../../field/src/common';
+type StrFalseArr = (string | false)[];
+
+export interface FieldInterface {
+  name: string;
+  getRef(): HTMLElement;
+  getValue(): any;
+  setValue(value: any): void;
+  validate(): StrFalseArr;
+  isValid(): boolean;
+  reset(): void;
+}
 
 /**
  * Duck-type check for a promise
@@ -22,20 +32,26 @@ const maybePromisify = (obj: any) => (isPromise(obj) ? obj : Promise.resolve(obj
 const fieldsToRemove = ['sf--reset', 'sf--submit'];
 
 export interface FormProps {
+  name: string;
+  onSubmit(values: object | Promise<object>): object | Promise<object>;
+  children: React.ReactNode;
   values?: object;
   noValidate?: boolean;
   autoComplete?: 'on' | 'off';
   beforeSubmit?(values: object | Promise<object>): object | Promise<object>;
-  onSubmit?(values: object | Promise<object>): object | Promise<object>;
   afterSubmit?(values: object | Promise<object>): object | Promise<object>;
   persist?: boolean;
 }
 
 export interface FormState {
+  isSubmitting: boolean;
+  hasSubmitted: boolean;
+  hasSubmitError: boolean;
+  errors: StrFalseArr;
   values: object;
 }
 
-export default class Form extends Component<FormProps, FormState> {
+export default class Form extends React.PureComponent<FormProps, FormState> {
   static propTypes = {
     /**
      * The name of the form
@@ -105,14 +121,13 @@ export default class Form extends Component<FormProps, FormState> {
     });
 
     // Fill out with all the things
-    // @ts-ignore: typescript, this is a valid way of assigning initial state.
     this.state = {
       isSubmitting: false,
       hasSubmitted: false,
       hasSubmitError: false,
       errors: emptyArray,
       values: props.values || emptyObject,
-    } as FormState;
+    };
   }
 
   getChildContext() {
@@ -148,10 +163,15 @@ export default class Form extends Component<FormProps, FormState> {
       .reduce((acc, field) => ({ ...acc, [field]: this.fields[field].getValue() }), {}),
   });
 
-  getSpreadProps() {
-    // If we get more than just this one, then we'll go back to `reduce`.
-    return hasOwnProperty(this.props, 'noValidate') ? { noValidate: this.props.noValidate } : emptyObject;
-  }
+  getSpreadProps = () =>
+    ['noValidate', 'name'].reduce(
+      // @ts-ignore: this is fine
+      (acc, field) => (hasOwnProperty(this.props, field) ? { ...acc, [field]: this.props[field] } : acc),
+      emptyObject,
+    );
+
+  // If we get more than just this one, then we'll go back to `reduce`.
+  // return hasOwnProperty(this.props, 'noValidate') ? { noValidate: this.props.noValidate } : emptyObject;
 
   handleBeforeSubmit = () => {
     // Update the state to show that we are currently submitting.

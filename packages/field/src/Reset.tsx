@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
+import * as PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
 import { classes } from '@swan-form/helpers';
 
@@ -10,7 +10,7 @@ export interface ResetProps {
   className?: string;
 }
 
-export default class Reset extends Component<ResetProps> {
+export default class Reset extends React.Component<ResetProps> {
   static propTypes = {
     name: PropTypes.string,
     value: PropTypes.string,

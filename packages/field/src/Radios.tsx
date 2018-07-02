@@ -1,12 +1,12 @@
 /* eslint-disable react/prefer-stateless-function, jsx-a11y/label-has-for */
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
+import * as PropTypes from 'prop-types';
 import { classes } from '@swan-form/helpers';
 import asField from './asField';
 
-import { FieldProps } from './common';
+import { FieldProps } from '../common.d';
 
-class Radios extends Component<FieldProps> {
+class Radios extends React.Component<FieldProps> {
   static displayName = 'Radios';
 
   static propTypes = {
