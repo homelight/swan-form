@@ -628,14 +628,18 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
       // Safari will freak out if we try to access selectionStart on an `<input/>` with many different
       // `types` set.
       if (!canAccessSelectionStart(this.props.type)) {
+        console.log('CANNOT ACCESS SELECTION START');
         return value;
       }
 
       // If the user has specified a formatter, then call it on the value
       if (isFunction(format)) {
+        console.log('FORMAT IS FUNCTION');
         // If we have a fieldRef and the fieldRef supports selectionStart, then we'll
         // do automated cursor management.
         if (this.fieldRef && this.fieldRef.selectionStart) {
+          console.log('WE HAVE SELECTION START');
+          console.log(format(value, this.fieldRef.selectionEnd));
           return format(value, this.fieldRef.selectionEnd);
         }
         // Otherwise, just call with the value

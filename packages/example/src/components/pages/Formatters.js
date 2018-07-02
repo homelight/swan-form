@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Field } from '@swan-form/field';
 import { AsYouType } from 'libphonenumber-js';
+import { createFormatter } from '@swan-form/helpers';
 import SyntaxHighlighter, { registerLanguage } from 'react-syntax-highlighter/prism-light';
 import jsx from 'react-syntax-highlighter/languages/prism/jsx';
 import prism from 'react-syntax-highlighter/styles/prism/prism';
@@ -24,32 +25,31 @@ const stripNonNumeric = value => {
 };
 
 const formatPhone = value => new AsYouType('US').input(value);
-
-const toUpperCase = value => value.toUpperCase();
+const identity = x => x;
+const toUpperCase = value => {
+  console.log('received value', value);
+  return value.toUpperCase();
+};
+const upCase = createFormatter(toUpperCase, '__|#');
 
 @hot(module)
 export default class Formatters extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      formattedPhone: '',
-    };
-
-    this.update = this.update.bind(this);
-  }
+  state = {
+    formattedPhone: '',
+  };
 
   shouldComponentUpdate(nextProps, nextState) {
     return this.props !== nextProps || this.state !== nextState;
   }
 
-  update(value, name) {
+  update = (value, name) => {
     if (Object.keys(this.state).includes(name) && this.state[name] !== value) {
       this.setState(prevState => ({
         ...prevState,
         [name]: value,
       }));
     }
-  }
+  };
 
   render() {
     return (
@@ -65,7 +65,8 @@ export default class Formatters extends Component {
             type="text"
             placeholder="This field will be all caps"
             name="allCapsField"
-            format={toUpperCase}
+            format={upCase}
+            unformat={x => x}
             size={30}
           />
         </p>

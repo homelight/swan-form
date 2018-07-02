@@ -10,10 +10,8 @@ const getDevCmd = project => `NODE_ENV="development" babel \
 --watch \
 "packages/${project}/src"`;
 
-const getTypeCmd = project => `cd ${__dirname}/packages/${project}; NODE_ENV="production" tsc -p "./tsconfig.json"`;
-
-const getDevTypeCmd = project =>
-  `cd ${__dirname}packages/${project} && NODE_ENV="production" tsc -p "./tsconfig.json" --watch`;
+const getTypeCmd = project => `cd ${__dirname}/packages/${project} && yarn run type`;
+const getDevTypeCmd = project => `cd ${__dirname}/packages/${project} && yarn run type --watch`;
 
 // Old commands
 // -----------
@@ -49,20 +47,23 @@ module.exports = {
     },
     dev: {
       all: npsUtils.concurrent.nps(
-        'dev.helpers',
-        'dev.form',
-        'dev.field',
-        'dev.extra-fields',
-        'dev.slider',
+        // 'dev.helpers',
+        // 'dev.form',
+        // 'dev.field',
+        // 'dev.extra-fields',
+        // 'dev.slider',
+        'dev.rollup',
+        'type.dev.all',
         'dev.example',
-        'type.dev.helpers',
-        'type.dev.field',
+        // 'type.dev.helpers',
+        // 'type.dev.field',
       ),
       helpers: getDevCmd('helpers'),
       form: getDevCmd('form'),
       field: getDevCmd('field'),
       'extra-fields': getDevCmd('extra-fields'),
       slider: getDevCmd('slider'),
+      rollup: 'rollup -c -w',
       example: 'cd packages/example && yarn run dev',
     },
     type: {
@@ -74,8 +75,11 @@ module.exports = {
         'type.slider',
       ]),
       dev: {
+        all: npsUtils.concurrent.nps('type.dev.helpers', 'type.dev.field', 'type.dev.form', 'type.dev.slider'),
         helpers: getDevTypeCmd('helpers'),
         field: getDevTypeCmd('field'),
+        form: getDevTypeCmd('form'),
+        slider: getDevTypeCmd('slider'),
       },
       helpers: getTypeCmd('helpers'),
       field: getTypeCmd('field'),
