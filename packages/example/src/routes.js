@@ -9,10 +9,7 @@ import store from './store';
 // import Container from './components/Container';
 import Loader from './Loader';
 
-const Intro = Loader(
-  () => import(/* webpackChunkName: "intro" */ './components/pages/Intro'),
-  <div>Loading...</div>,
-);
+const Intro = Loader(() => import(/* webpackChunkName: "intro" */ './components/pages/Intro'), <div>Loading...</div>);
 const Container = Loader(
   () => import(/* webpackChunkName: "container" */ './components/Container'),
   <div>Loading...</div>,
@@ -81,9 +78,7 @@ class Routes extends PureComponent {
         <Router history={this.props.history}>
           <Switch>
             <Container>
-              {pages.map(([path, name, component]) => (
-                <Route key={name} path={path} component={component} exact />
-              ))}
+              {pages.map(([path, name, component]) => <Route key={name} path={path} component={component} exact />)}
             </Container>
           </Switch>
         </Router>

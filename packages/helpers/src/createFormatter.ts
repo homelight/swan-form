@@ -1,5 +1,5 @@
 // functionally equivalent to String.repeat(int);
-function repeat(str, count) {
+function repeat(str: string, count: number) {
   const out = new Array(count);
   for (let i = 0; i < count; i++) {
     out[i] = str;
@@ -8,7 +8,7 @@ function repeat(str, count) {
 }
 
 // functionally equivalent to String.padStart(length, str);
-function padStart(str, targetLength, padStr) {
+function padStart(str: string, targetLength: number, padStr: string) {
   if (str.length > targetLength) {
     return str;
   }
@@ -20,8 +20,8 @@ function padStart(str, targetLength, padStr) {
   return padStr.slice(0, targetLen) + str;
 }
 
-function createTransformer(transformer) {
-  return function transform(value, cursor) {
+function createTransformer(transformer: (value: string) => string) {
+  return function transform(value: string, cursor: number): { value: string; cursor: number } {
     const leftValue = value.slice(0, cursor);
     const leftTransform = transformer(leftValue);
     const delta = leftTransform.length - leftValue.length;
@@ -32,7 +32,7 @@ function createTransformer(transformer) {
   };
 }
 
-function getPattern(pattern, wildcard, valueRawLen) {
+function getPattern(pattern: string, wildcard: string, valueRawLen: number): string {
   const patternRawLen = pattern.match(new RegExp(wildcard, 'g')).length || 0;
   const pFormattingChars = pattern.length - patternRawLen;
   const targetLength = valueRawLen + (Math.ceil(valueRawLen / patternRawLen) - pFormattingChars);
@@ -42,8 +42,8 @@ function getPattern(pattern, wildcard, valueRawLen) {
     .join('');
 }
 
-function createMask(pattern, wildcard, unbound) {
-  return function mask({ value, cursor }) {
+function createMask(pattern: string, wildcard: string, unbound: boolean) {
+  return function mask({ value, cursor }: { value: string; cursor: number }): [string, number] {
     // Unmasked value
     const v = value.split('');
     // The mask i.e. (___) ___, or, if unbound, the mask partial
@@ -62,8 +62,13 @@ function createMask(pattern, wildcard, unbound) {
   };
 }
 
-export default function createFormatter(transformer, pattern, unbound = false, wildcard = '_') {
+export default function createFormatter(
+  transformer: (value: any) => string,
+  pattern: string,
+  unbound = false,
+  wildcard = '_',
+) {
   const transform = createTransformer(transformer);
   const mask = createMask(pattern, wildcard, unbound);
-  return (value, cursor) => mask(transform(value, cursor));
+  return (value: string, cursor: number) => mask(transform(value, cursor));
 }

@@ -6,9 +6,27 @@ import invariant from 'invariant';
 import { Form } from '@swan-form/form';
 import { classes } from '@swan-form/helpers';
 
-import Slide from './Slide';
+import { default as Slide } from './Slide';
 
-export default class Slider extends PureComponent {
+export interface SliderProps {
+  formName: string;
+  current?: number;
+  autoComplete?: 'on' | 'off';
+  className?: string;
+  children: React.ReactNode;
+  PrevButton?: React.ReactNode;
+  NextButton?: React.ReactNode;
+  beforeSubmit(values: object): Promise<object>;
+  onSubmit(values: object): Promise<object>;
+  afterSubmit(values: object): Promise<object>;
+  commonProps?: object;
+}
+
+export interface SliderState {
+  current: number;
+}
+
+export default class Slider extends PureComponent<SliderProps, SliderState> {
   static propTypes = {
     /**
      * The slide to start on
@@ -25,8 +43,7 @@ export default class Slider extends PureComponent {
     /**
      * The slides. These should only be of type <Slide />
      */
-    children: PropTypes.oneOfType([PropTypes.element, PropTypes.arrayOf(PropTypes.element)])
-      .isRequired,
+    children: PropTypes.oneOfType([PropTypes.element, PropTypes.arrayOf(PropTypes.element)]).isRequired,
     /**
      * A button to use as a previous button
      */
@@ -62,13 +79,18 @@ export default class Slider extends PureComponent {
     autoComplete: 'off',
     PrevButton: '←',
     NextButton: '→',
-    beforeSubmit: values => Promise.resolve(values),
-    afterSubmit: values => Promise.resolve(values),
+    beforeSubmit: (values: object | Promise<object>) => Promise.resolve(values),
+    afterSubmit: (values: object | Promise<object>) => Promise.resolve(values),
     commonProps: {},
     formName: 'slider-form',
   };
 
-  constructor(props) {
+  mounted: boolean;
+  mapSlideProps: object; // @todo expand
+  current: Slide;
+  form: Form;
+
+  constructor(props: SliderProps) {
     super(props);
     // this.form = {};
     this.state = {
@@ -96,7 +118,7 @@ export default class Slider extends PureComponent {
     this.mounted = true;
   }
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate(prevProps: SliderProps, prevState: SliderState) {
     // Since we're using indices to keep track of progress, we _could_ get off track if one
     // disappears, so we're going to disallow dynamically manipulating the children
     invariant(
@@ -143,18 +165,16 @@ export default class Slider extends PureComponent {
    * We use refs on the current slide so that we can avoid having to setup another
    * register/unregister pattern with slides. Since slides are only direct children, this pattern
    * will work fine.
-   *
-   * @return React.element
    */
-  setCurrentSlideRef = el => {
+  setCurrentSlideRef = (el: Slide) => {
     this.current = el;
   };
 
-  setFormRef = el => {
+  setFormRef = (el: Form) => {
     this.form = el;
   };
 
-  moveTo = current => {
+  moveTo = (current: number) => {
     if (this.mounted) {
       this.setState(prevState => ({ ...prevState, current }));
     }
@@ -239,7 +259,7 @@ export default class Slider extends PureComponent {
     const formValues = this.form && isFunction(this.form.getValues) ? this.form.getValues() : {};
     const length = children.length; // eslint-disable-line
     for (let i = current + 1; i <= length - 1; i++) {
-      const slide = children[i];
+      const slide = children[i] as Slide;
       if (slide.props.shouldShowIf(formValues)) {
         return i;
       }
@@ -264,7 +284,7 @@ export default class Slider extends PureComponent {
     const formValues = this.form && isFunction(this.form.getValues) ? this.form.getValues() : {};
     const length = children.length; // eslint-disable-line
     for (let i = current - 1; i >= 0; i--) {
-      const slide = children[i];
+      const slide = children[i] as Slide;
       if (slide.props.shouldShowIf(formValues)) {
         return i;
       }
@@ -292,7 +312,7 @@ export default class Slider extends PureComponent {
     // React children as an array
     const children = this.getChildren();
     // The current slide
-    const slide = children[current];
+    const slide = children[current] as Slide;
     // Possible render prop on the slide
     const { render } = slide.props;
     // Classes applied to left control

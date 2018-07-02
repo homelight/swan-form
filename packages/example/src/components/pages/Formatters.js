@@ -87,10 +87,7 @@ export default class Formatters extends Component {
         </p>
         <ul>
           <li>
-            Value:{' '}
-            <code style={{ display: 'inline-block', minWidth: '5em' }}>
-              {this.state.formattedPhone || ' '}
-            </code>
+            Value: <code style={{ display: 'inline-block', minWidth: '5em' }}>{this.state.formattedPhone || ' '}</code>
           </li>
           <li>
             Processed:{' '}

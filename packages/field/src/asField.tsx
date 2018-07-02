@@ -8,18 +8,24 @@ import isEqual from 'lodash/isEqual';
 import isFunction from 'lodash/isFunction';
 import isObject from 'lodash/isObject';
 
+import { hasErrors, hasOwnProperty, keyCodes, moveCursor, emptyArray, runValidations } from '@swan-form/helpers';
+
 import {
-  hasErrors,
-  hasOwnProperty,
-  keyCodes,
-  moveCursor,
-  emptyArray,
-  runValidations,
-} from '@swan-form/helpers';
+  FieldInterface,
+  GenericClickEvent,
+  GenericFocusEvent,
+  AsFieldProps,
+  WrappedComponentProps,
+  AsFieldState,
+} from './common';
+
+export interface WrapperOptions {
+  registerWrapped?: boolean;
+}
 
 const { ENTER, TAB } = keyCodes;
 
-function getInitialValue(props) {
+function getInitialValue(props: AsFieldProps): any {
   if (props.type === 'checkbox' && isObject(props)) {
     if (hasOwnProperty(props, 'checked')) {
       return !!props.checked;
@@ -43,9 +49,11 @@ function getInitialValue(props) {
   return '';
 }
 
-function canAccessSelectionStart(type) {
+function canAccessSelectionStart(type: string): boolean {
   return ['text', 'search', 'password', 'tel', 'url'].includes(type);
 }
+
+// export interface FieldWrapper extends PureComponent<AsFieldProps, AsFieldState> {}
 
 /**
  * Wraps a component to treat it like a field (a controlled input)
@@ -54,10 +62,10 @@ function canAccessSelectionStart(type) {
  *
  * @param  {React.Component|React.Element} WrappedComponent The component to turn into a field
  * @param  {Object} options   [description]
- * @return {[type]}                  [description]
+ * @return {FieldWrapper}                  [description]
  */
-function asField(WrappedComponent, wrapperOptions = {}) {
-  return class extends PureComponent {
+const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, wrapperOptions: WrapperOptions = {}) =>
+  class FieldWrapper extends PureComponent<AsFieldProps, AsFieldState> {
     static displayName = `asField(${WrappedComponent.displayName || 'Component'})`;
 
     static propTypes = {
@@ -87,14 +95,24 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       unregisterField: PropTypes.func,
     };
 
-    constructor(props) {
+    autoComplete: string;
+    isMultipleSelect: boolean;
+    mounted: boolean;
+    debounceValidateTimer: number | null | undefined;
+    fields: { [key: string]: FieldInterface };
+
+    fieldRef: any; // @todo type this
+    ref: any;
+    initialState: AsFieldState;
+
+    constructor(props: AsFieldProps) {
       super(props);
 
       // We'll cache this because it's used in a few places and should not change
       this.isMultipleSelect = props.type === 'select' && props.multiple === true;
 
       // Establish the initial state
-      const state = {
+      const state: AsFieldState = {
         value: getInitialValue(props),
         errors: emptyArray,
         isValid: !hasErrors(runValidations(props.validate, props.value)),
@@ -103,7 +121,9 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       };
 
       // Setup the state, and also setup the initialState in case we get a queue to reset
+      // @ts-ignore: this is correct
       this.state = { ...state };
+      // @ts-ignore: this is correct
       this.initialState = { ...state };
 
       // This is used for debouncing validate functions while typing
@@ -153,14 +173,14 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       this.mounted = true;
     }
 
-    componentDidUpdate(prevProps, prevState) {
+    componentDidUpdate(_: AsFieldProps, prevState: AsFieldState) {
       // Safari will freak out if we try to access selectionStart on an `<input/>` with many different
       // `types` set.
       if (!canAccessSelectionStart(this.props.type)) {
         return;
       }
-      // This isn't working correctly for everything
-      if (this.fieldRef && this.fieldRef.selectionStart) {
+
+      if (this.fieldRef && hasOwnProperty(this.fieldRef, 'selectionStart')) {
         const { cursor } = this.state;
         if (typeof cursor !== 'undefined' && cursor !== prevState.cursor) {
           this.fieldRef.selectionStart = cursor;
@@ -189,7 +209,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * Use the registration function passed by context
      * @return {void}
      */
-    register = (fieldProps = null) => {
+    register = (fieldProps: FieldInterface = null): void => {
       const { name, doNotRegister } = this.props;
       if (fieldProps && wrapperOptions.registerWrapped === false) {
         // This is where we intercept the fields and control them.
@@ -219,7 +239,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * Use the unregistration function passed by context
      * @return {void}
      */
-    unregister = name => {
+    unregister = (name?: string) => {
       if (name) {
         // If this is called with a name, then that means a field is unregistering from this
         // composed field
@@ -250,7 +270,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * @param  {[type]} event [description]
      * @return {[type]}       [description]
      */
-    onChange = event => {
+    onChange = (event: React.SyntheticEvent<HTMLInputElement & HTMLSelectElement> | any): void => {
       // We're allowing the pattern for composed fields to call "onChange" with just a value
       // so, we have to detect whether this method was called from an event that gives us
       // access to a DOMElement | DOMNode in event.target or if we're just getting an object
@@ -273,7 +293,6 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         value = event;
       }
 
-      // const { value } = event.target;
       const { validateWhileTyping, validateDebounceTimeout } = this.props;
 
       if (this.props.type === 'checkbox') {
@@ -288,7 +307,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
         // through. This should help by not showing errors too early or, if there is a remote call
         // for the validation, not making too many worthless ajax requests
         window.clearTimeout(this.debounceValidateTimer);
-        this.debounceValidateTimer = setTimeout(() => this.validate(), validateDebounceTimeout);
+        this.debounceValidateTimer = window.setTimeout(() => this.validate(), validateDebounceTimeout);
       }
 
       // If this is `<input type='select' multiple, then our values are arrays and need to be
@@ -319,11 +338,10 @@ function asField(WrappedComponent, wrapperOptions = {}) {
     };
     /* eslint-enable consistent-return */
 
-    onClick = event => {
-      const { target } = event;
+    onClick = (event: GenericClickEvent): void => {
       const { onClick } = this.props;
       if (isFunction(onClick)) {
-        onClick(target);
+        onClick(event.target);
       }
     };
 
@@ -341,7 +359,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * a function as a prop.
      *
      */
-    onFocus = event => {
+    onFocus = (event: GenericFocusEvent): void => {
       const { onFocus } = this.props;
       const { target } = event;
 
@@ -368,7 +386,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * Blur handler that provides some async validation (if specified) and removes event listeners
      * that are created in onFocus
      */
-    onBlur = event => {
+    onBlur = (event: GenericFocusEvent): void => {
       const { onBlur, validate, asyncValidate } = this.props;
       const { target } = event;
 
@@ -392,7 +410,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * @param  {[type]} event [description]
      * @return {[type]}       [description]
      */
-    handleKey = event => {
+    handleKey = (event: React.KeyboardEvent<HTMLInputElement>): void => {
       const { name, type, handleKeyPress } = this.props;
       const { handleKey, handleTab } = this.context;
       const { shiftKey, ctrlKey, altKey } = event;
@@ -424,7 +442,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * Refs
      */
 
-    setRef = el => {
+    setRef = (el: HTMLElement): void => {
       this.fieldRef = el;
 
       const { setRef } = this.props;
@@ -434,7 +452,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       }
     };
 
-    getRef = () => this.fieldRef;
+    getRef = (): void => this.fieldRef;
 
     /**
      * Value Functions
@@ -448,7 +466,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      *
      * @return {any} the value of the field
      */
-    getValue = () => this.unformat(this.state.value);
+    getValue = (): any => this.unformat(this.state.value);
 
     /**
      * Set the value of the field
@@ -463,7 +481,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      *
      * @param {any} value the value to set
      */
-    setValue = (value, resetErrors = false, resetTouched = false) => {
+    setValue = (value: any, resetErrors = false, resetTouched = false): void => {
       if (this.mounted) {
         const { name, onChange } = this.props;
 
@@ -501,7 +519,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * Reset method called by `reset` buttons to restore the field to its initialState
      *
      */
-    reset = () => {
+    reset = (): void => {
       if (this.mounted) {
         // Clobber the state by setting back to the initialState
         this.setState(this.initialState);
@@ -532,8 +550,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       // good. Might be buggy.
       const controlledFields = Object.keys(this.fields)
         .reduce(
-          (acc, field) =>
-            isFunction(this.fields[field].validate) ? [...acc, this.fields[field].validate()] : acc,
+          (acc, field) => (isFunction(this.fields[field].validate) ? [...acc, this.fields[field].validate()] : acc),
           [],
         )
         // This filter is ugly... It sort of mixes concerns and shows how we're repurposing the
@@ -548,7 +565,8 @@ function asField(WrappedComponent, wrapperOptions = {}) {
     // functions
     isValid = () => !hasErrors(this.runValidations());
 
-    wrappedRef = el => {
+    // @TODO type this better
+    wrappedRef = (el: any) => {
       this.ref = el;
     };
 
@@ -560,7 +578,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      * @param  {[type]} msg [description]
      * @return {[type]}     [description]
      */
-    maybeUpdateErrors = msg => {
+    maybeUpdateErrors = (msg: false | string | (false | string)[]) => {
       if (msg === false) {
         if (this.state.errors.length !== 0) {
           this.setState(prevState => ({
@@ -604,7 +622,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
      *
      * @return {[type]} [description]
      */
-    format = value => {
+    format = (value: any): any => {
       const { format } = this.props;
 
       // Safari will freak out if we try to access selectionStart on an `<input/>` with many different
@@ -628,7 +646,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       return value;
     };
 
-    unformat = value => {
+    unformat = (value: any): any => {
       const { unformat } = this.props;
 
       if (isFunction(unformat)) {
@@ -669,6 +687,7 @@ function asField(WrappedComponent, wrapperOptions = {}) {
           onChange={this.onChange}
           onBlur={this.onBlur}
           onFocus={this.onFocus}
+          // @ts-ignore: I can't figure out why this isn't working
           onClick={this.onClick}
           setRef={this.setRef}
           getValue={this.getValue}
@@ -682,6 +701,5 @@ function asField(WrappedComponent, wrapperOptions = {}) {
       );
     }
   };
-}
 
 export default asField;

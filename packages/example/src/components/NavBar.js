@@ -38,9 +38,7 @@ export default class NavBar extends Component {
   render() {
     const { pathname } = window.location;
     return (
-      <div
-        className={[styles.navBar, !this.props.isShowing && styles.hide].filter(O => O).join(' ')}
-      >
+      <div className={[styles.navBar, !this.props.isShowing && styles.hide].filter(O => O).join(' ')}>
         <ul>{pages.map(([path, name, ...ignore]) => createLink(path, name, pathname))}</ul>
         <div className={styles.toggler} onClick={this.toggle}>
           {this.props.isShowing ? '↓ Hide ↓' : '↑ Show ↑'}

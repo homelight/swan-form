@@ -23,13 +23,9 @@ export default class Styling extends Component {
       <div>
         <h1>Styling</h1>
         <p>
-          The <code>Field</code> component creates HTML that is easily manipulable with CSS to make
-          the fields pretty.
+          The <code>Field</code> component creates HTML that is easily manipulable with CSS to make the fields pretty.
         </p>
-        <p>
-          For instance, using the following code snippet (with the input triggering the validation
-          errors),
-        </p>
+        <p>For instance, using the following code snippet (with the input triggering the validation errors),</p>
         <SyntaxHighlighter language="jsx" style={prism}>
           {`
 /* Validation functions */

@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
 import { hasOwnProperty, emptyArray, emptyObject } from '@swan-form/helpers';
 
+import { FieldInterface } from '../../field/src/common';
+
 /**
  * Duck-type check for a promise
  *
@@ -11,16 +13,29 @@ import { hasOwnProperty, emptyArray, emptyObject } from '@swan-form/helpers';
  * @param  {object} obj [description]
  * @return {boolean}     [description]
  */
-const isPromise = obj =>
-  !!obj && ['function', 'object'].includes(typeof obj) && isFunction(obj.then);
+const isPromise = (obj: any): boolean => !!obj && ['function', 'object'].includes(typeof obj) && isFunction(obj.then);
 
-const maybePromisify = obj => (isPromise(obj) ? obj : Promise.resolve(obj));
+const maybePromisify = (obj: any) => (isPromise(obj) ? obj : Promise.resolve(obj));
 
 // These are fields that we will automatically pull out of the form as they are just the
 // automatically generated names for the submit and reset buttons
 const fieldsToRemove = ['sf--reset', 'sf--submit'];
 
-export default class Form extends Component {
+export interface FormProps {
+  values?: object;
+  noValidate?: boolean;
+  autoComplete?: 'on' | 'off';
+  beforeSubmit?(values: object | Promise<object>): object | Promise<object>;
+  onSubmit?(values: object | Promise<object>): object | Promise<object>;
+  afterSubmit?(values: object | Promise<object>): object | Promise<object>;
+  persist?: boolean;
+}
+
+export interface FormState {
+  values: object;
+}
+
+export default class Form extends Component<FormProps, FormState> {
   static propTypes = {
     /**
      * The name of the form
@@ -70,31 +85,34 @@ export default class Form extends Component {
     persist: false,
   };
 
-  constructor(props) {
+  // We're going to keep track of accessors on a class property to avoid rerenders
+  fields: { [name: string]: FieldInterface } = emptyObject;
+  mounted: boolean = false;
+  form: HTMLFormElement;
+
+  constructor(props: FormProps) {
     super(props);
 
     ['acceptCharset', 'action', 'target'].forEach(prop => {
+      // @ts-ignore: this is just extra type checking
       if (props[prop]) {
         /* eslint-disable no-console */
         console.error(
-          `FlowForm Error: Do not provide a '${prop}' prop for a form. Instead, handle form submission with an onSubmit handler to submit and do any necessary transforms there.`,
+          `Swan Form Error: Do not provide a '${prop}' prop for a Form. Instead, handle form submission with an onSubmit handler to submit and do any necessary transforms there.`,
         );
         /* eslint-enable no-console */
       }
     });
 
     // Fill out with all the things
+    // @ts-ignore: typescript, this is a valid way of assigning initial state.
     this.state = {
       isSubmitting: false,
       hasSubmitted: false,
       hasSubmitError: false,
       errors: emptyArray,
-      values: emptyObject,
-    };
-
-    // We're going to keep track of accessors on a class property to avoid rerenders
-    this.fields = emptyObject;
-    this.mounted = false;
+      values: props.values || emptyObject,
+    } as FormState;
   }
 
   getChildContext() {
@@ -115,7 +133,7 @@ export default class Form extends Component {
     this.mounted = false;
   }
 
-  setRef = el => {
+  setRef = (el: HTMLFormElement) => {
     this.form = el;
   };
 
@@ -132,9 +150,7 @@ export default class Form extends Component {
 
   getSpreadProps() {
     // If we get more than just this one, then we'll go back to `reduce`.
-    return hasOwnProperty(this.props, 'noValidate')
-      ? { noValidate: this.props.noValidate }
-      : emptyObject;
+    return hasOwnProperty(this.props, 'noValidate') ? { noValidate: this.props.noValidate } : emptyObject;
   }
 
   handleBeforeSubmit = () => {
@@ -156,7 +172,7 @@ export default class Form extends Component {
       const isValid =
         Object.keys(this.fields)
           .map(field => this.fields[field].validate())
-          .filter(x => x !== true).length === 0;
+          .filter((x: any) => x !== true).length === 0;
 
       if (!isValid) {
         // Reject the promise and leave the function. We should handle this.
@@ -173,7 +189,7 @@ export default class Form extends Component {
     });
   };
 
-  handleAfterSubmit = values => {
+  handleAfterSubmit = (values: object | Promise<object>) => {
     const { afterSubmit } = this.props;
     if (this.mounted) {
       this.setState(prevState => ({
@@ -193,12 +209,12 @@ export default class Form extends Component {
     return Promise.resolve(values);
   };
 
-  handleSubmit = values => {
+  handleSubmit = (values: object | Promise<object>) => {
     const result = this.props.onSubmit(values);
     return maybePromisify(result);
   };
 
-  handleOnSubmit = event => {
+  handleOnSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     // We can call this event manually, so, we might not always have an event
     if (event) {
       // Prevent the form from doing anything native
@@ -222,14 +238,14 @@ export default class Form extends Component {
       });
   };
 
-  registerField = ({ name, getRef, getValue, setValue, validate, reset }) => {
+  registerField = ({ name, getRef, getValue, setValue, isValid, validate, reset }: FieldInterface) => {
     this.fields = {
       ...this.fields,
-      [name]: { getRef, getValue, validate, reset, setValue },
+      [name]: { name, getRef, getValue, setValue, validate, isValid, reset },
     };
   };
 
-  unregsiterField = name => {
+  unregsiterField = (name: string) => {
     const { [name]: removed, ...remaining } = this.fields;
     this.fields = remaining;
 
@@ -251,9 +267,7 @@ export default class Form extends Component {
 
   resetForm = () => {
     // @TODO not quite working for all cases
-    Object.keys(this.fields).forEach(
-      field => isFunction(this.fields[field].reset) && this.fields[field].reset(),
-    );
+    Object.keys(this.fields).forEach(field => isFunction(this.fields[field].reset) && this.fields[field].reset());
   };
 
   render() {

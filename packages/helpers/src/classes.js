@@ -1,5 +1,4 @@
 import isObject from 'lodash/isObject';
-// const isObject = require('lodash/isObject');
 
 export default function classes(obj) {
   if (Array.isArray(obj)) {

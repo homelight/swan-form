@@ -9,6 +9,7 @@
 - [all] fix lint errors
 - [all] use rollup to build cjs instead of just babel
 - [all] create es modules
+- [all] convert to typescript and create typings
 
 ## 0.1.0
 

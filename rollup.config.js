@@ -14,15 +14,14 @@ const formats = ['cjs', 'es'];
 const babelConfig = require('./babel.config');
 
 const config = (pkg, format) => {
-  /* eslint-disable */
+  // eslint-disable-next-line
   const pkgJSON = require(path.resolve(__dirname, `packages/${pkg}/package.json`));
-  /* eslint-enable */
+
   return {
-    input: `packages/${pkg}/src/index.js`,
+    input: `packages/${pkg}/src/index.ts`,
     output: {
       name: camelCase(`swanForm-${pkg}`),
-      file:
-        format === 'cjs' ? `packages/${pkg}/${pkgJSON.main}` : `packages/${pkg}/${pkgJSON.module}`,
+      file: format === 'cjs' ? `packages/${pkg}/${pkgJSON.main}` : `packages/${pkg}/${pkgJSON.module}`,
       format,
       globals: {
         react: 'React',
@@ -30,29 +29,17 @@ const config = (pkg, format) => {
       exports: 'named',
       sourcemap: true,
     },
-    external: [
-      '@swan-form/helpers',
-      '@swan-form/field',
-      '@swan-form/form',
-      '@swan-form/slider',
-      'react',
-      'prop-types',
-    ],
+    external: ['@swan-form/helpers', '@swan-form/field', '@swan-form/form', '@swan-form/slider', 'react', 'prop-types'],
     plugins: [
       resolve({
         browser: true,
         main: true,
+        extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
       }),
       commonjs({
         include: 'node_modules/**',
         namedExports: {
-          'node_modules/react/index.js': [
-            'Component',
-            'PureComponent',
-            'Fragment',
-            'Children',
-            'createElement',
-          ],
+          'node_modules/react/index.js': ['Component', 'PureComponent', 'Fragment', 'Children', 'createElement'],
         },
       }),
       babel(babelConfig()),
@@ -62,9 +49,6 @@ const config = (pkg, format) => {
   };
 };
 
-const configs = packages.reduce(
-  (acc, pkg) => [...acc, ...formats.map(format => config(pkg, format))],
-  [],
-);
+const configs = packages.reduce((acc, pkg) => [...acc, ...formats.map(format => config(pkg, format))], []);
 
 export default [...configs];
