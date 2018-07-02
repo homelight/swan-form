@@ -1,6 +1,11 @@
 # Changelog
 
-## master
+## 0.2.1
+
+- [all] fix problems with the exports
+- [all] fix typings
+
+## 0.2.0
 
 - [field] fix TypeError on Safari when accessing `selectionStart` on non-text fields
 - [all] upgrade babel packages
