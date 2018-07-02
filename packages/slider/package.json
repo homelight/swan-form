@@ -1,6 +1,6 @@
 {
   "name": "@swan-form/slider",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Decompose forms into sliders",
   "license": "Apache-2.0",
   "files": [
@@ -26,8 +26,8 @@
     "test:watch": "yarn run test -- --watch"
   },
   "dependencies": {
-    "@swan-form/form": "^0.1.0",
-    "@swan-form/helpers": "^0.1.0",
+    "@swan-form/form": "^0.2.0",
+    "@swan-form/helpers": "^0.2.0",
     "invariant": "^2.2.4",
     "lodash": "^4.17.5",
     "prop-types": "^15.6.1"
