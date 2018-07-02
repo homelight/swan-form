@@ -3,7 +3,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "bootstrap": "lerna bootstrap",
-    "build": "NODE_ENV=production rollup -c",
+    "build": "NODE_ENV=production rollup -c && yarn run type",
     "clean": "rm -fR packages/slider/dist; rm -fR packages/field/dist; rm -fR packages/form/dist; rm -fR packages/helpers/dist",
     "postinstall": "yarn run build",
     "precommit": "lint-staged",
@@ -12,7 +12,7 @@
     "lint": "nps lint.all",
     "test": "jest --env=jsdom",
     "test:watch": "yarn run test -- --watch",
-    "type": "nps type.all"
+    "type": "lerna run type"
   },
   "devDependencies": {
     "@babel/cli": "^7.0.0-beta.51",
@@ -61,7 +61,6 @@
     "rollup-plugin-filesize": "^2.0.0",
     "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-terser": "^1.0.1",
-    "rollup-plugin-typescript2": "^0.15.1",
     "rollup-plugin-uglify": "^4.0.0",
     "typescript": "^2.9.2"
   },

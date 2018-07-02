@@ -1,5 +1,5 @@
 /* eslint-disable react/require-default-props */
-import React, { Component } from 'react';
+import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import isObject from 'lodash/isObject';
 import { hasOwnProperty, classes, noop } from '@swan-form/helpers';
@@ -103,7 +103,7 @@ function renderOptions(options: any | any[]): React.ReactNode {
 }
 /* eslint-enable no-use-before-define */
 
-class Field extends Component<FieldProps> {
+class Field extends PureComponent<FieldProps> {
   static displayName = 'Field';
 
   static propTypes = {
@@ -212,7 +212,7 @@ class Field extends Component<FieldProps> {
     style: PropTypes.object, // eslint-disable-line
   };
 
-  maybeWrapInLabel(input) {
+  maybeWrapInLabel(input: React.ReactNode) {
     const { className, icon, name, errors, type, label, style } = this.props;
 
     const spread = {} as { htmlFor?: string; style?: React.CSSProperties };

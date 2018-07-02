@@ -6,7 +6,7 @@ import invariant from 'invariant';
 import { Form } from '@swan-form/form';
 import { classes } from '@swan-form/helpers';
 
-import Slide, { SlideProps } from './Slide';
+import { default as Slide } from './Slide';
 
 export interface SliderProps {
   formName: string;
@@ -87,6 +87,8 @@ export default class Slider extends PureComponent<SliderProps, SliderState> {
 
   mounted: boolean;
   mapSlideProps: object; // @todo expand
+  current: Slide;
+  form: Form;
 
   constructor(props: SliderProps) {
     super(props);
@@ -163,14 +165,12 @@ export default class Slider extends PureComponent<SliderProps, SliderState> {
    * We use refs on the current slide so that we can avoid having to setup another
    * register/unregister pattern with slides. Since slides are only direct children, this pattern
    * will work fine.
-   *
-   * @return React.element
    */
-  setCurrentSlideRef = el => {
+  setCurrentSlideRef = (el: Slide) => {
     this.current = el;
   };
 
-  setFormRef = el => {
+  setFormRef = (el: Form) => {
     this.form = el;
   };
 
@@ -259,7 +259,7 @@ export default class Slider extends PureComponent<SliderProps, SliderState> {
     const formValues = this.form && isFunction(this.form.getValues) ? this.form.getValues() : {};
     const length = children.length; // eslint-disable-line
     for (let i = current + 1; i <= length - 1; i++) {
-      const slide = children[i];
+      const slide = children[i] as Slide;
       if (slide.props.shouldShowIf(formValues)) {
         return i;
       }
@@ -284,7 +284,7 @@ export default class Slider extends PureComponent<SliderProps, SliderState> {
     const formValues = this.form && isFunction(this.form.getValues) ? this.form.getValues() : {};
     const length = children.length; // eslint-disable-line
     for (let i = current - 1; i >= 0; i--) {
-      const slide = children[i];
+      const slide = children[i] as Slide;
       if (slide.props.shouldShowIf(formValues)) {
         return i;
       }
@@ -312,7 +312,7 @@ export default class Slider extends PureComponent<SliderProps, SliderState> {
     // React children as an array
     const children = this.getChildren();
     // The current slide
-    const slide = children[current];
+    const slide = children[current] as Slide;
     // Possible render prop on the slide
     const { render } = slide.props;
     // Classes applied to left control

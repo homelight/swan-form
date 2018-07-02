@@ -10,6 +10,12 @@ export interface SlideProps {
   className?: string;
   children?: React.ReactNode;
   autoFocus?: boolean;
+  didEnter?: boolean;
+  didEnterAsPrev?: boolean;
+  didEnterAsNext?: boolean;
+  beforeExit?(props: object): Promise<boolean>;
+  beforeExitToPrev?(props: object): Promise<boolean>;
+  beforeExitToNext?(props: object): Promise<boolean>;
 }
 
 // @TODO pull these from a common source rather than redeclaring them

@@ -25,7 +25,8 @@
     "prepublish": "yarn run build",
     "start": "yarn run build --watch",
     "test": "jest --env=jsdom",
-    "test:watch": "yarn run test --watch"
+    "test:watch": "yarn run test --watch",
+    "type": "tsc -p ./tsconfig.json"
   },
   "dependencies": {
     "lodash": "^4.17.5"

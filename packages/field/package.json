@@ -9,6 +9,7 @@
   ],
   "main": "dist/cjs/index.js",
   "module": "dist/es/index.js",
+  "typings": "dist/typings/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/helloeave/swan-form.git"
@@ -21,7 +22,8 @@
     "prepublish": "yarn run build",
     "start": "yarn run build --watch",
     "test": "jest --env=jsdom",
-    "test:watch": "yarn run test --watch"
+    "test:watch": "yarn run test --watch",
+    "type": "tsc -p ./tsconfig.json"
   },
   "dependencies": {
     "@swan-form/helpers": "^0.1.0",

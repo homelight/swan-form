@@ -11,6 +11,7 @@
     "declaration": true,
     "baseUrl": ".",
     "allowSyntheticDefaultImports": true,
+    "typeRoots": ["node_modules/@types"],
     "paths": {
       "@swan-form/*": ["packages/*"]
     }

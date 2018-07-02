@@ -15,6 +15,8 @@ const getTypeCmd = project => `cd ${__dirname}/packages/${project}; NODE_ENV="pr
 const getDevTypeCmd = project =>
   `cd ${__dirname}packages/${project} && NODE_ENV="production" tsc -p "./tsconfig.json" --watch`;
 
+// Old commands
+// -----------
 // const getBuildCmd = project => `NODE_ENV="production" babel \
 // "packages/${project}/src" \
 // --config-file="packages/${project}/.babelrc.js"
@@ -23,13 +25,13 @@ const getDevTypeCmd = project =>
 // --ignore "packages/${project}/src/**/*.test.js" \
 // --watch`;
 
-const getBuildCmd = project => `NODE_ENV="production" babel \
-"packages/${project}/src" \
---config-file="packages/${project}/.babelrc.js"
---src-type module \
---out-dir "packages/${project}/dist/cjs" \
---ignore "packages/${project}/src/**/*.test.js" \
---watch`;
+// const getBuildCmd = project => `NODE_ENV="production" babel \
+// "packages/${project}/src" \
+// --config-file="packages/${project}/.babelrc.js"
+// --src-type module \
+// --out-dir "packages/${project}/dist/cjs" \
+// --ignore "packages/${project}/src/**/*.test.js" \
+// --watch`;
 
 const getLintCmd = project => `eslint --config .eslintrc.js packages/${project}/src`;
 

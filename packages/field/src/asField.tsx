@@ -11,60 +11,13 @@ import isObject from 'lodash/isObject';
 import { hasErrors, hasOwnProperty, keyCodes, moveCursor, emptyArray, runValidations } from '@swan-form/helpers';
 
 import {
-  StrFalseArr,
   FieldInterface,
-  FieldElement,
-  FieldKeyboardEvent,
   GenericClickEvent,
   GenericFocusEvent,
+  AsFieldProps,
+  WrappedComponentProps,
+  AsFieldState,
 } from './common';
-
-export interface AsFieldProps {
-  name: string;
-  type: string; // @todo expand this
-  value?: any;
-  validate?(value: any): StrFalseArr;
-  multiple?: boolean;
-  autoFocus?: boolean;
-  autoComplete?: string;
-  doNotRegister?: boolean;
-  asyncValidate?: boolean;
-  validateWhileTyping?: boolean;
-  validateDebounceTimeout?: number;
-  onChange?(newValue: any, name: string): void;
-  onClick?(target: FieldElement): void;
-  onFocus?(target: FieldElement): void;
-  onBlur?(target: FieldElement): void;
-  handleKeyPress?(event: FieldKeyboardEvent): void;
-  setRef?(el: FieldElement): void;
-  format?(value: any, cursor?: number): any;
-  unformat?(value: any): any;
-  registerWrapped?: boolean;
-  handleEnterKey?(event: FieldKeyboardEvent): void;
-}
-
-export interface WrappedComponentProps {
-  onChange(event: GenericFocusEvent): void;
-  onBlur(event: GenericFocusEvent): void;
-  onFocus(event: GenericFocusEvent): void;
-  onClick(event: GenericClickEvent): void;
-  setRef(element: FieldElement): void;
-  getValue(): any;
-  setValue(value: any): void;
-  ref: any; // more strong type this
-  value: any;
-  errors: StrFalseArr;
-  isValid: boolean;
-}
-
-export interface AsFieldState {
-  value: any;
-  cursor?: number;
-  errors: StrFalseArr;
-  isValid: boolean;
-  isDirty: boolean;
-  isTouched: boolean;
-}
 
 export interface WrapperOptions {
   registerWrapped?: boolean;
@@ -72,7 +25,7 @@ export interface WrapperOptions {
 
 const { ENTER, TAB } = keyCodes;
 
-function getInitialValue(props: AsFieldProps & { [key: string]: any }): any {
+function getInitialValue(props: AsFieldProps): any {
   if (props.type === 'checkbox' && isObject(props)) {
     if (hasOwnProperty(props, 'checked')) {
       return !!props.checked;
@@ -100,6 +53,8 @@ function canAccessSelectionStart(type: string): boolean {
   return ['text', 'search', 'password', 'tel', 'url'].includes(type);
 }
 
+// export interface FieldWrapper extends PureComponent<AsFieldProps, AsFieldState> {}
+
 /**
  * Wraps a component to treat it like a field (a controlled input)
  *
@@ -107,13 +62,10 @@ function canAccessSelectionStart(type: string): boolean {
  *
  * @param  {React.Component|React.Element} WrappedComponent The component to turn into a field
  * @param  {Object} options   [description]
- * @return {[type]}                  [description]
+ * @return {FieldWrapper}                  [description]
  */
-function asField<P extends object>(
-  WrappedComponent: React.ComponentType<P & WrappedComponentProps>,
-  wrapperOptions: WrapperOptions = {},
-): React.ComponentType {
-  return class extends PureComponent<AsFieldProps, AsFieldState> {
+const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, wrapperOptions: WrapperOptions = {}) =>
+  class FieldWrapper extends PureComponent<AsFieldProps, AsFieldState> {
     static displayName = `asField(${WrappedComponent.displayName || 'Component'})`;
 
     static propTypes = {
@@ -153,7 +105,7 @@ function asField<P extends object>(
     ref: any;
     initialState: AsFieldState;
 
-    constructor(props) {
+    constructor(props: AsFieldProps) {
       super(props);
 
       // We'll cache this because it's used in a few places and should not change
@@ -221,7 +173,7 @@ function asField<P extends object>(
       this.mounted = true;
     }
 
-    componentDidUpdate(_, prevState) {
+    componentDidUpdate(_: AsFieldProps, prevState: AsFieldState) {
       // Safari will freak out if we try to access selectionStart on an `<input/>` with many different
       // `types` set.
       if (!canAccessSelectionStart(this.props.type)) {
@@ -257,7 +209,7 @@ function asField<P extends object>(
      * Use the registration function passed by context
      * @return {void}
      */
-    register = (fieldProps = null): void => {
+    register = (fieldProps: FieldInterface = null): void => {
       const { name, doNotRegister } = this.props;
       if (fieldProps && wrapperOptions.registerWrapped === false) {
         // This is where we intercept the fields and control them.
@@ -613,7 +565,8 @@ function asField<P extends object>(
     // functions
     isValid = () => !hasErrors(this.runValidations());
 
-    wrappedRef = el => {
+    // @TODO type this better
+    wrappedRef = (el: any) => {
       this.ref = el;
     };
 
@@ -625,7 +578,7 @@ function asField<P extends object>(
      * @param  {[type]} msg [description]
      * @return {[type]}     [description]
      */
-    maybeUpdateErrors = msg => {
+    maybeUpdateErrors = (msg: false | string | (false | string)[]) => {
       if (msg === false) {
         if (this.state.errors.length !== 0) {
           this.setState(prevState => ({
@@ -734,6 +687,7 @@ function asField<P extends object>(
           onChange={this.onChange}
           onBlur={this.onBlur}
           onFocus={this.onFocus}
+          // @ts-ignore: I can't figure out why this isn't working
           onClick={this.onClick}
           setRef={this.setRef}
           getValue={this.getValue}
@@ -747,6 +701,5 @@ function asField<P extends object>(
       );
     }
   };
-}
 
 export default asField;

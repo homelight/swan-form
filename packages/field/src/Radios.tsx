@@ -38,7 +38,7 @@ class Radios extends Component<FieldProps> {
     return (
       <fieldset className={classes(['sf--radios', 'sf--fieldset', required && 'sf--field--required', className])}>
         {label && <legend>{label}</legend>}
-        {options.map(option => (
+        {options.map((option: { label: string; value: string }) => (
           // right now, I'm spreading this
           <label
             className={classes(['sf--radio--field', value === option.value && 'sf--radio--checked'])}
