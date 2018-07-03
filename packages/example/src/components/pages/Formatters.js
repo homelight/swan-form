@@ -26,11 +26,8 @@ const stripNonNumeric = value => {
 
 const formatPhone = value => new AsYouType('US').input(value);
 const identity = x => x;
-const toUpperCase = value => {
-  console.log('received value', value);
-  return value.toUpperCase();
-};
-const upCase = createFormatter(toUpperCase, '__|#');
+const toUpperCase = value => value.replace(/[_-]{1,}/g, '').toUpperCase();
+const upCase = createFormatter(toUpperCase, '___-', true);
 
 @hot(module)
 export default class Formatters extends Component {

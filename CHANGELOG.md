@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.2
+
+- [field] fix problem with detecting `selectionStart` for cursor management
+- [field] fix multiple calls to `setState` on multiple selects
+- [helpers] fix regression with createFormatter
+- [helpers] fix possible non-integer value with `repeat`
+
 ## 0.2.1
 
 - [all] fix problems with the exports

@@ -53,6 +53,8 @@ function canAccessSelectionStart(type: string): boolean {
   return ['text', 'search', 'password', 'tel', 'url'].includes(type);
 }
 
+const isNotTrue = (value: any) => value !== true;
+
 // export interface FieldWrapper extends PureComponent<AsFieldProps, AsFieldState> {}
 
 /**
@@ -180,7 +182,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
         return;
       }
 
-      if (this.fieldRef && hasOwnProperty(this.fieldRef, 'selectionStart')) {
+      if (this.fieldRef && this.fieldRef.selectionStart) {
         const { cursor } = this.state;
         if (typeof cursor !== 'undefined' && cursor !== prevState.cursor) {
           this.fieldRef.selectionStart = cursor;
@@ -239,7 +241,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
      * Use the unregistration function passed by context
      * @return {void}
      */
-    unregister = (name?: string) => {
+    unregister = (name?: string): void => {
       if (name) {
         // If this is called with a name, then that means a field is unregistering from this
         // composed field
@@ -329,9 +331,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
         if (!isEqual(this.state.value, values)) {
           this.setValue(values);
         }
-      }
-
-      if (this.state.value !== value) {
+      } else if (this.state.value !== value) {
         // Only run the setState method if the value is actually different
         this.setValue(value);
       }
@@ -482,37 +482,29 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
      * @param {any} value the value to set
      */
     setValue = (value: any, resetErrors = false, resetTouched = false): void => {
-      if (this.mounted) {
-        const { name, onChange } = this.props;
-
-        this.setState(prevState => {
-          const formatted = this.format(value);
-
-          let newValue = formatted;
-          let cursor;
-
-          if (Array.isArray(formatted)) {
-            /* eslint-disable prefer-destructuring */
-            newValue = formatted[0];
-            cursor = formatted[1];
-            /* eslint-enable prefer-destructuring */
-          }
-
-          // Call user supplied function if given
-          if (isFunction(onChange)) {
-            onChange(newValue, name);
-          }
-
-          return {
-            ...prevState,
-            cursor,
-            errors: resetErrors === false ? prevState.errors : emptyArray,
-            isDirty: newValue !== this.props.value,
-            isTouched: resetTouched !== true,
-            value: newValue,
-          };
-        });
+      if (!this.mounted) {
+        return;
       }
+
+      const { name, onChange } = this.props;
+
+      this.setState(prevState => {
+        const [newValue, cursor] = this.format(value);
+
+        // Call user supplied function if given
+        if (isFunction(onChange)) {
+          onChange(newValue, name);
+        }
+
+        return {
+          ...prevState,
+          cursor: cursor || prevState.cursor,
+          errors: resetErrors === false ? prevState.errors : emptyArray,
+          isDirty: newValue !== this.props.value,
+          isTouched: resetTouched !== true,
+          value: newValue,
+        };
+      });
     };
 
     /**
@@ -520,22 +512,24 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
      *
      */
     reset = (): void => {
-      if (this.mounted) {
-        // Clobber the state by setting back to the initialState
-        this.setState(this.initialState);
-        // If we were provided a change function, then call it with the initial value
-        if (isFunction(this.props.onChange)) {
-          this.props.onChange(this.initialState.value, this.props.name);
-        }
-
-        // If this is acting as a wrapper to compose fields, then call the reset on the fields it
-        // controls
-        Object.keys(this.fields).forEach(field => {
-          if (isFunction(this.fields[field].reset)) {
-            this.fields[field].reset();
-          }
-        });
+      if (!this.mounted) {
+        return;
       }
+
+      // Clobber the state by setting back to the initialState
+      this.setState(this.initialState);
+      // If we were provided a change function, then call it with the initial value
+      if (isFunction(this.props.onChange)) {
+        this.props.onChange(this.initialState.value, this.props.name);
+      }
+
+      // If this is acting as a wrapper to compose fields, then call the reset on the fields it
+      // controls
+      Object.keys(this.fields).forEach(field => {
+        if (isFunction(this.fields[field].reset)) {
+          this.fields[field].reset();
+        }
+      });
     };
 
     /**
@@ -555,7 +549,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
         )
         // This filter is ugly... It sort of mixes concerns and shows how we're repurposing the
         // method.
-        .filter(valid => valid !== true);
+        .filter(isNotTrue);
       return this.maybeUpdateErrors([...controlledFields, ...this.runValidations()]);
     };
 
@@ -625,40 +619,22 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
     format = (value: any): any => {
       const { format } = this.props;
 
-      // Safari will freak out if we try to access selectionStart on an `<input/>` with many different
-      // `types` set.
-      if (!canAccessSelectionStart(this.props.type)) {
-        console.log('CANNOT ACCESS SELECTION START');
-        return value;
+      // Safari will freak out if we try to access selectionStart on an `<input/>` with many
+      // different `types` set. Second, if no formatting function is supplied, then return the raw
+      // value
+      if (!canAccessSelectionStart(this.props.type) || !isFunction(format)) {
+        return [value, null];
       }
 
-      // If the user has specified a formatter, then call it on the value
-      if (isFunction(format)) {
-        console.log('FORMAT IS FUNCTION');
-        // If we have a fieldRef and the fieldRef supports selectionStart, then we'll
-        // do automated cursor management.
-        if (this.fieldRef && this.fieldRef.selectionStart) {
-          console.log('WE HAVE SELECTION START');
-          console.log(format(value, this.fieldRef.selectionEnd));
-          return format(value, this.fieldRef.selectionEnd);
-        }
-        // Otherwise, just call with the value
-        return format(value);
-      }
+      // If the user has specified a formatter, then call it on the value. If we have a fieldRef
+      // and the fieldRef supports selectionStart, then we'll do automated cursor management.
+      const formatted =
+        this.fieldRef && this.fieldRef.selectionStart ? format(value, this.fieldRef.selectionEnd) : format(value);
 
-      // If not formatting function is supplied, then return the raw value
-      return value;
+      return Array.isArray(formatted) ? formatted : [formatted, null];
     };
 
-    unformat = (value: any): any => {
-      const { unformat } = this.props;
-
-      if (isFunction(unformat)) {
-        return unformat(value);
-      }
-
-      return value;
-    };
+    unformat = (value: any): any => (isFunction(this.props.unformat) ? this.props.unformat(value) : value);
 
     render() {
       // We are going to pull out the internal things that we need and call the rest `spreadProps`,
