@@ -6,6 +6,35 @@ import asField from './asField';
 
 import { FieldProps } from '../common.d';
 
+export interface Option {
+  label: string;
+  value: string;
+}
+
+function createRadio(option: Option, { onChange, onFocus, onBlur, name, value }: FieldProps) {
+  const id = `${name}-${('' + option.value).replace(/[^a-z0-9]{1,}/gi, '')}`;
+  const isChecked = value === option.value;
+  return (
+    <label
+      className={classes(['sf--field', 'sf--type-radio', isChecked && 'sf--checked'])}
+      key={option.value}
+      htmlFor={id}
+    >
+      <span>{option.label}</span>
+      <input
+        type="radio"
+        name={name}
+        id={id}
+        value={option.value}
+        onChange={onChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        checked={isChecked}
+      />
+    </label>
+  );
+}
+
 class Radios extends React.Component<FieldProps> {
   static displayName = 'Radios';
 
@@ -33,7 +62,7 @@ class Radios extends React.Component<FieldProps> {
   };
 
   render() {
-    const { errors, className, required, label, options, name, onChange, onFocus, onBlur, value } = this.props;
+    const { errors, className, required, label, options } = this.props;
 
     return (
       <fieldset
@@ -46,29 +75,7 @@ class Radios extends React.Component<FieldProps> {
         ])}
       >
         {label && <legend>{label}</legend>}
-        {options.map((option: { label: string; value: string }) => {
-          const id = `${name}-${('' + option.value).replace(/[^a-z0-9]{1,}/gi, '')}`;
-          const isChecked = value === option.value;
-          return (
-            <label
-              className={classes(['sf--field', 'sf--type-radio', isChecked && 'sf--checked'])}
-              key={option.value}
-              htmlFor={id}
-            >
-              <span>{option.label}</span>
-              <input
-                type="radio"
-                name={name}
-                id={id}
-                value={option.value}
-                onChange={onChange}
-                onFocus={onFocus}
-                onBlur={onBlur}
-                checked={isChecked}
-              />
-            </label>
-          );
-        })}
+        {options.map((option: Option) => createRadio(option, this.props))}
         <span className="sf--errors">
           {errors.map((err: string) => (
             <span key={err} className="sf--error">
