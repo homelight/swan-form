@@ -12,6 +12,8 @@
 - [field] make `<Reset />` a wrapper for `Field`
 - [field] add `sf--required` class to required fields
 - [field] add `id`s to radio buttons within radio fieldsets. Add `htmlFor` as well.
+- [helpers] export `required` fn and the `createRequired` fn
+- [field] change type on validate prop
 
 ## 0.2.1
 

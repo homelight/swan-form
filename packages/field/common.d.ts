@@ -10,8 +10,6 @@ export type GenericChangeEvent = React.FormEvent<FieldElement>;
 
 export type GenericClickEvent = React.MouseEvent<FieldElement>;
 
-export type ValidateFn = (value: any) => false | false;
-
 export interface FieldInterface {
   name: string;
   getRef(): HTMLElement;
@@ -26,7 +24,7 @@ export interface AsFieldProps {
   name: string;
   type: string; // @todo expand this
   value?: any;
-  validate?: ValidateFn | ValidateFn[];
+  validate?: ((value: any) => string | false) | ((value: any) => string | false)[];
   multiple?: boolean;
   autoFocus?: boolean;
   autoComplete?: string;
@@ -84,12 +82,6 @@ export interface FieldProps extends WrappedComponentProps {
   setValue(value: any): void;
   setRef(element: HTMLElement): void;
   isValid: boolean;
-
-  // onInput?(): void;
-  // onChange?(): void;
-  // onFocus?(): void;
-  // onBlur?(): void;
-  // onClick?(): void;
 }
 
 export interface AsFieldState {
