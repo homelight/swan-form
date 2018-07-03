@@ -34,6 +34,7 @@ export interface AsFieldProps {
   asyncValidate?: boolean;
   validateWhileTyping?: boolean;
   validateDebounceTimeout?: number;
+  checked?: boolean;
   onChange?(newValue: any, name: string): void;
   onClick?(target: FieldElement): void;
   onFocus?(target: FieldElement): void;
@@ -98,4 +99,5 @@ export interface AsFieldState {
   isValid: boolean;
   isDirty: boolean;
   isTouched: boolean;
+  checked: boolean;
 }

@@ -285,6 +285,11 @@ export default class Form extends React.PureComponent<FormProps, FormState> {
     }
   };
 
+  handleResetForm = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    this.resetForm();
+  };
+
   resetForm = () => {
     // @TODO not quite working for all cases
     Object.keys(this.fields).forEach(field => isFunction(this.fields[field].reset) && this.fields[field].reset());
@@ -293,7 +298,12 @@ export default class Form extends React.PureComponent<FormProps, FormState> {
   render() {
     const { autoComplete, children } = this.props;
     return (
-      <form onSubmit={this.handleOnSubmit} autoComplete={autoComplete} {...this.getSpreadProps()}>
+      <form
+        onSubmit={this.handleOnSubmit}
+        autoComplete={autoComplete}
+        onReset={this.handleResetForm}
+        {...this.getSpreadProps()}
+      >
         {children}
       </form>
     );

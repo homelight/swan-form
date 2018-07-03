@@ -6,6 +6,10 @@
 - [field] fix multiple calls to `setState` on multiple selects
 - [helpers] fix regression with createFormatter
 - [helpers] fix possible non-integer value with `repeat`
+- [field] render all buttons as button rather than as 'input' or 'button'
+- [field] handle checkable fields differently
+- [form] prevent default on reset
+- [field] make `<Reset />` a wrapper for `Field`
 
 ## 0.2.1
 

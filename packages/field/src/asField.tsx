@@ -26,7 +26,7 @@ export interface WrapperOptions {
 const { ENTER, TAB } = keyCodes;
 
 function getInitialValue(props: AsFieldProps): any {
-  if (props.type === 'checkbox' && isObject(props)) {
+  if (props.type === 'checkbox') {
     if (hasOwnProperty(props, 'checked')) {
       return !!props.checked;
     }
@@ -49,9 +49,8 @@ function getInitialValue(props: AsFieldProps): any {
   return '';
 }
 
-function canAccessSelectionStart(type: string): boolean {
-  return ['text', 'search', 'password', 'tel', 'url'].includes(type);
-}
+const typesWithSelectionStart = ['text', 'search', 'password', 'tel', 'url'];
+const canAccessSelectionStart = (type: string): boolean => typesWithSelectionStart.includes(type);
 
 const isNotTrue = (value: any) => value !== true;
 
@@ -104,7 +103,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
     fields: { [key: string]: FieldInterface };
 
     fieldRef: any; // @todo type this
-    ref: any;
+    ref: any; // @todo type this
     initialState: AsFieldState;
 
     constructor(props: AsFieldProps) {
@@ -116,6 +115,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
       // Establish the initial state
       const state: AsFieldState = {
         value: getInitialValue(props),
+        checked: props.checked || props.defaultChecked || false,
         errors: emptyArray,
         isValid: !hasErrors(runValidations(props.validate, props.value)),
         isDirty: false,
@@ -340,6 +340,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
 
     onClick = (event: GenericClickEvent): void => {
       const { onClick } = this.props;
+
       if (isFunction(onClick)) {
         onClick(event.target);
       }
@@ -447,7 +448,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
 
       const { setRef } = this.props;
       // If setRef was sent to to the component as a prop, then also call it with the element
-      if (setRef && isFunction(setRef)) {
+      if (isFunction(setRef)) {
         setRef(el);
       }
     };
@@ -486,7 +487,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
         return;
       }
 
-      const { name, onChange } = this.props;
+      const { name, onChange, type } = this.props;
 
       this.setState(prevState => {
         const [newValue, cursor] = this.format(value);
@@ -494,6 +495,18 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
         // Call user supplied function if given
         if (isFunction(onChange)) {
           onChange(newValue, name);
+        }
+
+        if (['checkbox', 'radio'].includes(type)) {
+          return {
+            ...prevState,
+            cursor: cursor || prevState.cursor,
+            errors: resetErrors === false ? prevState.errors : emptyArray,
+            isDirty: newValue !== this.props.value,
+            isTouched: resetTouched !== true,
+            value: newValue,
+            checked: value,
+          };
         }
 
         return {
@@ -516,18 +529,22 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
         return;
       }
 
+      const { name, onChange } = this.props;
+      const { fields, initialState } = this;
+
       // Clobber the state by setting back to the initialState
-      this.setState(this.initialState);
+      this.setState(initialState);
+
       // If we were provided a change function, then call it with the initial value
-      if (isFunction(this.props.onChange)) {
-        this.props.onChange(this.initialState.value, this.props.name);
+      if (isFunction(onChange)) {
+        onChange(initialState.value, name);
       }
 
       // If this is acting as a wrapper to compose fields, then call the reset on the fields it
       // controls
-      Object.keys(this.fields).forEach(field => {
-        if (isFunction(this.fields[field].reset)) {
-          this.fields[field].reset();
+      Object.keys(fields).forEach(field => {
+        if (isFunction(fields[field].reset)) {
+          fields[field].reset();
         }
       });
     };
@@ -617,19 +634,19 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
      * @return {[type]} [description]
      */
     format = (value: any): any => {
-      const { format } = this.props;
+      const { format, type } = this.props;
+      const { fieldRef } = this;
 
       // Safari will freak out if we try to access selectionStart on an `<input/>` with many
       // different `types` set. Second, if no formatting function is supplied, then return the raw
       // value
-      if (!canAccessSelectionStart(this.props.type) || !isFunction(format)) {
+      if (!canAccessSelectionStart(type) || !isFunction(format)) {
         return [value, null];
       }
 
       // If the user has specified a formatter, then call it on the value. If we have a fieldRef
       // and the fieldRef supports selectionStart, then we'll do automated cursor management.
-      const formatted =
-        this.fieldRef && this.fieldRef.selectionStart ? format(value, this.fieldRef.selectionEnd) : format(value);
+      const formatted = fieldRef && fieldRef.selectionStart ? format(value, fieldRef.selectionEnd) : format(value);
 
       return Array.isArray(formatted) ? formatted : [formatted, null];
     };
@@ -653,6 +670,8 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
         unformat,
         handleEnterKey,
         doNotRegister,
+        checked,
+        defaultChecked,
         ...spreadProps
       } = this.props;
 
@@ -660,6 +679,11 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
         spreadProps.autoComplete = this.autoComplete;
       } else if (this.props.autoComplete) {
         spreadProps.autoComplete = this.props.autoComplete;
+      }
+
+      if (['checkbox', 'radio'].includes(this.props.type)) {
+        // @ts-ignore: this is fine
+        spreadProps.checked = Boolean(this.state.checked);
       }
 
       return (

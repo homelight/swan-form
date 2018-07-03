@@ -25,9 +25,16 @@ const stripNonNumeric = value => {
 };
 
 const formatPhone = value => new AsYouType('US').input(value);
-const identity = x => x;
 const toUpperCase = value => value.replace(/[_-]{1,}/g, '').toUpperCase();
 const upCase = createFormatter(toUpperCase, '___-', true);
+
+const numbersOnly = value => value.replace(/[^0-9]{1,}/g, '');
+const _moneyFormatter = createFormatter(numbersOnly, '___,', true);
+const moneyFormatter = (val, cur) => {
+  const [value, cursor] = _moneyFormatter(val, cur);
+  // Since we're prefixing the value, we have to increment the cursor.
+  return ['$' + value, cursor + 1];
+};
 
 @hot(module)
 export default class Formatters extends Component {
@@ -127,7 +134,7 @@ const stripNonNumeric = value => {
 />
           `.trim()}
         </SyntaxHighlighter>
-        <Field label="Formatted Currency: " type="text" name="formattedCurrency" />
+        <Field label="Formatted Currency: " format={moneyFormatter} type="text" name="formattedCurrency" />
       </div>
     );
   }

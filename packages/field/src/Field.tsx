@@ -287,42 +287,30 @@ class Field extends React.PureComponent<FieldProps> {
 
     if (type === 'button') {
       // We do not wrap buttons in labels. So, give them a class.
-      if (children) {
-        // If there are children, use a button node rather than an input`type=button`.
-        return (
-          <button
-            ref={setRef}
-            type="button"
-            className={classes(['sf--field', 'sf--type-button', className])}
-            {...spreadProps}
-          >
-            {children}
-          </button>
-        );
-      }
-      // If there are no children, then we use a regular input.
-      return (
-        <input
-          type="button"
+      return children ? (
+        <button
           ref={setRef}
+          type="button"
           className={classes(['sf--field', 'sf--type-button', className])}
           {...spreadProps}
-        />
+        >
+          {children}
+        </button>
+      ) : (
+        <button
+          ref={setRef}
+          type="button"
+          className={classes(['sf--field', 'sf--type-button', className])}
+          {...spreadProps}
+        >
+          {spreadProps.value}
+        </button>
       );
     }
 
     // Make sure we add a ref and a className to the unwrapped element
     if (type === 'submit' || type === 'reset') {
       return <input type={type} ref={setRef} className={classes(['sf--field', className])} {...spreadProps} />;
-    }
-
-    if (type === 'checkbox' || type === 'radio') {
-      /**
-       * @TODO clean this up; I think it might be preventing checkboxes from resetting correctly
-       */
-      spreadProps.value = spreadProps.value ? 'on' : 'off';
-      spreadProps.defaultChecked = spreadProps.value === 'on';
-      delete spreadProps.checked;
     }
 
     // If it's an input type, then render the input with the spread spreadProps
