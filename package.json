@@ -63,7 +63,8 @@
     "rollup-plugin-node-resolve": "^3.3.0",
     "rollup-plugin-terser": "^1.0.1",
     "rollup-plugin-uglify": "^4.0.0",
-    "typescript": "^2.9.2"
+    "typescript": "^2.9.2",
+    "typescript-eslint-parser": "^16.0.1"
   },
   "browserslist": {
     "development": [

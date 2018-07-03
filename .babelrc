@@ -1,6 +1,0 @@
-{
-  "presets": [
-    ["@babel/preset-env", { "targets": { "browsers": ["ie 11", ">1%"] }, "modules": false }],
-    "@babel/preset-react"
-  ]
-}

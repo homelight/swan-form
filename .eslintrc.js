@@ -3,6 +3,7 @@ const { resolve } = require('path');
 module.exports = {
   extends: ['airbnb', 'prettier'],
   parser: 'babel-eslint',
+  // parser: 'typescript-eslint-parser',
   root: true,
   plugins: ['monorepo'],
   parserOptions: {
@@ -12,6 +13,10 @@ module.exports = {
   },
   env: {
     browser: true,
+  },
+  globals: {
+    document: true,
+    window: true,
   },
   rules: {
     'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],

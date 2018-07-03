@@ -31,7 +31,7 @@ const getDevTypeCmd = project => `cd ${__dirname}/packages/${project} && yarn ru
 // --ignore "packages/${project}/src/**/*.test.js" \
 // --watch`;
 
-const getLintCmd = project => `eslint --config .eslintrc.js packages/${project}/src`;
+const getLintCmd = project => `eslint --ext .js,.jsx,.ts,.tsx --config .eslintrc.js packages/${project}/src`;
 
 module.exports = {
   // @todo expand these scripts
