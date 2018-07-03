@@ -66,7 +66,7 @@ export default class RegularForm extends Component {
             </div>
 
             <div>
-              <Field type="checkbox" label="Checkbox field" name="checkboxaaa" value />
+              <Field type="checkbox" label="Checkbox field" name="checkboxaaa" checked />
             </div>
 
             <div>
@@ -132,47 +132,70 @@ export default class RegularForm extends Component {
               />
             </div>
 
-            <Field type="number" label="Number Field" name="number-field" value="4" />
-
-            <Field name="date" type="date" placeholder="MM/YYYY" />
-
-            <Field name="button" type="button" onClick={() => alert('Hi')} value="What?" />
             <div>
-              <Field name="color" type="color" label="Native Color Picker: " />
+              <Field type="number" label="Number Field" name="number-field" value="4" />
             </div>
-
-            <Field name="datetime-local" type="datetime-local" />
-            <Field name="email" type="email" />
-            <Field name="file" type="file" accept="dmg" />
-
-            <Field name="month" type="month" value="2018-01" label="month" />
-            <Field name="notapassword" type="password" />
-
-            <Field name="range" type="range" min={0} max={200} step={5} label="Range" />
-            <Field name="checkbox" type="checkbox" checked />
-            <Field name="invalid" type="invalid" />
-
-            <Field name="tel" type="tel" label="tel" />
-
-            <Field name="time" type="time" label="time" />
+            <div>
+              <Field name="date" type="date" label="Date Field" placeholder="MM/YYYY" />
+            </div>
+            <div>
+              <Field name="button" type="button" label="Button" onClick={() => alert('Hi')} value="What?" />
+            </div>
+            <div>
+              The color picker doesn't work quite right
+              <Field name="color" type="color" label="Native Color Picker: " value="#ff0000" />
+            </div>
+            <div>
+              <Field name="datetime-local" type="datetime-local" label="DateTime Local" />
+            </div>
+            <div>
+              <Field name="email" type="email" />
+            </div>
+            <div>
+              <Field name="file" type="file" accept="dmg" />
+            </div>
+            <div>
+              <Field name="month" type="month" value="2018-01" label="month" />
+            </div>
+            <div>
+              <Field name="notapassword" type="password" />
+            </div>
+            <div>
+              <Field name="range" type="range" min={0} max={200} step={5} label="Range" />
+            </div>
+            <div>
+              <Field name="checkbox" type="checkbox" checked />
+            </div>
+            <div>
+              <Field name="invalid" type="invalid" />
+            </div>
+            <div>
+              <Field name="tel" type="tel" label="tel" />
+            </div>
+            <div>
+              <Field name="time" type="time" label="time" />
+            </div>
             <div>
               <Field name="url" type="url" label="url" placeholder="https://www.example.com" size={30} />
               <pre>{'<Field name="url" type="url" label="url" placeholder="https://www.example.com" size={30} />'}</pre>
             </div>
 
-            <Field name="week" type="week" label="week" />
+            <div>
+              <Field name="week" type="week" label="week" />
+            </div>
             <br />
             <br />
-
-            <Field type="textarea" name="freeform" label="Please Explain" value="test" rows={5} cols={40} required />
-
-            <Field
-              name="selectField"
-              type="select"
-              multiple
-              options={['one', 'two', 'three', { label: 'four', value: 'four' }, { OptGroup: ['abc', 'def', 'hij'] }]}
-            />
-
+            <div>
+              <Field type="textarea" name="freeform" label="Please Explain" value="test" rows={5} cols={40} required />
+            </div>
+            <div>
+              <Field
+                name="selectField"
+                type="select"
+                multiple
+                options={['one', 'two', 'three', { label: 'four', value: 'four' }, { OptGroup: ['abc', 'def', 'hij'] }]}
+              />
+            </div>
             <br />
             <br />
             <hr />

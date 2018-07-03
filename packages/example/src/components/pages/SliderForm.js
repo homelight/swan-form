@@ -2,8 +2,8 @@
 import React, { Component } from 'react';
 import { Field, Radios } from '@swan-form/field';
 import { Slide, Slider } from '@swan-form/slider';
-import '@swan-form/slider/dist/Slider.css';
-import '@swan-form/slider/dist/Slide.css';
+// import '@swan-form/slider/dist/Slider.css';
+// import '@swan-form/slider/dist/Slide.css';
 import { hot } from 'react-hot-loader';
 
 const required = value => (value !== null && value !== undefined && value.trim() !== '' ? false : 'Required');

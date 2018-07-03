@@ -15,7 +15,7 @@ function padStart(str: string, targetLength: number, padStr: string) {
   const targetLen = targetLength - str.length;
   if (targetLen > padStr.length) {
     // eslint-disable-next-line
-    padStr += repeat(padStr, targetLen / padStr.length);
+    padStr += repeat(padStr, Math.floor(targetLen / padStr.length));
   }
   return padStr.slice(0, targetLen) + str;
 }
@@ -52,8 +52,7 @@ function createMask(pattern: string, wildcard: string, unbound: boolean) {
     let pi = 0;
     for (let vi = 0, plen = p.length, vlen = v.length; pi < plen && vi < vlen; pi++) {
       if (p[pi] === wildcard) {
-        vi += 1;
-        p[pi] = v[vi];
+        p[pi] = v[vi++];
       } else if (vi < cursor) {
         delta += 1;
       }
@@ -62,6 +61,19 @@ function createMask(pattern: string, wildcard: string, unbound: boolean) {
   };
 }
 
+/**
+ * Creates a simple formatter.
+ *
+ * Note, if you are going to create a formatter that is "unbound," then take special note that you
+ * restrict yourself to a charset that does not include anything in the mask. E.g. if the mask looks
+ * like "___," — (to put commas every three characters) — then the transformer function should strip
+ * these out. E.g. `const transformer = (value) => value.replace(/[_-]{1,}/g, '');`
+ *
+ * @param transformer
+ * @param pattern
+ * @param unbound
+ * @param wildcard
+ */
 export default function createFormatter(
   transformer: (value: any) => string,
   pattern: string,

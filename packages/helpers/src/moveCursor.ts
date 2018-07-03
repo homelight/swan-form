@@ -1,9 +1,9 @@
-import { hasOwnProperty } from './hasOwnProperty';
 export interface ExtendedHTMLElement extends HTMLElement {
   createTextRange?(): any;
   value?: any;
   selectionStart?: number;
   selectionEnd?: number;
+  type?: string;
 }
 
 /**
@@ -19,11 +19,12 @@ export interface ExtendedHTMLElement extends HTMLElement {
  */
 export default function moveCursor(el: ExtendedHTMLElement, position = -1) {
   /* eslint-disable no-param-reassign */
-  if (hasOwnProperty(el, 'selectionStart') && typeof el.selectionStart === 'number') {
+  const types = /text|password|search|tel|url/;
+  if ('selectionStart' in el && 'type' in el && types.test(el.type)) {
     const pos = position > -1 ? position : el.value.length;
     el.selectionStart = pos;
     el.selectionEnd = pos;
-  } else if (hasOwnProperty(el, 'createTextRange') && typeof el.createTextRange === 'function') {
+  } else if ('createTextRange' in el && typeof el.createTextRange === 'function') {
     const range = el.createTextRange();
     range.collapse(false);
     range.select();

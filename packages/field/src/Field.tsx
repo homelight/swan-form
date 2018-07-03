@@ -114,7 +114,7 @@ class Field extends React.PureComponent<FieldProps> {
      * An array of error messages (false means no error)
      * @type {Array}
      */
-    errors: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([false])])).isRequired,
+    errors: PropTypes.arrayOf(PropTypes.string).isRequired,
     /**
      * Whether or not the field's value is valid
      * @type {Boolean}
@@ -213,7 +213,7 @@ class Field extends React.PureComponent<FieldProps> {
   };
 
   maybeWrapInLabel(input: React.ReactNode) {
-    const { className, icon, name, errors, type, label, style } = this.props;
+    const { className, icon, name, errors, type, label, required, style } = this.props;
 
     const spread = {} as { htmlFor?: string; style?: React.CSSProperties };
     if (name) {
@@ -229,6 +229,7 @@ class Field extends React.PureComponent<FieldProps> {
         className={classes([
           'sf--field',
           `sf--type-${type}`,
+          required && 'sf--required',
           errors.length !== 0 && `sf--has-errors`,
           icon && 'sf--has-icon',
           className,
@@ -240,7 +241,7 @@ class Field extends React.PureComponent<FieldProps> {
           {input}
           <span className="sf--icon">{icon && icon}</span>
           <span className="sf--errors">
-            {errors.filter(Boolean).map((err: string) => (
+            {errors.map((err: string) => (
               <span key={err} className="sf--error">
                 {err}
               </span>
@@ -287,42 +288,30 @@ class Field extends React.PureComponent<FieldProps> {
 
     if (type === 'button') {
       // We do not wrap buttons in labels. So, give them a class.
-      if (children) {
-        // If there are children, use a button node rather than an input`type=button`.
-        return (
-          <button
-            ref={setRef}
-            type="button"
-            className={classes(['sf--field', 'sf--type-button', className])}
-            {...spreadProps}
-          >
-            {children}
-          </button>
-        );
-      }
-      // If there are no children, then we use a regular input.
-      return (
-        <input
-          type="button"
+      return children ? (
+        <button
           ref={setRef}
+          type="button"
           className={classes(['sf--field', 'sf--type-button', className])}
           {...spreadProps}
-        />
+        >
+          {children}
+        </button>
+      ) : (
+        <button
+          ref={setRef}
+          type="button"
+          className={classes(['sf--field', 'sf--type-button', className])}
+          {...spreadProps}
+        >
+          {spreadProps.value}
+        </button>
       );
     }
 
     // Make sure we add a ref and a className to the unwrapped element
     if (type === 'submit' || type === 'reset') {
       return <input type={type} ref={setRef} className={classes(['sf--field', className])} {...spreadProps} />;
-    }
-
-    if (type === 'checkbox' || type === 'radio') {
-      /**
-       * @TODO clean this up; I think it might be preventing checkboxes from resetting correctly
-       */
-      spreadProps.value = spreadProps.value ? 'on' : 'off';
-      spreadProps.defaultChecked = spreadProps.value === 'on';
-      delete spreadProps.checked;
     }
 
     // If it's an input type, then render the input with the spread spreadProps
@@ -352,10 +341,7 @@ class Field extends React.PureComponent<FieldProps> {
 
   render() {
     // Hidden fields are never wrapped in labels
-    if (noWrap.includes(this.props.type)) {
-      return this.renderField();
-    }
-    return this.maybeWrapInLabel(this.renderField());
+    return noWrap.includes(this.props.type) ? this.renderField() : this.maybeWrapInLabel(this.renderField());
   }
 }
 

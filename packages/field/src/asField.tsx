@@ -26,7 +26,7 @@ export interface WrapperOptions {
 const { ENTER, TAB } = keyCodes;
 
 function getInitialValue(props: AsFieldProps): any {
-  if (props.type === 'checkbox' && isObject(props)) {
+  if (props.type === 'checkbox') {
     if (hasOwnProperty(props, 'checked')) {
       return !!props.checked;
     }
@@ -49,9 +49,10 @@ function getInitialValue(props: AsFieldProps): any {
   return '';
 }
 
-function canAccessSelectionStart(type: string): boolean {
-  return ['text', 'search', 'password', 'tel', 'url'].includes(type);
-}
+const typesWithSelectionStart = ['text', 'search', 'password', 'tel', 'url'];
+const canAccessSelectionStart = (type: string): boolean => typesWithSelectionStart.includes(type);
+
+const isNotTrue = (value: any) => value !== true;
 
 // export interface FieldWrapper extends PureComponent<AsFieldProps, AsFieldState> {}
 
@@ -102,7 +103,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
     fields: { [key: string]: FieldInterface };
 
     fieldRef: any; // @todo type this
-    ref: any;
+    ref: any; // @todo type this
     initialState: AsFieldState;
 
     constructor(props: AsFieldProps) {
@@ -114,6 +115,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
       // Establish the initial state
       const state: AsFieldState = {
         value: getInitialValue(props),
+        checked: props.checked || props.defaultChecked || false,
         errors: emptyArray,
         isValid: !hasErrors(runValidations(props.validate, props.value)),
         isDirty: false,
@@ -180,7 +182,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
         return;
       }
 
-      if (this.fieldRef && hasOwnProperty(this.fieldRef, 'selectionStart')) {
+      if (this.fieldRef && this.fieldRef.selectionStart) {
         const { cursor } = this.state;
         if (typeof cursor !== 'undefined' && cursor !== prevState.cursor) {
           this.fieldRef.selectionStart = cursor;
@@ -239,7 +241,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
      * Use the unregistration function passed by context
      * @return {void}
      */
-    unregister = (name?: string) => {
+    unregister = (name?: string): void => {
       if (name) {
         // If this is called with a name, then that means a field is unregistering from this
         // composed field
@@ -329,9 +331,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
         if (!isEqual(this.state.value, values)) {
           this.setValue(values);
         }
-      }
-
-      if (this.state.value !== value) {
+      } else if (this.state.value !== value) {
         // Only run the setState method if the value is actually different
         this.setValue(value);
       }
@@ -340,6 +340,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
 
     onClick = (event: GenericClickEvent): void => {
       const { onClick } = this.props;
+
       if (isFunction(onClick)) {
         onClick(event.target);
       }
@@ -447,7 +448,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
 
       const { setRef } = this.props;
       // If setRef was sent to to the component as a prop, then also call it with the element
-      if (setRef && isFunction(setRef)) {
+      if (isFunction(setRef)) {
         setRef(el);
       }
     };
@@ -482,37 +483,41 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
      * @param {any} value the value to set
      */
     setValue = (value: any, resetErrors = false, resetTouched = false): void => {
-      if (this.mounted) {
-        const { name, onChange } = this.props;
+      if (!this.mounted) {
+        return;
+      }
 
-        this.setState(prevState => {
-          const formatted = this.format(value);
+      const { name, onChange, type } = this.props;
 
-          let newValue = formatted;
-          let cursor;
+      this.setState(prevState => {
+        const [newValue, cursor] = this.format(value);
 
-          if (Array.isArray(formatted)) {
-            /* eslint-disable prefer-destructuring */
-            newValue = formatted[0];
-            cursor = formatted[1];
-            /* eslint-enable prefer-destructuring */
-          }
+        // Call user supplied function if given
+        if (isFunction(onChange)) {
+          onChange(newValue, name);
+        }
 
-          // Call user supplied function if given
-          if (isFunction(onChange)) {
-            onChange(newValue, name);
-          }
-
+        if (['checkbox', 'radio'].includes(type)) {
           return {
             ...prevState,
-            cursor,
+            cursor: cursor || prevState.cursor,
             errors: resetErrors === false ? prevState.errors : emptyArray,
             isDirty: newValue !== this.props.value,
             isTouched: resetTouched !== true,
             value: newValue,
+            checked: value,
           };
-        });
-      }
+        }
+
+        return {
+          ...prevState,
+          cursor: cursor || prevState.cursor,
+          errors: resetErrors === false ? prevState.errors : emptyArray,
+          isDirty: newValue !== this.props.value,
+          isTouched: resetTouched !== true,
+          value: newValue,
+        };
+      });
     };
 
     /**
@@ -520,22 +525,28 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
      *
      */
     reset = (): void => {
-      if (this.mounted) {
-        // Clobber the state by setting back to the initialState
-        this.setState(this.initialState);
-        // If we were provided a change function, then call it with the initial value
-        if (isFunction(this.props.onChange)) {
-          this.props.onChange(this.initialState.value, this.props.name);
-        }
-
-        // If this is acting as a wrapper to compose fields, then call the reset on the fields it
-        // controls
-        Object.keys(this.fields).forEach(field => {
-          if (isFunction(this.fields[field].reset)) {
-            this.fields[field].reset();
-          }
-        });
+      if (!this.mounted) {
+        return;
       }
+
+      const { name, onChange } = this.props;
+      const { fields, initialState } = this;
+
+      // Clobber the state by setting back to the initialState
+      this.setState(initialState);
+
+      // If we were provided a change function, then call it with the initial value
+      if (isFunction(onChange)) {
+        onChange(initialState.value, name);
+      }
+
+      // If this is acting as a wrapper to compose fields, then call the reset on the fields it
+      // controls
+      Object.keys(fields).forEach(field => {
+        if (isFunction(fields[field].reset)) {
+          fields[field].reset();
+        }
+      });
     };
 
     /**
@@ -555,7 +566,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
         )
         // This filter is ugly... It sort of mixes concerns and shows how we're repurposing the
         // method.
-        .filter(valid => valid !== true);
+        .filter(isNotTrue);
       return this.maybeUpdateErrors([...controlledFields, ...this.runValidations()]);
     };
 
@@ -598,10 +609,11 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
         }));
         return true;
       }
+      // @ts-ignore: the filter makes this correct
       this.setState(prevState => ({
         ...prevState,
         isValid: false,
-        errors: Array.isArray(msg) ? msg : [msg],
+        errors: Array.isArray(msg) ? msg.filter(Boolean) : [msg],
       }));
       // This means it is not valid, which is non-intuitive coming from a method with this name
       return false;
@@ -623,38 +635,24 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
      * @return {[type]} [description]
      */
     format = (value: any): any => {
-      const { format } = this.props;
+      const { format, type } = this.props;
+      const { fieldRef } = this;
 
-      // Safari will freak out if we try to access selectionStart on an `<input/>` with many different
-      // `types` set.
-      if (!canAccessSelectionStart(this.props.type)) {
-        return value;
+      // Safari will freak out if we try to access selectionStart on an `<input/>` with many
+      // different `types` set. Second, if no formatting function is supplied, then return the raw
+      // value
+      if (!canAccessSelectionStart(type) || !isFunction(format)) {
+        return [value, null];
       }
 
-      // If the user has specified a formatter, then call it on the value
-      if (isFunction(format)) {
-        // If we have a fieldRef and the fieldRef supports selectionStart, then we'll
-        // do automated cursor management.
-        if (this.fieldRef && this.fieldRef.selectionStart) {
-          return format(value, this.fieldRef.selectionEnd);
-        }
-        // Otherwise, just call with the value
-        return format(value);
-      }
+      // If the user has specified a formatter, then call it on the value. If we have a fieldRef
+      // and the fieldRef supports selectionStart, then we'll do automated cursor management.
+      const formatted = fieldRef && fieldRef.selectionStart ? format(value, fieldRef.selectionEnd) : format(value);
 
-      // If not formatting function is supplied, then return the raw value
-      return value;
+      return Array.isArray(formatted) ? formatted : [formatted, null];
     };
 
-    unformat = (value: any): any => {
-      const { unformat } = this.props;
-
-      if (isFunction(unformat)) {
-        return unformat(value);
-      }
-
-      return value;
-    };
+    unformat = (value: any): any => (isFunction(this.props.unformat) ? this.props.unformat(value) : value);
 
     render() {
       // We are going to pull out the internal things that we need and call the rest `spreadProps`,
@@ -673,6 +671,8 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
         unformat,
         handleEnterKey,
         doNotRegister,
+        checked,
+        defaultChecked,
         ...spreadProps
       } = this.props;
 
@@ -680,6 +680,11 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
         spreadProps.autoComplete = this.autoComplete;
       } else if (this.props.autoComplete) {
         spreadProps.autoComplete = this.props.autoComplete;
+      }
+
+      if (['checkbox', 'radio'].includes(this.props.type)) {
+        // @ts-ignore: this is fine
+        spreadProps.checked = Boolean(this.state.checked);
       }
 
       return (

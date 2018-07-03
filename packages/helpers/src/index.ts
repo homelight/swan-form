@@ -8,6 +8,7 @@ import keyCodes from './keyCodes';
 import moveCursor from './moveCursor';
 import noop from './noop';
 import runValidations from './runValidations';
+import { default as required, createRequired } from './required';
 
 export {
   classes,
@@ -20,4 +21,6 @@ export {
   moveCursor,
   noop,
   runValidations,
+  required,
+  createRequired,
 };

@@ -1,5 +1,20 @@
 # Changelog
 
+## 0.2.2
+
+- [field] fix problem with detecting `selectionStart` for cursor management
+- [field] fix multiple calls to `setState` on multiple selects
+- [helpers] fix regression with createFormatter
+- [helpers] fix possible non-integer value with `repeat`
+- [field] render all buttons as button rather than as 'input' or 'button'
+- [field] handle checkable fields differently
+- [form] prevent default on reset
+- [field] make `<Reset />` a wrapper for `Field`
+- [field] add `sf--required` class to required fields
+- [field] add `id`s to radio buttons within radio fieldsets. Add `htmlFor` as well.
+- [helpers] export `required` fn and the `createRequired` fn
+- [field] change type on validate prop
+
 ## 0.2.1
 
 - [all] fix problems with the exports

@@ -10,8 +10,6 @@ export type GenericChangeEvent = React.FormEvent<FieldElement>;
 
 export type GenericClickEvent = React.MouseEvent<FieldElement>;
 
-export type ValidateFn = (value: any) => false | false;
-
 export interface FieldInterface {
   name: string;
   getRef(): HTMLElement;
@@ -26,7 +24,7 @@ export interface AsFieldProps {
   name: string;
   type: string; // @todo expand this
   value?: any;
-  validate?: ValidateFn | ValidateFn[];
+  validate?: ((value: any) => string | false) | ((value: any) => string | false)[];
   multiple?: boolean;
   autoFocus?: boolean;
   autoComplete?: string;
@@ -34,6 +32,7 @@ export interface AsFieldProps {
   asyncValidate?: boolean;
   validateWhileTyping?: boolean;
   validateDebounceTimeout?: number;
+  checked?: boolean;
   onChange?(newValue: any, name: string): void;
   onClick?(target: FieldElement): void;
   onFocus?(target: FieldElement): void;
@@ -58,7 +57,7 @@ export interface WrappedComponentProps {
   setValue(value: any): void;
   ref: any; // more strong type this
   value: any;
-  errors: StrFalseArr;
+  errors: string[];
   isValid: boolean;
   [key: string]: any;
 }
@@ -72,7 +71,7 @@ export interface FieldProps extends WrappedComponentProps {
   icon?: React.ReactNode;
   className?: string;
   children?: React.ReactNode;
-  errors: (string | false)[];
+  errors: string[];
   checked?: boolean;
   defaultChecked?: boolean;
   required?: boolean;
@@ -83,19 +82,14 @@ export interface FieldProps extends WrappedComponentProps {
   setValue(value: any): void;
   setRef(element: HTMLElement): void;
   isValid: boolean;
-
-  // onInput?(): void;
-  // onChange?(): void;
-  // onFocus?(): void;
-  // onBlur?(): void;
-  // onClick?(): void;
 }
 
 export interface AsFieldState {
   value: any;
   cursor?: number;
-  errors: StrFalseArr;
+  errors: string[];
   isValid: boolean;
   isDirty: boolean;
   isTouched: boolean;
+  checked: boolean;
 }
