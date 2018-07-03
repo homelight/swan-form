@@ -59,7 +59,7 @@ export interface WrappedComponentProps {
   setValue(value: any): void;
   ref: any; // more strong type this
   value: any;
-  errors: StrFalseArr;
+  errors: string[];
   isValid: boolean;
   [key: string]: any;
 }
@@ -73,7 +73,7 @@ export interface FieldProps extends WrappedComponentProps {
   icon?: React.ReactNode;
   className?: string;
   children?: React.ReactNode;
-  errors: (string | false)[];
+  errors: string[];
   checked?: boolean;
   defaultChecked?: boolean;
   required?: boolean;
@@ -95,7 +95,7 @@ export interface FieldProps extends WrappedComponentProps {
 export interface AsFieldState {
   value: any;
   cursor?: number;
-  errors: StrFalseArr;
+  errors: string[];
   isValid: boolean;
   isDirty: boolean;
   isTouched: boolean;

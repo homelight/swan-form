@@ -114,7 +114,7 @@ class Field extends React.PureComponent<FieldProps> {
      * An array of error messages (false means no error)
      * @type {Array}
      */
-    errors: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.string, PropTypes.oneOf([false])])).isRequired,
+    errors: PropTypes.arrayOf(PropTypes.string).isRequired,
     /**
      * Whether or not the field's value is valid
      * @type {Boolean}
@@ -240,7 +240,7 @@ class Field extends React.PureComponent<FieldProps> {
           {input}
           <span className="sf--icon">{icon && icon}</span>
           <span className="sf--errors">
-            {errors.filter(Boolean).map((err: string) => (
+            {errors.map((err: string) => (
               <span key={err} className="sf--error">
                 {err}
               </span>
@@ -340,10 +340,7 @@ class Field extends React.PureComponent<FieldProps> {
 
   render() {
     // Hidden fields are never wrapped in labels
-    if (noWrap.includes(this.props.type)) {
-      return this.renderField();
-    }
-    return this.maybeWrapInLabel(this.renderField());
+    return noWrap.includes(this.props.type) ? this.renderField() : this.maybeWrapInLabel(this.renderField());
   }
 }
 

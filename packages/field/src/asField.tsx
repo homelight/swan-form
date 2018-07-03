@@ -609,10 +609,11 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
         }));
         return true;
       }
+      // @ts-ignore: the filter makes this correct
       this.setState(prevState => ({
         ...prevState,
         isValid: false,
-        errors: Array.isArray(msg) ? msg : [msg],
+        errors: Array.isArray(msg) ? msg.filter(Boolean) : [msg],
       }));
       // This means it is not valid, which is non-intuitive coming from a method with this name
       return false;

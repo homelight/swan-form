@@ -36,12 +36,20 @@ class Radios extends React.Component<FieldProps> {
     const { errors, className, required, label, options, name, onChange, onFocus, onBlur, value } = this.props;
 
     return (
-      <fieldset className={classes(['sf--radios', 'sf--fieldset', required && 'sf--field--required', className])}>
+      <fieldset
+        className={classes([
+          'sf--fieldset',
+          'sf--radios',
+          required && 'sf--required',
+          errors.length !== 0 && 'sf--has-errors',
+          className,
+        ])}
+      >
         {label && <legend>{label}</legend>}
         {options.map((option: { label: string; value: string }) => (
           // right now, I'm spreading this
           <label
-            className={classes(['sf--radio--field', value === option.value && 'sf--radio--checked'])}
+            className={classes(['sf--field', 'sf--type-radio', value === option.value && 'sf--checked'])}
             key={option.value}
           >
             <span>{option.label}</span>
@@ -56,9 +64,9 @@ class Radios extends React.Component<FieldProps> {
             />
           </label>
         ))}
-        <span className="sf--field--errors">
-          {errors.filter(Boolean).map((err: string) => (
-            <span key={err} className="sf--field--error">
+        <span className="sf--errors">
+          {errors.map((err: string) => (
+            <span key={err} className="sf--error">
               {err}
             </span>
           ))}
