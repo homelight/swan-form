@@ -10,6 +10,8 @@
 - [field] handle checkable fields differently
 - [form] prevent default on reset
 - [field] make `<Reset />` a wrapper for `Field`
+- [field] add `sf--required` class to required fields
+- [field] add `id`s to radio buttons within radio fieldsets. Add `htmlFor` as well.
 
 ## 0.2.1
 

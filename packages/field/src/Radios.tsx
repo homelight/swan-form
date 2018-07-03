@@ -46,24 +46,29 @@ class Radios extends React.Component<FieldProps> {
         ])}
       >
         {label && <legend>{label}</legend>}
-        {options.map((option: { label: string; value: string }) => (
-          // right now, I'm spreading this
-          <label
-            className={classes(['sf--field', 'sf--type-radio', value === option.value && 'sf--checked'])}
-            key={option.value}
-          >
-            <span>{option.label}</span>
-            <input
-              type="radio"
-              name={name}
-              value={option.value}
-              onChange={onChange}
-              onFocus={onFocus}
-              onBlur={onBlur}
-              checked={value === option.value}
-            />
-          </label>
-        ))}
+        {options.map((option: { label: string; value: string }) => {
+          const id = `${name}-${('' + option.value).replace(/[^a-z0-9]{1,}/gi, '')}`;
+          const isChecked = value === option.value;
+          return (
+            <label
+              className={classes(['sf--field', 'sf--type-radio', isChecked && 'sf--checked'])}
+              key={option.value}
+              htmlFor={id}
+            >
+              <span>{option.label}</span>
+              <input
+                type="radio"
+                name={name}
+                id={id}
+                value={option.value}
+                onChange={onChange}
+                onFocus={onFocus}
+                onBlur={onBlur}
+                checked={isChecked}
+              />
+            </label>
+          );
+        })}
         <span className="sf--errors">
           {errors.map((err: string) => (
             <span key={err} className="sf--error">
