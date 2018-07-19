@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.3
+
+- [slider] call render prop in slide rather than slider so slide lifecycle method does not get skipped
+
 ## 0.2.2
 
 - [field] fix problem with detecting `selectionStart` for cursor management
