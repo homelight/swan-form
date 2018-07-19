@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.4
+
+- [misc] republish
+
 ## 0.2.3
 
 - [slider] call render prop in slide rather than slider so slide lifecycle method does not get skipped
