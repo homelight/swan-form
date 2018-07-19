@@ -162,6 +162,10 @@ export default class Slide extends React.PureComponent<SlideProps> {
       .filter(x => x === false).length === 0;
 
   render() {
-    return <div className={classes([this.props.className, 'sf--slide'])}>{this.props.children}</div>;
+    return (
+      <div className={classes([this.props.className, 'sf--slide'])}>
+        {isFunction(this.props.render) ? this.props.render(this.props) : this.props.children}
+      </div>
+    );
   }
 }

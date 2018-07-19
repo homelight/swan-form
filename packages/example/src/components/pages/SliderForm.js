@@ -12,7 +12,7 @@ const onSubmit = values => {
   return values;
 };
 const beforeSubmit = values =>
-  Object.keys(values).reduce((acc, key) => ({ ...acc, [key]: values[key].toUpperCase() }), {});
+  Promise.resolve(Object.keys(values).reduce((acc, key) => ({ ...acc, [key]: values[key].toUpperCase() }), {}));
 
 @hot(module)
 export default class SliderForm extends Component {
@@ -33,12 +33,28 @@ export default class SliderForm extends Component {
                   placeholder="This field is required"
                 />
                 <p>
-                  This slider has four slides. This one, two that we skip, and one with a submit button. After we{' '}
+                  This slider has five slides. This one, two that we skip, and one with a submit button. After we{' '}
                   <em>press</em> submit, we transform the value in the first to an uppercase string (<code>
                     beforeSubmit
                   </code>) that is passed to the actual submit (<code>onSubmit</code>) that is then logged to the
                   console in the after submit method (<code>afterSubmit</code>).
                 </p>
+              </div>
+            )}
+          />
+          <Slide
+            render={props => (
+              <div>
+                <h1>A second question</h1>
+                <Field
+                  type="text"
+                  name="first-question-a"
+                  validate={required}
+                  size={50}
+                  value={props.getFormValues()['first-question-a']}
+                  placeholder="This field is required"
+                />
+                <p>This is just another random question.</p>
               </div>
             )}
           />

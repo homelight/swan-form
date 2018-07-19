@@ -9,7 +9,7 @@ import { classes } from '@swan-form/helpers';
 import { default as Slide } from './Slide';
 
 export interface SliderProps {
-  formName: string;
+  formName?: string;
   current?: number;
   autoComplete?: 'on' | 'off';
   className?: string;
@@ -313,8 +313,6 @@ export default class Slider extends React.PureComponent<SliderProps, SliderState
     const children = this.getChildren();
     // The current slide
     const slide = children[current] as Slide;
-    // Possible render prop on the slide
-    const { render } = slide.props;
     // Classes applied to left control
     const leftClasses = classes(['sf--slider-control', 'sf--slider-control-left']);
     // Classes applied to the right control
@@ -337,13 +335,7 @@ export default class Slider extends React.PureComponent<SliderProps, SliderState
           persist
           ref={this.setFormRef}
         >
-          {isFunction(render) ? (
-            <Slide ref={this.setCurrentSlideRef} {...slide.props}>
-              {render(this.mapSlideProps)}
-            </Slide>
-          ) : (
-            React.cloneElement(slide as any, this.mapSlideProps)
-          )}
+          {React.cloneElement(slide as any, this.mapSlideProps)}
         </Form>
       </div>
     );
