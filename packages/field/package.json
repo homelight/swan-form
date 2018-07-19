@@ -1,6 +1,6 @@
 {
   "name": "@swan-form/field",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Elegant form handling for React -- contains fields",
   "license": "Apache-2.0",
   "author": "Shawn Patrick Rice",
@@ -26,7 +26,7 @@
     "type": "tsc -p ./tsconfig.json"
   },
   "dependencies": {
-    "@swan-form/helpers": "^0.2.2",
+    "@swan-form/helpers": "^0.2.3",
     "lodash": "^4.17.5",
     "prop-types": "^15.6.1"
   },

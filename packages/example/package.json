@@ -11,10 +11,10 @@
     "analyze": "ANALYZE=true yarn run build"
   },
   "dependencies": {
-    "@swan-form/extra-fields": "^0.2.2",
-    "@swan-form/field": "^0.2.2",
-    "@swan-form/form": "^0.2.2",
-    "@swan-form/helpers": "^0.2.2",
+    "@swan-form/extra-fields": "^0.2.3",
+    "@swan-form/field": "^0.2.3",
+    "@swan-form/form": "^0.2.3",
+    "@swan-form/helpers": "^0.2.3",
     "@swan-form/slider": "^0.2.3",
     "foundation-sites": "^6.5.0-rc.1",
     "history": "^4.7.2",
