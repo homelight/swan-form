@@ -6,6 +6,7 @@ import path from 'path';
 import filesize from 'rollup-plugin-filesize';
 import { uglify } from 'rollup-plugin-uglify';
 import { terser } from 'rollup-plugin-terser';
+import typescript from 'rollup-plugin-typescript2';
 
 const packages = ['helpers', 'field', 'slider', 'form'];
 // NOTE: if we add other formats, we need to change the `config` function
@@ -21,10 +22,22 @@ const config = (pkg, format) => {
     input: `packages/${pkg}/src/index.ts`,
     output: {
       name: camelCase(`swanForm-${pkg}`),
-      file: format === 'cjs' ? `packages/${pkg}/${pkgJSON.main}` : `packages/${pkg}/${pkgJSON.module}`,
-      format,
+      file: (fmt => {
+        switch (fmt) {
+          case 'types':
+            return `packages/${pkg}/${pkgJSON.typings}`;
+          case 'cjs':
+            return `packages/${pkg}/${pkgJSON.main}`;
+          case 'es':
+            return `packages/${pkg}/${pkgJSON.module}`;
+          default:
+            throw new Error('Unrecognized type');
+        }
+      })(format),
+      format: format === 'es' ? format : 'cjs',
       globals: {
         react: 'React',
+        'prop-types': 'PropTypes',
       },
       exports: 'named',
       sourcemap: true,
@@ -43,12 +56,20 @@ const config = (pkg, format) => {
         },
       }),
       babel(babelConfig()),
-      format === 'cjs' ? uglify() : terser(),
+      format === 'es' && terser(),
+      format === 'cjs' && uglify(),
+      format === 'types' &&
+        typescript({
+          tsconfig: path.resolve(__dirname, 'packages', pkg, 'tsconfig.json'),
+        }),
       filesize(),
     ].filter(Boolean),
   };
 };
 
-const configs = packages.reduce((acc, pkg) => [...acc, ...formats.map(format => config(pkg, format))], []);
+const configs = [
+  ...packages.reduce((acc, pkg) => [...acc, ...formats.map(format => config(pkg, format))], []),
+  // ...packages.map()
+];
 
 export default [...configs];
