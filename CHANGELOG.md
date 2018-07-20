@@ -1,16 +1,12 @@
 # Changelog
 
-## 0.2.6
+## 0.2.9
 
-- [misc] republish (failure because lerna publishing with 2fa is not supported well)
+- [all] change build system
 
-## 0.2.5
+## 0.2.4 - 0.2.8
 
-- [misc] republish (failure because lerna publishing with 2fa is not supported well)
-
-## 0.2.4
-
-- [misc] republish (failure because lerna publishing with 2fa is not supported well)
+- [all] republish (failure because lerna publishing with 2fa is not supported well)
 
 ## 0.2.3
 
