@@ -4,7 +4,7 @@ import * as PropTypes from 'prop-types';
 import isObject from 'lodash/isObject';
 import { hasOwnProperty, classes, noop } from '@swan-form/helpers';
 import asField from './asField';
-import { FieldProps } from '../common.d';
+import { FieldProps } from './common';
 
 const INPUT_TYPES = [
   'button',

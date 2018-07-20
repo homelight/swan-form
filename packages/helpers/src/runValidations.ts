@@ -1,4 +1,4 @@
-import isFunction from 'lodash/isFunction';
+import { isFunction } from 'lodash';
 import emptyArray from './emptyArray';
 
 export type ValidateFn = (value: any) => string | false;

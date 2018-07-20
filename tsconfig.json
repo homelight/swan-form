@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "lib": ["dom", "esnext"],
-    "emitDeclarationOnly": true,
+    // "emitDeclarationOnly": true,
     "module": "esnext",
     "jsx": "react",
     "target": "es5",
