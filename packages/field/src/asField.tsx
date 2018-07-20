@@ -17,7 +17,7 @@ import {
   AsFieldProps,
   WrappedComponentProps,
   AsFieldState,
-} from '../common.d';
+} from './common';
 
 export interface WrapperOptions {
   registerWrapped?: boolean;

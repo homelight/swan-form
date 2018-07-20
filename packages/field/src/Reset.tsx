@@ -1,8 +1,8 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
-import Field from './Field';
 import { classes } from '@swan-form/helpers';
+import Field from './Field';
 
 export interface ResetProps {
   name: string;
@@ -11,7 +11,7 @@ export interface ResetProps {
   className?: string;
 }
 
-import { FieldElement } from '../common.d';
+import { FieldElement } from './common';
 
 export default class Reset extends React.Component<ResetProps> {
   static propTypes = {

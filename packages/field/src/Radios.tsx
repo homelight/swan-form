@@ -4,7 +4,7 @@ import * as PropTypes from 'prop-types';
 import { classes } from '@swan-form/helpers';
 import asField from './asField';
 
-import { FieldProps } from '../common.d';
+import { FieldProps } from './common';
 
 export interface Option {
   label: string;
