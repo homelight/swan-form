@@ -10,6 +10,10 @@
       "url": "https://github.com/shawnrice"
     }
   ],
+  "files": [
+    "dist",
+    "src"
+  ],
   "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",
   "typings": "dist/index.d.ts",

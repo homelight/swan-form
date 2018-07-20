@@ -12,3 +12,4 @@ rollup.config.*
 test/
 yarn-debug.log*
 yarn-error.log*
+src/Field.test.js

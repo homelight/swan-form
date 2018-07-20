@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.10
+
+- [all] include src in package to see if that will fix some typescript issues
+
 ## 0.2.9
 
 - [all] change build system
