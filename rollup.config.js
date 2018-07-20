@@ -8,7 +8,7 @@ import { uglify } from 'rollup-plugin-uglify';
 import { terser } from 'rollup-plugin-terser';
 import typescript from 'rollup-plugin-typescript2';
 
-const packages = ['helpers', 'field', 'slider', 'form'];
+const packages = ['helpers', 'field', 'form', 'slider'];
 // NOTE: if we add other formats, we need to change the `config` function
 const formats = ['cjs', 'es'];
 
