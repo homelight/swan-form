@@ -1,5 +1,5 @@
-import { default as React } from 'react';
-import { default as PropTypes } from 'prop-types';
+import * as React from 'react';
+import * as PropTypes from 'prop-types';
 import clamp from 'lodash/clamp';
 import isFunction from 'lodash/isFunction';
 import invariant from 'invariant';

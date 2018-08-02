@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { default as PropTypes } from 'prop-types';
+import * as PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
 import { classes, moveCursor } from '@swan-form/helpers';
 
@@ -20,9 +20,9 @@ export interface SlideProps {
 }
 
 // @TODO pull these from a common source rather than redeclaring them
-type StrFalseArr = (string | false)[];
+export type StrFalseArr = (string | false)[];
 
-interface FieldInterface {
+export interface FieldInterface {
   name: string;
   getRef(): HTMLElement;
   getValue(): any;

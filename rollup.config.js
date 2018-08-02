@@ -10,7 +10,7 @@ import typescript from 'rollup-plugin-typescript2';
 
 const packages = ['helpers', 'field', 'form', 'slider'];
 // NOTE: if we add other formats, we need to change the `config` function
-const formats = ['cjs', 'es'];
+const formats = ['es', 'cjs'];
 
 // const babelConfig = require('./babel.config');
 

@@ -1,8 +1,8 @@
 /* global document, window */
 /* eslint-disable react/prop-types, react/sort-comp */
 
-import { default as React } from 'react';
-import { default as PropTypes } from 'prop-types';
+import * as React from 'react';
+import * as PropTypes from 'prop-types';
 
 import isEqual from 'lodash/isEqual';
 import isFunction from 'lodash/isFunction';
@@ -681,8 +681,10 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
       } = this.props;
 
       if (this.context.autoComplete === 'off') {
+        // @ts-ignore: this is fine
         spreadProps.autoComplete = this.autoComplete;
       } else if (this.props.autoComplete) {
+        // @ts-ignore: this is fine
         spreadProps.autoComplete = this.props.autoComplete;
       }
 

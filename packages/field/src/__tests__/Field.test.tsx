@@ -4,7 +4,7 @@ import React from 'react';
 import Adapter from 'enzyme-adapter-react-16';
 import { configure, shallow, mount, render } from 'enzyme';
 
-import Field from './Field';
+import Field from '../Field';
 
 configure({ adapter: new Adapter() });
 

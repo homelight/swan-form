@@ -11,7 +11,7 @@
     "format": "prettier --write '**/*.{json,js,css,md,ts,tsx}'",
     "lint": "nps lint.all",
     "rollup": "rollup -c",
-    "test": "jest --env=jsdom",
+    "test": "jest",
     "test:watch": "yarn run test -- --watch",
     "type": "lerna run type"
   },
@@ -65,7 +65,7 @@
     "rollup-plugin-terser": "^1.0.1",
     "rollup-plugin-typescript2": "^0.16.1",
     "rollup-plugin-uglify": "^4.0.0",
-    "typescript": "^3.0.1",
+    "typescript": "~2.8.4",
     "typescript-eslint-parser": "^17.0.1"
   },
   "browserslist": {

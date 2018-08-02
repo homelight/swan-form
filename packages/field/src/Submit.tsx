@@ -1,5 +1,5 @@
-import { default as React } from 'react';
-import { default as PropTypes } from 'prop-types';
+import * as React from 'react';
+import * as PropTypes from 'prop-types';
 import { classes } from '@swan-form/helpers';
 import Field from './Field';
 
