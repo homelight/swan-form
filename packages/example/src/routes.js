@@ -78,7 +78,9 @@ class Routes extends PureComponent {
         <Router history={this.props.history}>
           <Switch>
             <Container>
-              {pages.map(([path, name, component]) => <Route key={name} path={path} component={component} exact />)}
+              {pages.map(([path, name, component]) => (
+                <Route key={name} path={path} component={component} exact />
+              ))}
             </Container>
           </Switch>
         </Router>

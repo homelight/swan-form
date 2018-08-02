@@ -42,7 +42,17 @@ const config = (pkg, format) => {
       exports: 'named',
       sourcemap: true,
     },
-    external: [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})],
+    external: [
+      ...Object.keys(pkg.dependencies || {}),
+      ...Object.keys(pkg.peerDependencies || {}),
+      'react',
+      'lodash',
+      'prop-types',
+      pkg.name !== '@swan-form/helpers' && '@swan-form/helpers',
+      pkg.name !== '@swan-form/field' && '@swan-form/field',
+      pkg.name !== '@swan-form/form' && '@swan-form/form',
+      pkg.name !== '@swan-form/slider' && '@swan-form/slider',
+    ].filter(Boolean),
     plugins: [
       resolve({
         browser: true,
