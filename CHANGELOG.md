@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.11
+
+- [all] upgrade dependencies
+- [all] turn on stricter typechecking with typescript
+- [field] allow for prop `defaultValue` in `asField` wrapper
+
 ## 0.2.10
 
 - [all] include src in package to see if that will fix some typescript issues
