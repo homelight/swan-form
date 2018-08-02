@@ -16,8 +16,7 @@ const minLenTen = value => (value.length > 9 ? false : 'Min len 10');
 const alphaNumeric = value => (/^[a-zA-Z0-9]{1,}$/.test(value) ? false : 'Alpha Numeric');
 const tenAndAlpha = [minLenTen, alphaNumeric];
 
-@hot(module)
-export default class Styling extends Component {
+class Styling extends Component {
   render() {
     return (
       <div>
@@ -91,3 +90,5 @@ const tenAndAlpha = [minLenTen, alphaNumeric];
     );
   }
 }
+
+export default hot(module)(Styling);

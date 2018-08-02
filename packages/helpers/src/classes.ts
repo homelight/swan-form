@@ -1,6 +1,6 @@
-import { isObject } from 'lodash';
+import isObject from 'lodash/isObject';
 
-export type ClassesArgs = (string | false)[] | { [key: string]: boolean } | string;
+export type ClassesArgs = (string | false | null | 0 | undefined)[] | { [key: string]: boolean } | string;
 
 export default function classes(obj: ClassesArgs) {
   if (Array.isArray(obj)) {

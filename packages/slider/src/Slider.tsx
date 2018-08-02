@@ -1,5 +1,5 @@
-import * as React from 'react';
-import * as PropTypes from 'prop-types';
+import { default as React } from 'react';
+import { default as PropTypes } from 'prop-types';
 import clamp from 'lodash/clamp';
 import isFunction from 'lodash/isFunction';
 import invariant from 'invariant';
@@ -94,7 +94,7 @@ export default class Slider extends React.PureComponent<SliderProps, SliderState
     super(props);
     // this.form = {};
     this.state = {
-      current: clamp(props.current, 0, React.Children.count(props.children)) || 0,
+      current: clamp(props.current || 0, 0, React.Children.count(props.children)) || 0,
     };
 
     this.mounted = false;
@@ -261,7 +261,7 @@ export default class Slider extends React.PureComponent<SliderProps, SliderState
     const length = children.length; // eslint-disable-line
     for (let i = current + 1; i <= length - 1; i++) {
       const slide = children[i] as Slide;
-      if (slide.props.shouldShowIf(formValues)) {
+      if (slide.props.shouldShowIf!(formValues)) {
         return i;
       }
       // No valid candidate for next slide, so we test the next
@@ -285,7 +285,7 @@ export default class Slider extends React.PureComponent<SliderProps, SliderState
     const formValues = this.form && isFunction(this.form.getValues) ? this.form.getValues() : {};
     for (let i = current - 1; i >= 0; i--) {
       const slide = children[i] as Slide;
-      if (slide.props.shouldShowIf(formValues)) {
+      if (slide.props.shouldShowIf!(formValues)) {
         return i;
       }
       // No valid candidate for next slide, so we test the next
@@ -327,7 +327,7 @@ export default class Slider extends React.PureComponent<SliderProps, SliderState
           {NextButton}
         </button>
         <Form
-          name={formName}
+          name={formName!}
           onSubmit={onSubmit}
           beforeSubmit={beforeSubmit}
           afterSubmit={afterSubmit}

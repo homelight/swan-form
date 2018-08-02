@@ -1,6 +1,6 @@
 /* eslint-disable react/require-default-props */
-import * as React from 'react';
-import * as PropTypes from 'prop-types';
+import { default as React } from 'react';
+import { default as PropTypes } from 'prop-types';
 import isObject from 'lodash/isObject';
 import { hasOwnProperty, classes, noop } from '@swan-form/helpers';
 import asField from './asField';

@@ -1,6 +1,6 @@
 /* eslint-disable react/prefer-stateless-function, jsx-a11y/label-has-for */
-import * as React from 'react';
-import * as PropTypes from 'prop-types';
+import { default as React } from 'react';
+import { default as PropTypes } from 'prop-types';
 import { classes } from '@swan-form/helpers';
 import asField from './asField';
 
@@ -20,7 +20,7 @@ function createRadio(option: Option, { onChange, onFocus, onBlur, name, value }:
       key={option.value}
       htmlFor={id}
     >
-      <span>{option.label}</span>
+      <span className="sf--label">{option.label}</span>
       <input
         type="radio"
         name={name}

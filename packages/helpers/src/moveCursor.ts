@@ -20,6 +20,7 @@ export interface ExtendedHTMLElement extends HTMLElement {
 export default function moveCursor(el: ExtendedHTMLElement, position = -1) {
   /* eslint-disable no-param-reassign */
   const types = /text|password|search|tel|url/;
+  // @ts-ignore
   if ('selectionStart' in el && 'type' in el && types.test(el.type)) {
     const pos = position > -1 ? position : el.value.length;
     el.selectionStart = pos;

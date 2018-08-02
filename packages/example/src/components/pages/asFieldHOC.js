@@ -24,8 +24,7 @@ class toWrapClass extends Component {
 const Wrapped = asField(toWrap);
 const WrappedClass = asField(toWrapClass);
 
-@hot(module)
-export default class asFieldHOC extends Component {
+class asFieldHOC extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -53,7 +52,9 @@ export default class asFieldHOC extends Component {
           <WrappedClass name="aWrappedFormInput2" onChange={this.change2} placeholder="test" />
         </p>
         <h4>Values</h4>
-        {Object.keys(this.state).map(key => <pre key={key}>{`${key}: ${this.state[key]}`}</pre>)}
+        {Object.keys(this.state).map(key => (
+          <pre key={key}>{`${key}: ${this.state[key]}`}</pre>
+        ))}
         <p>
           <Submit />
         </p>
@@ -61,3 +62,5 @@ export default class asFieldHOC extends Component {
     );
   }
 }
+
+export default hot(module)(asFieldHOC);

@@ -14,8 +14,7 @@ const onSubmit = values => {
 const beforeSubmit = values =>
   Promise.resolve(Object.keys(values).reduce((acc, key) => ({ ...acc, [key]: values[key].toUpperCase() }), {}));
 
-@hot(module)
-export default class SliderForm extends Component {
+class SliderForm extends Component {
   render() {
     return (
       <div>
@@ -34,10 +33,10 @@ export default class SliderForm extends Component {
                 />
                 <p>
                   This slider has five slides. This one, two that we skip, and one with a submit button. After we{' '}
-                  <em>press</em> submit, we transform the value in the first to an uppercase string (<code>
-                    beforeSubmit
-                  </code>) that is passed to the actual submit (<code>onSubmit</code>) that is then logged to the
-                  console in the after submit method (<code>afterSubmit</code>).
+                  <em>press</em> submit, we transform the value in the first to an uppercase string (
+                  <code>beforeSubmit</code>) that is passed to the actual submit (<code>onSubmit</code>) that is then
+                  logged to the console in the after submit method (<code>afterSubmit</code>
+                  ).
                 </p>
               </div>
             )}
@@ -114,3 +113,5 @@ export default class SliderForm extends Component {
     );
   }
 }
+
+export default hot(module)(SliderForm);

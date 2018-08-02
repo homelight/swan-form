@@ -42,15 +42,7 @@ const config = (pkg, format) => {
       exports: 'named',
       sourcemap: true,
     },
-    external: [
-      '@swan-form/helpers',
-      '@swan-form/field',
-      '@swan-form/form',
-      '@swan-form/slider',
-      'react',
-      'prop-types',
-      'lodash',
-    ],
+    external: [...Object.keys(pkg.dependencies || {}), ...Object.keys(pkg.peerDependencies || {})],
     plugins: [
       resolve({
         browser: true,
@@ -71,6 +63,7 @@ const config = (pkg, format) => {
         clean: true,
         cacheRoot: path.resolve(__dirname, '.rts2_cache'),
         rollupCommonJSResolveHack: true,
+        typescript: require('typescript'), // eslint-disable-line
       }),
 
       // babel(babelConfig()),

@@ -36,8 +36,7 @@ const moneyFormatter = (val, cur) => {
   return ['$' + value, cursor + 1];
 };
 
-@hot(module)
-export default class Formatters extends Component {
+class Formatters extends Component {
   state = {
     formattedPhone: '',
   };
@@ -139,3 +138,5 @@ const stripNonNumeric = value => {
     );
   }
 }
+
+export default hot(module)(Formatters);

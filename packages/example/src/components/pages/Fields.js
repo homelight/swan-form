@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { hot } from 'react-hot-loader';
 
-@hot(module)
-export default class Fields extends PureComponent {}
+class Fields extends PureComponent {}
+
+export default hot(module)(Fields);

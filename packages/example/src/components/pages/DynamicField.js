@@ -6,7 +6,6 @@ import { hot } from 'react-hot-loader';
 /* @todo move this */
 const minSize = { minHeight: '1em', minWidth: '3em' };
 
-@hot(module)
 class EditableDisplay extends Component {
   constructor(props) {
     super(props);
@@ -62,7 +61,7 @@ class EditableDisplay extends Component {
 
 const style = { padding: '.25em', border: '1px solid black', margin: '.25em', maxWidth: '300px' };
 
-export default class DynamicField extends Component {
+class DynamicField extends Component {
   constructor(props) {
     super(props);
     this.state = { field1: 'HiHi', field2: 'What', field3: 'Something Else', field4: '' };
@@ -100,3 +99,5 @@ export default class DynamicField extends Component {
     );
   }
 }
+
+export default hot(module)(DynamicField);
