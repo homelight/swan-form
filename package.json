@@ -11,7 +11,7 @@
     "format": "prettier --write '**/*.{json,js,css,md,ts,tsx}'",
     "lint": "nps lint.all",
     "rollup": "rollup -c",
-    "test": "jest --env=jsdom",
+    "test": "jest",
     "test:watch": "yarn run test -- --watch",
     "type": "lerna run type"
   },

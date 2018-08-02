@@ -1,5 +1,5 @@
-import { default as React } from 'react';
-import { default as PropTypes } from 'prop-types';
+import * as React from 'react';
+import * as PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
 import { hasOwnProperty, emptyArray, emptyObject } from '@swan-form/helpers';
 

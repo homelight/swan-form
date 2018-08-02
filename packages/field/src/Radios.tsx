@@ -1,6 +1,6 @@
 /* eslint-disable react/prefer-stateless-function, jsx-a11y/label-has-for */
-import { default as React } from 'react';
-import { default as PropTypes } from 'prop-types';
+import * as React from 'react';
+import * as PropTypes from 'prop-types';
 import { classes } from '@swan-form/helpers';
 import asField from './asField';
 

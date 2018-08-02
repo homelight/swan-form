@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { default as PropTypes } from 'prop-types';
+import * as PropTypes from 'prop-types';
 import isFunction from 'lodash/isFunction';
 import { classes, moveCursor } from '@swan-form/helpers';
 
