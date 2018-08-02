@@ -1,8 +1,6 @@
 import React, { PureComponent } from 'react';
 import { hot } from 'react-hot-loader';
-
-@hot(module)
-export default class Intro extends PureComponent {
+class Intro extends PureComponent {
   render() {
     return (
       <div>
@@ -23,7 +21,7 @@ export default class Intro extends PureComponent {
           <code>Radios</code> component is provided because radios are, well, different.
         </p>
         <p>
-          We also ship a Higher Order Component — <code>asField</code> — so that it&apos;s easy for you to compose your
+          We also ship a Higher Order Component —<code>asField</code> — so that it&apos;s easy for you to compose your
           own complex fields. <code>asField</code> provides the interface for any field to work with the Form component
           out of the box.
         </p>
@@ -47,3 +45,5 @@ export default class Intro extends PureComponent {
     );
   }
 }
+
+export default hot(module)(Intro);

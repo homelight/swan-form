@@ -3,8 +3,7 @@ import { connect } from 'react-redux';
 import NavBar from './NavBar';
 import styles from './Container.scss';
 
-@connect(state => ({ navVisible: state.nav.show }))
-export default class Container extends PureComponent {
+class Container extends PureComponent {
   render() {
     return (
       <div>
@@ -16,3 +15,5 @@ export default class Container extends PureComponent {
     );
   }
 }
+
+export default connect(state => ({ navVisible: state.nav.show }))(Container);

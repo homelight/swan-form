@@ -1,8 +1,8 @@
 /* global document, window */
 /* eslint-disable react/prop-types, react/sort-comp */
 
-import * as React from 'react';
-import * as PropTypes from 'prop-types';
+import { default as React } from 'react';
+import { default as PropTypes } from 'prop-types';
 
 import isEqual from 'lodash/isEqual';
 import isFunction from 'lodash/isFunction';
@@ -12,6 +12,7 @@ import { hasErrors, hasOwnProperty, keyCodes, moveCursor, emptyArray, runValidat
 
 import {
   FieldInterface,
+  FieldElement,
   GenericClickEvent,
   GenericFocusEvent,
   AsFieldProps,
@@ -38,8 +39,12 @@ function getInitialValue(props: AsFieldProps): any {
     return !!props.value;
   }
 
-  if (props.value) {
+  if (hasOwnProperty(props, 'value')) {
     return props.value;
+  }
+
+  if (hasOwnProperty(props, 'defaultValue')) {
+    return props.defaultValue;
   }
 
   if (props.type === 'select' && props.multiple === true) {
@@ -53,8 +58,6 @@ const typesWithSelectionStart = ['text', 'search', 'password', 'tel', 'url'];
 const canAccessSelectionStart = (type: string): boolean => typesWithSelectionStart.includes(type);
 
 const isNotTrue = (value: any) => value !== true;
-
-// export interface FieldWrapper extends PureComponent<AsFieldProps, AsFieldState> {}
 
 /**
  * Wraps a component to treat it like a field (a controlled input)
@@ -99,7 +102,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
     autoComplete: string;
     isMultipleSelect: boolean;
     mounted: boolean;
-    debounceValidateTimer: number | null | undefined;
+    debounceValidateTimer: number | undefined;
     fields: { [key: string]: FieldInterface };
 
     fieldRef: any; // @todo type this
@@ -129,7 +132,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
       this.initialState = { ...state };
 
       // This is used for debouncing validate functions while typing
-      this.debounceValidateTimer = null;
+      this.debounceValidateTimer = undefined;
 
       // We collect fields if they aren't registered with the context above, and we manipulate them
       // that way.
@@ -211,7 +214,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
      * Use the registration function passed by context
      * @return {void}
      */
-    register = (fieldProps: FieldInterface = null): void => {
+    register = (fieldProps?: FieldInterface): void => {
       const { name, doNotRegister } = this.props;
       if (fieldProps && wrapperOptions.registerWrapped === false) {
         // This is where we intercept the fields and control them.
@@ -342,7 +345,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
       const { onClick } = this.props;
 
       if (isFunction(onClick)) {
-        onClick(event.target);
+        onClick(event.target as FieldElement);
       }
     };
 
@@ -561,13 +564,13 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
       // good. Might be buggy.
       const controlledFields = Object.keys(this.fields)
         .reduce(
-          (acc, field) => (isFunction(this.fields[field].validate) ? [...acc, this.fields[field].validate()] : acc),
+          (acc, field) => (isFunction(this.fields[field].validate) ? [...acc, ...this.fields[field].validate()] : acc),
           [],
         )
         // This filter is ugly... It sort of mixes concerns and shows how we're repurposing the
         // method.
         .filter(isNotTrue);
-      return this.maybeUpdateErrors([...controlledFields, ...this.runValidations()]);
+      return this.maybeUpdateErrors([...(controlledFields as (string | false)[]), ...this.runValidations()]);
     };
 
     runValidations = () => runValidations(this.props.validate, this.state.value);
@@ -649,6 +652,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
       // and the fieldRef supports selectionStart, then we'll do automated cursor management.
       const formatted = fieldRef && fieldRef.selectionStart ? format(value, fieldRef.selectionEnd) : format(value);
 
+      // We might consider expanding this check to make sure that it's `[string, number]`
       return Array.isArray(formatted) ? formatted : [formatted, null];
     };
 

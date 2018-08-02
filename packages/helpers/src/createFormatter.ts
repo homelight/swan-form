@@ -33,7 +33,7 @@ function createTransformer(transformer: (value: string) => string) {
 }
 
 function getPattern(pattern: string, wildcard: string, valueRawLen: number): string {
-  const patternRawLen = pattern.match(new RegExp(wildcard, 'g')).length || 0;
+  const patternRawLen = pattern.match(new RegExp(wildcard, 'g'))!.length || 0;
   const pFormattingChars = pattern.length - patternRawLen;
   const targetLength = valueRawLen + (Math.ceil(valueRawLen / patternRawLen) - pFormattingChars);
   return padStart('', targetLength, pattern)

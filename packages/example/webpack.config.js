@@ -15,7 +15,7 @@ function filter(arr) {
   return arr.filter(Boolean);
 }
 
-const happyThreadPool = HappyPack.ThreadPool({ size: clamp(os.cpus().length, 5, 1) });
+const happyThreadPool = HappyPack.ThreadPool({ id: 'main-pool', size: clamp(os.cpus().length, 5, 1) });
 
 const createHappyPackPlugin = (id, loaders, debug = false) =>
   new HappyPack({
@@ -70,13 +70,15 @@ function factory(environment, analyze = false) {
           presets: filter([
             ['@babel/preset-env', { loose: true }],
             ['@babel/preset-react', { development: isDev }],
-            ['@babel/preset-stage-0', { decoratorsLegacy: true }],
+            // ['@babel/preset-stage-0', { decoratorsLegacy: true }],
           ]),
           plugins: filter([
             ifProd('transform-react-remove-prop-types'),
+            '@babel/plugin-syntax-dynamic-import',
+            '@babel/plugin-proposal-class-properties',
             'react-hot-loader/babel',
-            // 'transform-decorators-legacy',
-            // 'syntax-decorators',
+            'transform-decorators-legacy',
+            'syntax-decorators',
             'lodash',
           ]),
         },
@@ -257,4 +259,4 @@ function factory(environment, analyze = false) {
   return config;
 }
 
-module.exports = factory(process.env.NODE_ENV, process.env.ANALYZE);
+module.exports = factory(process.env.NODE_ENV, !!process.env.ANALYZE);

@@ -1,5 +1,5 @@
-import * as React from 'react';
-import * as PropTypes from 'prop-types';
+import { default as React } from 'react';
+import { default as PropTypes } from 'prop-types';
 import isFunction from 'lodash/isFunction';
 import { classes } from '@swan-form/helpers';
 import Field from './Field';
@@ -11,7 +11,7 @@ export interface ResetProps {
   className?: string;
 }
 
-import { FieldElement } from './common';
+// import { FieldElement } from './common';
 
 export default class Reset extends React.Component<ResetProps> {
   static propTypes = {
@@ -31,9 +31,9 @@ export default class Reset extends React.Component<ResetProps> {
     className: '',
   };
 
-  resetForm = (target: FieldElement) => {
-    event.preventDefault();
-    event.stopPropagation();
+  resetForm = (/* target: FieldElement */) => {
+    // event.preventDefault();
+    // event.stopPropagation();
     if (isFunction(this.props.resetFunction)) {
       this.props.resetFunction();
     } else if (isFunction(this.context.reset)) {

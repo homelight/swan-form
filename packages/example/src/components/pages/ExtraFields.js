@@ -12,8 +12,7 @@ const defaultAddress = {
   zip: '10118',
 };
 
-@hot(module)
-export default class DynamicField extends Component {
+class DynamicField extends Component {
   constructor(props) {
     super(props);
     this.state = {};
@@ -45,3 +44,5 @@ export default class DynamicField extends Component {
     );
   }
 }
+
+export default hot(module)(DynamicField);

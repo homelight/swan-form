@@ -34,8 +34,7 @@ const fieldSetStyling = `
   padding: 0;
 }`.trim();
 
-@hot(module)
-export default class RegularForm extends Component {
+class RegularForm extends Component {
   constructor(props) {
     super(props);
     console.log(
@@ -210,3 +209,5 @@ export default class RegularForm extends Component {
     );
   }
 }
+
+export default hot(module)(RegularForm);

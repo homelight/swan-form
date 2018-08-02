@@ -20,10 +20,13 @@ export interface FieldInterface {
   reset(): void;
 }
 
+export interface BoolObject {}
+
 export interface AsFieldProps {
   name: string;
   type: string; // @todo expand this
   value?: any;
+  defaultValue?: any;
   validate?: ((value: any) => string | false) | ((value: any) => string | false)[];
   multiple?: boolean;
   autoFocus?: boolean;
@@ -37,7 +40,14 @@ export interface AsFieldProps {
   onClick?(target: FieldElement): void;
   onFocus?(target: FieldElement): void;
   onBlur?(target: FieldElement): void;
-  handleKeyPress?(event: FieldKeyboardEvent): void;
+  // handleKeyPress?(event: FieldKeyboardEvent): void;
+  handleKeyPress?(
+    keyCode: number,
+    modifiers: { [key: string]: boolean },
+    type: string,
+    name: string,
+    fieldRef: any,
+  ): void;
   setRef?(el: FieldElement): void;
   format?(value: any, cursor?: number): any;
   unformat?(value: any): any;
