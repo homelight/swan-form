@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.12
+
+- [all] downgrade typescript for better compatibility, export more types
+
 ## 0.2.11
 
 - [all] upgrade dependencies
