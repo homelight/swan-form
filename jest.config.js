@@ -26,10 +26,5 @@ module.exports = {
     createProject('form'),
     createProject('helpers'),
     createProject('slider'),
-    // '<rootDir>/packages/extra-fields',
-    // '<rootDir>/packages/field',
-    // '<rootDir>/packages/form',
-    // '<rootDir>/packages/helpers',
-    // '<rootDir>/packages/slider',
   ],
 };
