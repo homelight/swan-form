@@ -20,9 +20,9 @@ export interface SlideProps {
 }
 
 // @TODO pull these from a common source rather than redeclaring them
-type StrFalseArr = (string | false)[];
+export type StrFalseArr = (string | false)[];
 
-interface FieldInterface {
+export interface FieldInterface {
   name: string;
   getRef(): HTMLElement;
   getValue(): any;

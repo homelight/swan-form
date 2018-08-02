@@ -57,18 +57,18 @@ export interface AsFieldProps {
 }
 
 export interface WrappedComponentProps {
-  onChange(event: GenericChangeEvent): void;
-  onInput(event: GenericChangeEvent): void;
-  onBlur(event: GenericFocusEvent): void;
-  onFocus(event: GenericFocusEvent): void;
-  onClick(event: GenericClickEvent): void;
-  setRef(element: FieldElement): void;
-  getValue(): any;
-  setValue(value: any): void;
+  // onChange(event: GenericChangeEvent): void;
+  // onInput(event: GenericChangeEvent): void;
+  // onBlur(event: GenericFocusEvent): void;
+  // onFocus(event: GenericFocusEvent): void;
+  // onClick(event: GenericClickEvent): void;
+  // setRef(element: FieldElement): void;
+  // getValue(): any;
+  // setValue(value: any): void;
   ref: any; // more strong type this
-  value: any;
-  errors: string[];
-  isValid: boolean;
+  // value: any;
+  // errors: string[];
+  // isValid: boolean;
   [key: string]: any;
 }
 

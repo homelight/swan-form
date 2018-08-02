@@ -681,8 +681,10 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
       } = this.props;
 
       if (this.context.autoComplete === 'off') {
+        // @ts-ignore: this is fine
         spreadProps.autoComplete = this.autoComplete;
       } else if (this.props.autoComplete) {
+        // @ts-ignore: this is fine
         spreadProps.autoComplete = this.props.autoComplete;
       }
 

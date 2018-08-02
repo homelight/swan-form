@@ -4,7 +4,8 @@ import * as PropTypes from 'prop-types';
 import isObject from 'lodash/isObject';
 import { hasOwnProperty, classes, noop } from '@swan-form/helpers';
 import asField from './asField';
-import { FieldProps } from './common';
+// @ts-ignore: typescript yells at me if I don't import `AsFieldProps`, but it also yells if I do
+import { AsFieldProps, AsFieldState, FieldInterface, FieldProps } from './common';
 
 const INPUT_TYPES = [
   'button',
@@ -270,6 +271,7 @@ class Field extends React.PureComponent<FieldProps> {
     } = this.props;
 
     if (!spreadProps.id && spreadProps.name && type !== 'radio') {
+      // @ts-ignore: this is fine
       spreadProps.id = spreadProps.name;
     }
 
@@ -281,7 +283,9 @@ class Field extends React.PureComponent<FieldProps> {
      * @see  Some discussion https://github.com/facebook/react/issues/3964
      */
     if (type === 'text') {
+      // @ts-ignore: this is fine
       spreadProps.onInput = spreadProps.onChange;
+      // @ts-ignore: this is fine
       spreadProps.onChange = noop; // React complains if there is no `onChange` method
       return <input ref={setRef} type={type} {...spreadProps} />;
     }
