@@ -26,7 +26,7 @@ export interface WrapperOptions {
 
 const { ENTER, TAB } = keyCodes;
 
-function getInitialValue(props: AsFieldProps): any {
+export function getInitialValue(props: AsFieldProps): any {
   if (props.type === 'checkbox') {
     if (hasOwnProperty(props, 'checked')) {
       return !!props.checked;
@@ -36,14 +36,14 @@ function getInitialValue(props: AsFieldProps): any {
       return !!props.defaultChecked;
     }
 
-    return !!props.value;
+    return false;
   }
 
-  if (hasOwnProperty(props, 'value')) {
+  if (hasOwnProperty(props, 'value') && props.value !== undefined) {
     return props.value;
   }
 
-  if (hasOwnProperty(props, 'defaultValue')) {
+  if (hasOwnProperty(props, 'defaultValue') && props.defaultValue !== undefined) {
     return props.defaultValue;
   }
 

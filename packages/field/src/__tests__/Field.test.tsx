@@ -5,8 +5,31 @@ import Adapter from 'enzyme-adapter-react-16';
 import { configure, shallow, mount, render } from 'enzyme';
 
 import Field from '../Field';
+import { getInitialValue } from '../asField';
 
 configure({ adapter: new Adapter() });
+
+describe('Determine Initial Value', () => {
+  it('value should take precedence over default value', () => {
+    expect(getInitialValue({ name: 'test', type: 'text', value: true, defaultValue: false })).toBe(true);
+  });
+
+  it('should use defaultValue if supplied when no value is supplied', () => {
+    expect(getInitialValue({ name: 'test', type: 'text', defaultValue: false })).toBe(false);
+  });
+
+  it('should default to an empty string', () => {
+    expect(getInitialValue({ name: 'test', type: 'text' })).toBe('');
+  });
+
+  it('should default to an array with a single string when it is a multiple select', () => {
+    expect(getInitialValue({ name: 'test', type: 'select', multiple: true })).toEqual(expect.arrayContaining(['']));
+  });
+
+  it('should allow defaultValue to succeed if value is explicitly undefined', () => {
+    expect(getInitialValue({ name: 'test', type: 'text', value: undefined, defaultValue: false })).toBe(false);
+  });
+});
 
 describe('Text Field Input Suite', () => {
   it('should shallow render with no error', () => {
