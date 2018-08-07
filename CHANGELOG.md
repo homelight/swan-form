@@ -4,6 +4,7 @@
 
 - [form] change prop `values` to `defaultValues`
 - [slider] accept `defaultValues` prop and pass through to `Form`
+- [field] fix minor bug when setting initial value
 
 ## 0.2.12
 
