@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.2.13
+
+- [form] change prop `values` to `defaultValues`
+- [slider] accept `defaultValues` prop and pass through to `Form`
+
 ## 0.2.12
 
 - [all] downgrade typescript for better compatibility, export more types

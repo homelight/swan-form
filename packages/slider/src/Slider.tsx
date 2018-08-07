@@ -20,6 +20,7 @@ export interface SliderProps {
   onSubmit(values: object): Promise<object>;
   afterSubmit?(values: object): Promise<object>;
   commonProps?: object;
+  defaultValues?: object;
 }
 
 export interface SliderState {
@@ -72,6 +73,10 @@ export default class Slider extends React.PureComponent<SliderProps, SliderState
      * The name of the form in the slider
      */
     formName: PropTypes.string,
+    /**
+     * Default values to be passed to the form
+     */
+    defaultValues: PropTypes.object,
   };
 
   static defaultProps = {
@@ -83,6 +88,7 @@ export default class Slider extends React.PureComponent<SliderProps, SliderState
     afterSubmit: (values: object | Promise<object>) => Promise.resolve(values),
     commonProps: {},
     formName: 'slider-form',
+    defaultValues: {},
   };
 
   mounted: boolean;
@@ -305,6 +311,7 @@ export default class Slider extends React.PureComponent<SliderProps, SliderState
       afterSubmit,
       beforeSubmit,
       autoComplete,
+      defaultValues,
     } = this.props;
 
     // Get the current slide that we're on
@@ -334,6 +341,7 @@ export default class Slider extends React.PureComponent<SliderProps, SliderState
           autoComplete={autoComplete}
           persist
           ref={this.setFormRef}
+          defaultValues={defaultValues}
         >
           {React.cloneElement(slide as any, this.mapSlideProps)}
         </Form>

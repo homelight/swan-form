@@ -35,7 +35,7 @@ export interface FormProps {
   name: string;
   onSubmit(values: object | Promise<object>): object | Promise<object>;
   children: React.ReactNode;
-  values?: object;
+  defaultValues?: object;
   noValidate?: boolean;
   autoComplete?: 'on' | 'off';
   beforeSubmit?(values: object | Promise<object>): object | Promise<object>;
@@ -85,6 +85,14 @@ export default class Form extends React.PureComponent<FormProps, FormState> {
      * Whether or not to keep the field values after the fields unmount
      */
     persist: PropTypes.bool,
+    /**
+     * The default values for the form.
+     *
+     * Note: this can be useful when using with a Slider, but if you're using the Form component
+     *       directly, then it is probably best to provide a `defaultValue` to the Field components
+     *       themselves
+     */
+    defaultValues: PropTypes.object,
   };
 
   static childContextTypes = {
@@ -99,6 +107,7 @@ export default class Form extends React.PureComponent<FormProps, FormState> {
     autoComplete: 'on',
     noValidate: false,
     persist: false,
+    defaultValues: {},
   };
 
   // We're going to keep track of accessors on a class property to avoid rerenders
@@ -126,7 +135,7 @@ export default class Form extends React.PureComponent<FormProps, FormState> {
       hasSubmitted: false,
       hasSubmitError: false,
       errors: emptyArray,
-      values: props.values || emptyObject,
+      values: props.defaultValues || {},
     };
   }
 
