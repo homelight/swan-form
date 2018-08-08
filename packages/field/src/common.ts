@@ -88,8 +88,8 @@ export interface FieldProps extends WrappedComponentProps {
 
   style?: React.CSSProperties;
   options?: any;
-  getValue(): any;
-  setValue(value: any): void;
+  getValue?(): any;
+  setValue?(value: any): void;
   setRef(element: HTMLElement): void;
   isValid: boolean;
 }
