@@ -44,6 +44,18 @@ describe('Text Field Input Suite', () => {
     render(<Field name="test" type="text" />);
   });
 
+  it('should have a state value as empty string', () => {
+    expect(shallow(<Field name="test" type="text" />).state().value).toBe('');
+  });
+
+  it('should have a state value equal to defaultValue', () => {
+    expect(shallow(<Field name="test" type="text" defaultValue="123" />).state().value).toBe('123');
+  });
+
+  it('should have a state value equal to value', () => {
+    expect(shallow(<Field name="test" type="text" value="456" defaultValue="123" />).state().value).toBe('456');
+  });
+
   const testTextField = render(<Field name="test" type="text" />);
   it('should have an input field with the name of "test"', () => {
     expect(testTextField.find('input').attr('name')).toBe('test');
@@ -56,7 +68,37 @@ describe('Text Field Input Suite', () => {
   it('should have an input field with the value of ""', () => {
     expect(testTextField.find('input').attr('value')).toBe('');
   });
+});
 
+describe('Checkbox Field Input Suite', () => {
+  it('should have checkboxes go to value based on defaultChecked', () => {
+    expect(shallow(<Field name="test" type="checkbox" defaultChecked={true} />).state().value).toBe(true);
+  });
+
+  it('should have checkboxes go to value based on checked over defaultChecked', () => {
+    expect(shallow(<Field name="test" type="checkbox" checked={false} defaultChecked={true} />).state().value).toBe(
+      false,
+    );
+  });
+});
+
+describe('Button Field Input Suite', () => {
+  it('should render with child props and no value', () => {
+    expect(
+      shallow(
+        <Field name="test" type="button">
+          Test
+        </Field>,
+      ),
+    );
+  });
+
+  it('should render with no children and a value', () => {
+    expect(shallow(<Field name="test" type="button" value="Test" />));
+  });
+});
+
+describe('Select Field Input Suite', () => {
   const multipleSelect = render(
     <Field
       name="selectField"
@@ -69,12 +111,16 @@ describe('Text Field Input Suite', () => {
     expect(multipleSelect.find('select').attr('multiple')).toBe('multiple');
     // @todo add more tests on this select
   });
+});
 
+describe('Textarea Field Input Suite', () => {
   it('renders textareas correctly', () => {
     const node = render(<Field type="textarea" name="test" value="abc" />);
     expect(node.find('textarea')[0].children[0].data).toBe('abc');
   });
+});
 
+describe('Hidden Field Input Suite', () => {
   it('renders hidden fields', () => {
     const hidden = render(<Field type="hidden" name="test" value="1" />);
     expect(hidden[0].attribs.type).toBe('hidden');
