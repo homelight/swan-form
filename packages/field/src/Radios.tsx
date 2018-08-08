@@ -3,6 +3,7 @@ import * as React from 'react';
 import * as PropTypes from 'prop-types';
 import { classes } from '@swan-form/helpers';
 import asField from './asField';
+import { Field } from './Field';
 
 // @ts-ignore: typescript yells at me if I don't import `AsFieldProps`, but it also yells if I do
 import { AsFieldProps, AsFieldState, FieldInterface, FieldProps } from './common';

@@ -104,7 +104,7 @@ function renderOptions(options: any | any[]): React.ReactNode {
 }
 /* eslint-enable no-use-before-define */
 
-class Field extends React.PureComponent<FieldProps> {
+export class Field extends React.PureComponent<FieldProps> {
   static displayName = 'Field';
 
   static propTypes = {
@@ -267,6 +267,7 @@ class Field extends React.PureComponent<FieldProps> {
       icon,
       getValue, // we're just going to ignore this
       setValue, // we're just going to ignore this
+      value,
       ...spreadProps // the rest of everything that we need to send on
     } = this.props;
 
@@ -287,7 +288,7 @@ class Field extends React.PureComponent<FieldProps> {
       spreadProps.onInput = spreadProps.onChange;
       // @ts-ignore: this is fine
       spreadProps.onChange = noop; // React complains if there is no `onChange` method
-      return <input ref={setRef} type={type} {...spreadProps} />;
+      return <input ref={setRef} type={type} value={value} {...spreadProps} />;
     }
 
     if (type === 'button') {
@@ -297,6 +298,7 @@ class Field extends React.PureComponent<FieldProps> {
           ref={setRef}
           type="button"
           className={classes(['sf--field', 'sf--type-button', className])}
+          value={value}
           {...spreadProps}
         >
           {children}
@@ -315,24 +317,26 @@ class Field extends React.PureComponent<FieldProps> {
 
     // Make sure we add a ref and a className to the unwrapped element
     if (type === 'submit' || type === 'reset') {
-      return <input type={type} ref={setRef} className={classes(['sf--field', className])} {...spreadProps} />;
+      return (
+        <input type={type} ref={setRef} className={classes(['sf--field', className])} value={value} {...spreadProps} />
+      );
     }
 
     // If it's an input type, then render the input with the spread spreadProps
     if (INPUT_TYPES.includes(type)) {
-      return <input ref={setRef} type={type} {...spreadProps} />;
+      return <input ref={setRef} type={type} value={value} {...spreadProps} />;
     }
 
     // Text areas get spreadProps too
     if (type === 'textarea') {
-      return <textarea ref={setRef} {...spreadProps} />;
+      return <textarea ref={setRef} value={value} {...spreadProps} />;
     }
 
     // For select, we also have to render all the options / optgroups. We've moved these out to
     // separate functions so that we can call them recursively if needed.
     if (type === 'select') {
       return (
-        <select ref={setRef} {...spreadProps}>
+        <select ref={setRef} value={value} {...spreadProps}>
           {renderOptions(options)}
         </select>
       );

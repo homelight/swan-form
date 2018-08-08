@@ -677,6 +677,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
         doNotRegister,
         checked,
         defaultChecked,
+        defaultValue,
         ...spreadProps
       } = this.props;
 
