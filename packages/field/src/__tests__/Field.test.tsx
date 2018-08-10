@@ -68,6 +68,12 @@ describe('Text Field Input Suite', () => {
   it('should have an input field with the value of ""', () => {
     expect(testTextField.find('input').attr('value')).toBe('');
   });
+
+  it('should format the initial value if a formatter and a value is supplied', () => {
+    expect(
+      shallow(<Field name="test" type="text" value="testing" format={v => [v.toUpperCase(), null]} />).state().value,
+    ).toBe('TESTING');
+  });
 });
 
 describe('Checkbox Field Input Suite', () => {

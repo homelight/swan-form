@@ -115,9 +115,10 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
       // We'll cache this because it's used in a few places and should not change
       this.isMultipleSelect = props.type === 'select' && props.multiple === true;
 
+      const [initialValue] = this.format(getInitialValue(props));
       // Establish the initial state
       const state: AsFieldState = {
-        value: getInitialValue(props),
+        value: initialValue,
         checked: props.checked || props.defaultChecked || false,
         errors: emptyArray,
         isValid: !hasErrors(runValidations(props.validate, props.value)),
@@ -168,8 +169,7 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
       if (this.props.autoFocus && this.fieldRef) {
         // Actually focus on the field
         this.fieldRef.focus();
-        // Safari will freak out if we try to access selectionStart on an `<input/>` with many different
-        // `types` set.
+        // Safari will freak out if we try to access selectionStart on an `<input/>` with many different `types` set.
         if (canAccessSelectionStart(this.props.type)) {
           moveCursor(this.fieldRef);
         }
@@ -179,13 +179,8 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
     }
 
     componentDidUpdate(_: AsFieldProps, prevState: AsFieldState) {
-      // Safari will freak out if we try to access selectionStart on an `<input/>` with many different
-      // `types` set.
-      if (!canAccessSelectionStart(this.props.type)) {
-        return;
-      }
-
-      if (this.fieldRef && this.fieldRef.selectionStart) {
+      // Safari will freak out if we try to access selectionStart on an `<input/>` with many different `types` set.
+      if (canAccessSelectionStart(this.props.type) && this.fieldRef && this.fieldRef.selectionStart) {
         const { cursor } = this.state;
         if (typeof cursor !== 'undefined' && cursor !== prevState.cursor) {
           this.fieldRef.selectionStart = cursor;
