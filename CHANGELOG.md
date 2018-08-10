@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.15
+
+- [field] format initial value if formatter is supplied
+
 ## 0.2.14
 
 - [field] fix minor bug when setting initial value
