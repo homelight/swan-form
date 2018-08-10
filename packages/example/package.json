@@ -1,6 +1,6 @@
 {
   "name": "@swan-form/example",
-  "version": "0.2.14",
+  "version": "0.2.15",
   "description": "An Example for Swan Form",
   "main": "index.js",
   "license": "Apache-2.0",
@@ -11,8 +11,8 @@
     "analyze": "ANALYZE=true yarn run build"
   },
   "dependencies": {
-    "@swan-form/extra-fields": "^0.2.14",
-    "@swan-form/field": "^0.2.14",
+    "@swan-form/extra-fields": "^0.2.15",
+    "@swan-form/field": "^0.2.15",
     "@swan-form/form": "^0.2.13",
     "@swan-form/helpers": "^0.2.12",
     "@swan-form/slider": "^0.2.13",
