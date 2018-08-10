@@ -200,7 +200,7 @@ export class Field extends React.PureComponent<FieldProps> {
      * An optional icon component to be merged in with the display
      * @type {React.ReactNode}
      */
-    icon: PropTypes.element,
+    icon: PropTypes.node,
     /**
      * Options if this is a select field
      * @type {Object|Array}

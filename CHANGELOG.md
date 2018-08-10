@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.16
+
+- [field] fix icon propType on Field (element -> node)
+
 ## 0.2.15
 
 - [field] format initial value if formatter is supplied
