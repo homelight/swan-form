@@ -1,6 +1,6 @@
 {
   "name": "@swan-form/field",
-  "version": "0.2.15",
+  "version": "0.2.16",
   "description": "Elegant form handling for React -- contains fields",
   "license": "Apache-2.0",
   "author": "Shawn Patrick Rice",
