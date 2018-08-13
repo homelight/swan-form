@@ -1,0 +1,476 @@
+$border-size: 0.125em;
+$input-padding: 1.2em;
+$input-inner-padding-top: 0.5em;
+$input-inner-padding-right: 0.25em;
+$input-inner-padding-bottom: 0.25em;
+$input-inner-padding-left: 0.25em;
+$input-line-height: 1.618;
+
+$base-font-size: 16px;
+
+$label-scale: 0.8;
+
+@import url('https://fonts.googleapis.com/css?family=Roboto+Condensed');
+
+:global(.sf--type-text).underline {
+  position: relative;
+  display: flex;
+  margin-bottom: 2em;
+
+  > span {
+    display: flex;
+    position: relative;
+  }
+
+  input {
+    border: 0;
+    padding: 0.625em 0.3125em;
+    background: white no-repeat;
+    background-image: linear-gradient(to bottom, #1abc9c, #1abc9c), linear-gradient(to bottom, silver, silver);
+    background-size: 0 2px, 100% 1px;
+    background-position: 50% 100%, 50% 100%;
+    font: 400 1em / 1 'Lato', sans-serif;
+    transition: background-size 0.3s cubic-bezier(0.64, 0.09, 0.08, 1);
+
+    &:focus {
+      background-size: 100% 2px, 100% 1px;
+      outline: none;
+    }
+  }
+
+  :global(.sf--label) {
+    position: absolute;
+    left: 0;
+    top: 0;
+    font: 400 0.85em / 1 'Roboto Condensed', sans-serif;
+  }
+}
+
+:global(.sf--type-text).theme {
+  position: relative;
+  display: flex;
+  margin-bottom: 2em;
+
+  > span {
+    display: flex;
+    position: relative;
+    padding-top: $input-padding;
+    padding-bottom: $input-padding;
+  }
+
+  &:global(.sf--required) {
+    > span::after {
+      content: '*Required';
+      position: absolute;
+      bottom: 0;
+    }
+  }
+
+  :global(.sf--label) {
+    position: absolute;
+    left: calc(#{$border-size} + #{$input-inner-padding-left});
+    top: $input-padding * $input-line-height;
+    transform: translate(-0.5em, -1.25em) scale($label-scale);
+    background-color: white;
+    transition: transform 0.15s ease-in;
+  }
+
+  input {
+    padding: $input-inner-padding-top $input-inner-padding-right $input-inner-padding-bottom $input-inner-padding-left;
+    border: $border-size solid black;
+    border-radius: 2 * $border-size;
+    font: 400 #{$base-font-size} / #{$input-line-height} sans-serif;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  input[value=''] + :global(.sf--label) {
+    transform: translate(0, 0) scale(1);
+  }
+
+  input[value='']:focus + :global(.sf--label) {
+    transform: translate(-0.5em, -1.25em) scale($label-scale);
+  }
+}
+
+/// Material radio buttons
+
+$regular-color: black;
+$radio-checked-color: blue;
+$disabled-color: gray;
+$radio-size: 16px;
+$radio-checked-size: 8px;
+$radio-border-size: 2px;
+$ripple-size: 15px;
+$checkbox-size: 16px;
+$checkbox-padding: 4px;
+
+@keyframes ripple {
+  0% {
+    box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0);
+  }
+  50% {
+    box-shadow: 0px 0px 0px $ripple-size rgba(0, 0, 0, 0.1);
+  }
+  100% {
+    box-shadow: 0px 0px 0px $ripple-size rgba(0, 0, 0, 0);
+  }
+}
+
+:global(.sf--fieldset).theme {
+  border: 0;
+  padding: 0;
+  -webkit-padding-before: 0;
+  -webkit-padding-start: 0;
+  -webkit-padding-end: 0;
+
+  :global(.sf--type-radio) {
+    cursor: pointer;
+    margin: 1em 0;
+    display: flex;
+
+    > span {
+      position: relative;
+    }
+
+    input {
+      appearance: none;
+      -webkit-appearance: none;
+      background-color: white;
+      width: $radio-size;
+      height: $radio-size;
+      padding: 0 $radio-size;
+      &:focus,
+      &:active {
+        outline: none;
+      }
+    }
+
+    :global(.sf--icon) {
+      &:before,
+      &:after {
+        position: absolute;
+        content: '';
+        border-radius: 50%;
+        transition-timing-function: ease;
+        transition-duration: 0.3s;
+        transition-property: transform, border-color;
+      }
+      &:before {
+        left: 0;
+        top: 0;
+        width: $radio-size;
+        height: $radio-size;
+        border: $radio-border-size solid $regular-color;
+      }
+      &:after {
+        top: $radio-size / 2 - $radio-border-size;
+        left: $radio-size / 2 - $radio-border-size;
+        width: $radio-checked-size;
+        height: $radio-checked-size;
+        transform: scale(0);
+        background: $radio-checked-color;
+      }
+    }
+
+    input:active {
+      & ~ :global(.sf--icon) {
+        &:before {
+          animation: ripple 0.2s linear forwards;
+          :local {
+            animation-name: ripple;
+          }
+        }
+      }
+    }
+
+    input:hover {
+      & ~ :global(.sf--icon) {
+        &:before {
+          border-color: $radio-checked-color;
+        }
+      }
+
+      & ~ :global(.sf--label) {
+        color: $radio-checked-color;
+      }
+    }
+
+    input:checked {
+      & ~ :global(.sf--icon) {
+        &:before {
+          border-color: $radio-checked-color;
+        }
+        &::after {
+          transform: scale(1);
+        }
+      }
+
+      & ~ :global(.sf--label) {
+        color: $radio-checked-color;
+      }
+    }
+
+    input:disabled {
+      & ~ :global(.sf--icon) {
+        cursor: not-allowed;
+
+        &:before {
+          border-color: $disabled-color;
+        }
+
+        &:after {
+          background: $disabled-color;
+        }
+      }
+
+      & ~ :global(.sf--label) {
+        color: $disabled-color;
+        cursor: not-allowed;
+      }
+    }
+  }
+
+  &.inline {
+    :global(.sf--type-radio) {
+      display: inline-flex;
+    }
+
+    :global(label.sf--type-radio):not(:last-of-type) {
+      margin-right: 2em;
+    }
+  }
+}
+
+/// Material checkboxes
+:global(.sf--type-checkbox).theme {
+  cursor: pointer;
+  margin: 2em 0;
+  display: flex;
+
+  :global(.sf--label) {
+    position: relative;
+    // font: 400 16px / 1 Lato, sans-serif;
+  }
+
+  > span {
+    display: flex;
+    position: relative;
+  }
+
+  input {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 1em;
+    height: 1em;
+    margin-right: 1em;
+    border-radius: 50%;
+
+    &:active,
+    &:focus {
+      outline: none;
+    }
+
+    &:active {
+      animation: ripple 0.2s linear forwards;
+      :local {
+        animation-name: ripple;
+      }
+    }
+  }
+
+  :global(.sf--icon) {
+    &:before,
+    &:after {
+      content: ' ';
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 1em;
+      height: 1em;
+    }
+    &:before {
+      border: $border-size solid $regular-color;
+    }
+  }
+
+  &:hover {
+    :global(.sf--icon) {
+      &:before {
+        border-color: $radio-checked-color;
+      }
+    }
+
+    :global(.sf--label) {
+      color: $radio-checked-color;
+    }
+  }
+
+  input {
+    &:checked {
+      & ~ :global(.sf--icon) {
+        &:before {
+          background-color: $radio-checked-color;
+          border-color: $radio-checked-color;
+        }
+        &:after {
+          $checkmark-size: $checkbox-size - 2 * $checkbox-padding;
+
+          transform: translate($checkbox-padding, ($checkbox-size / 2) - ($checkmark-size / 2.6)) rotate(-45deg);
+          width: $checkmark-size;
+          height: $checkmark-size / 2;
+
+          border: $border-size solid white;
+          border-top-style: none;
+          border-right-style: none;
+        }
+      }
+
+      & ~ :global(.sf--label) {
+        color: $radio-checked-color;
+      }
+    }
+  }
+
+  input:disabled {
+    cursor: not-allowed;
+
+    & ~ :global(.sf--icon) {
+      cursor: not-allowed;
+
+      &:before {
+        border-color: $disabled-color;
+      }
+    }
+
+    & ~ :global(.sf--label) {
+      cursor: not-allowed;
+      color: $disabled-color;
+    }
+
+    &:checked {
+      & ~ :global(.sf--icon) {
+        &:before {
+          background-color: $disabled-color;
+        }
+      }
+    }
+  }
+}
+
+:global(.sf--type-checkbox).theme.inline {
+  display: inline-flex;
+  &:not(:last-of-type) {
+    margin-right: 2em;
+  }
+}
+
+:global(.sf--type-checkbox).switch {
+  display: flex;
+  margin: 2em 0;
+
+  > span {
+    display: flex;
+    position: relative;
+  }
+
+  :global(.sf--label) {
+    cursor: pointer;
+    margin-left: 3em;
+  }
+
+  :global(.sf--icon) {
+    &:before,
+    &:after {
+      content: ' ';
+      display: block;
+      position: absolute;
+      background-color: gray;
+      z-index: 0;
+      left: 0;
+      cursor: pointer;
+      border: gray $border-size solid;
+    }
+
+    &:before {
+      height: 1em;
+      width: 1em;
+      border-radius: 50%;
+      border-radius: 50% 0 0 50%;
+      transform: translate(0, 0);
+      border-right: 0;
+    }
+
+    &:after {
+      height: 1em;
+      width: 1em;
+      border-radius: 0 50% 50% 0;
+      transform: translate(1em, 0);
+      border-left: 0;
+    }
+  }
+
+  input {
+    appearance: none;
+    -webkit-appearance: none;
+    background-color: white;
+    border-radius: 50%;
+    cursor: pointer;
+    height: 1em;
+    margin-right: 2em;
+    outline: 0;
+    position: absolute;
+    transform: translate(0, $border-size);
+    transition: transform 0.15s ease, background-color 0.15s ease;
+    width: 1em;
+    z-index: 1;
+
+    &:active {
+      animation: ripple 0.2s linear forwards;
+      :local {
+        animation-name: ripple;
+      }
+    }
+
+    &:checked {
+      transform: translate(1em, $border-size);
+
+      & ~ :global(.sf--icon) {
+        &:before,
+        &:after {
+          background-color: $radio-checked-color;
+          border-color: $radio-checked-color;
+        }
+      }
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+
+      & ~ :global(.sf--icon) {
+        cursor: not-allowed;
+
+        &:before,
+        &:after {
+          cursor: not-allowed;
+        }
+      }
+
+      & ~ :global(.sf--label) {
+        cursor: not-allowed;
+      }
+
+      &:checked {
+        & ~ :global(.sf--icon) {
+          &:before,
+          &:after {
+            background-color: $disabled-color;
+            border-color: $disabled-color;
+          }
+        }
+      }
+    }
+  }
+}

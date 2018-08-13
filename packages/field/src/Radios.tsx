@@ -1,8 +1,9 @@
 /* eslint-disable react/prefer-stateless-function, jsx-a11y/label-has-for */
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
-import { classes } from '@swan-form/helpers';
+import { classes, emptyArray, noop } from '@swan-form/helpers';
 import asField from './asField';
+import { Field } from './Field';
 
 // @ts-ignore: typescript yells at me if I don't import `AsFieldProps`, but it also yells if I do
 import { AsFieldProps, AsFieldState, FieldInterface, FieldProps } from './common';
@@ -12,27 +13,22 @@ export interface Option {
   value: string;
 }
 
-function createRadio(option: Option, { onChange, onFocus, onBlur, name, value }: FieldProps) {
+function createRadio(option: Option, props: FieldProps) {
   const id = `${name}-${('' + option.value).replace(/[^a-z0-9]{1,}/gi, '')}`;
-  const isChecked = value === option.value;
+  const isChecked = props.value === option.value;
+  // Reuse the `Field` component as the radio button, but use create a unique id for the field
+  // also, override the value and label for the radio with the values passed as the option
   return (
-    <label
-      className={classes(['sf--field', 'sf--type-radio', isChecked && 'sf--checked'])}
-      key={option.value}
-      htmlFor={id}
-    >
-      <span className="sf--label">{option.label}</span>
-      <input
-        type="radio"
-        name={name}
-        id={id}
-        value={option.value}
-        onChange={onChange}
-        onFocus={onFocus}
-        onBlur={onBlur}
-        checked={isChecked}
-      />
-    </label>
+    <Field
+      {...props}
+      key={id}
+      id={id}
+      errors={emptyArray}
+      type="radio"
+      value={option.value}
+      label={option.label}
+      checked={isChecked}
+    />
   );
 }
 

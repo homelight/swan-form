@@ -214,10 +214,13 @@ export class Field extends React.PureComponent<FieldProps> {
   };
 
   maybeWrapInLabel(input: React.ReactNode) {
-    const { className, icon, name, errors, type, label, required, style } = this.props;
+    const { className, icon, name, id, errors, type, label, required, style } = this.props;
 
     const spread = {} as { htmlFor?: string; style?: React.CSSProperties };
-    if (name) {
+
+    if (id) {
+      spread.htmlFor = id;
+    } else if (name) {
       spread.htmlFor = name;
     }
     if (style) {
@@ -238,8 +241,8 @@ export class Field extends React.PureComponent<FieldProps> {
         {...spread}
       >
         <span>
-          <span className="sf--label">{label && label}</span>
           {input}
+          <span className="sf--label">{label && label}</span>
           <span className="sf--icon">{icon && icon}</span>
           <span className="sf--errors">
             {errors.map((err: string) => (

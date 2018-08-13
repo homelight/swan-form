@@ -8,48 +8,38 @@ import store from './store';
 
 // import Container from './components/Container';
 import Loader from './Loader';
+const Loading = <div>Loading...</div>;
 
-const Intro = Loader(() => import(/* webpackChunkName: "intro" */ './components/pages/Intro'), <div>Loading...</div>);
-const Container = Loader(
-  () => import(/* webpackChunkName: "container" */ './components/Container'),
-  <div>Loading...</div>,
-);
+const Intro = Loader(() => import(/* webpackChunkName: "intro" */ './components/pages/Intro'), Loading);
+const Container = Loader(() => import(/* webpackChunkName: "container" */ './components/Container'), Loading);
 
-const SliderForm = Loader(
-  () => import(/* webpackChunkName: "sliderForm" */ './components/pages/SliderForm'),
-  <div>Loading...</div>,
-);
+const SliderForm = Loader(() => import(/* webpackChunkName: "sliderForm" */ './components/pages/SliderForm'), Loading);
 
 const Formatters = Loader(
   () => import(/* webpackChunkName: "formatters-example" */ './components/pages/Formatters'),
-  <div>Loading...</div>,
+  Loading,
 );
 
 const DependentField = Loader(
   () => import(/* webpackChunkName: "dependent-field" */ './components/pages/DependentField'),
-  <div>Loading...</div>,
+  Loading,
 );
 
 const DynamicField = Loader(
   () => import(/* webpackChunkName: "dynamic-field" */ './components/pages/DynamicField'),
-  <div>Loading...</div>,
+  Loading,
 );
 const ExtraFields = Loader(
   () => import(/* webpackChunkName: "extra-field" */ './components/pages/ExtraFields'),
-  <div>Loading...</div>,
+  Loading,
 );
 const RegularForm = Loader(
   () => import(/* webpackChunkName: "regular-form" */ './components/pages/RegularForm'),
-  <div>Loading...</div>,
+  Loading,
 );
-const Styling = Loader(
-  () => import(/* webpackChunkName: "styling" */ './components/pages/Styling'),
-  <div>Loading...</div>,
-);
-const AsFieldHoc = Loader(
-  () => import(/* webpackChunkName: "asfield-hoc" */ './components/pages/asFieldHOC'),
-  <div>Loading...</div>,
-);
+const Styling = Loader(() => import(/* webpackChunkName: "styling" */ './components/pages/Styling'), Loading);
+const AsFieldHoc = Loader(() => import(/* webpackChunkName: "asfield-hoc" */ './components/pages/asFieldHOC'), Loading);
+const Theme = Loader(() => import(/* webpackChunkName: "theme" */ './components/pages/Theme'), Loading);
 
 const Dummy = () => <div>@TODO</div>;
 
@@ -65,6 +55,7 @@ export const pages = [
   ['/with-redux', 'With Redux', Dummy],
   ['/with-react-router', 'With React Router', Dummy],
   ['/asfield-hoc', 'asField HOC', AsFieldHoc],
+  ['/theme', 'Theming', Theme],
 ];
 
 class Routes extends PureComponent {

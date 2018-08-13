@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.17
+
+- [field] change the html structure to allow better sibling selectors for the input
+- [field] use the Field component in the Radios component.
+- [exmaple] add material theme example
+
 ## 0.2.16
 
 - [field] fix icon propType on Field (element -> node)
