@@ -1,7 +1,7 @@
 /* eslint-disable react/prefer-stateless-function, jsx-a11y/label-has-for */
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
-import { classes, emptyArray, noop } from '@swan-form/helpers';
+import { classes, emptyArray } from '@swan-form/helpers';
 import asField from './asField';
 import { Field } from './Field';
 
@@ -14,7 +14,7 @@ export interface Option {
 }
 
 function createRadio(option: Option, props: FieldProps) {
-  const id = `${name}-${('' + option.value).replace(/[^a-z0-9]{1,}/gi, '')}`;
+  const id = `${props.name}-${('' + option.value).replace(/[^a-z0-9]{1,}/gi, '')}`;
   const isChecked = props.value === option.value;
   // Reuse the `Field` component as the radio button, but use create a unique id for the field
   // also, override the value and label for the radio with the values passed as the option
