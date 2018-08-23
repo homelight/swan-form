@@ -36,10 +36,14 @@ export interface AsFieldProps {
   validateWhileTyping?: boolean;
   validateDebounceTimeout?: number;
   checked?: boolean;
-  onChange?(newValue: any, name: string): void;
-  onClick?(target: FieldElement): void;
-  onFocus?(target: FieldElement): void;
-  onBlur?(target: FieldElement): void;
+  onChange(event: GenericChangeEvent): void;
+  onClick(event: GenericClickEvent): void;
+  onFocus(event: GenericFocusEvent): void;
+  onBlur(event: GenericFocusEvent): void;
+  // onChange?(newValue: any, name: string): void;
+  // onClick?(target: FieldElement): void;
+  // onFocus?(target: FieldElement): void;
+  // onBlur?(target: FieldElement): void;
   // handleKeyPress?(event: FieldKeyboardEvent): void;
   handleKeyPress?(
     keyCode: number,
@@ -57,41 +61,49 @@ export interface AsFieldProps {
 }
 
 export interface WrappedComponentProps {
-  // onChange(event: GenericChangeEvent): void;
-  // onInput(event: GenericChangeEvent): void;
-  // onBlur(event: GenericFocusEvent): void;
-  // onFocus(event: GenericFocusEvent): void;
-  // onClick(event: GenericClickEvent): void;
-  // setRef(element: FieldElement): void;
-  // getValue(): any;
-  // setValue(value: any): void;
-  ref: any; // more strong type this
-  // value: any;
-  // errors: string[];
-  // isValid: boolean;
-  [key: string]: any;
+  onChange(event: GenericChangeEvent): void;
+  onBlur(event: GenericFocusEvent): void;
+  onFocus(event: GenericFocusEvent): void;
+  onClick(event: GenericClickEvent): void;
+  setRef: (element: any) => void;
+  getValue: () => any;
+  setValue: (value: any) => void;
+  value: any;
+  errors: (string | false)[];
+  isValid: boolean;
 }
 
-export interface FieldProps extends WrappedComponentProps {
+export interface FieldProps {
   type: string;
   name: string;
-  value: any;
+
+  autoComplete?: string;
+  checked?: boolean;
+  children?: React.ReactNode;
+  className?: string;
+  icon?: React.ReactNode;
   id?: string;
   label?: React.ReactNode;
-  icon?: React.ReactNode;
-  className?: string;
-  children?: React.ReactNode;
-  errors: string[];
-  checked?: boolean;
-  defaultChecked?: boolean;
   required?: boolean;
 
   style?: React.CSSProperties;
   options?: any;
-  getValue?(): any;
-  setValue?(value: any): void;
-  setRef(element: HTMLElement): void;
+
+  // Provided by asField
+  setRef: (instance: HTMLElement | HTMLInputElement | null) => any;
+  value: any;
+  onChange(event: GenericChangeEvent): void;
+  onBlur(event: GenericFocusEvent): void;
+  onFocus(event: GenericFocusEvent): void;
+  onClick(event: GenericClickEvent): void;
+  // setRef: (element: any) => void;
+  getValue: () => any;
+  setValue: (value: any) => void;
+  errors: (string | false)[];
   isValid: boolean;
+
+  // Allow others to come through
+  [key: string]: any;
 }
 
 export interface AsFieldState {

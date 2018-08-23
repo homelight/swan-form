@@ -1,5 +1,6 @@
 import isFunction from 'lodash/isFunction';
-import emptyArray from './emptyArray';
+
+const emptyArray: any[] = [];
 
 export type ValidateFn = (value: any) => string | false;
 

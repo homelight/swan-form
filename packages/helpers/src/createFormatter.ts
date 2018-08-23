@@ -1,4 +1,6 @@
-// functionally equivalent to String.repeat(int);
+/**
+ *  functionally equivalent to String.repeat(int);
+ */
 function repeat(str: string, count: number) {
   const out = new Array(count);
   for (let i = 0; i < count; i++) {
@@ -7,7 +9,9 @@ function repeat(str: string, count: number) {
   return out.join('');
 }
 
-// functionally equivalent to String.padStart(length, str);
+/**
+ * functionally equivalent to String.padStart(length, str);
+ */
 function padStart(str: string, targetLength: number, padStr: string) {
   if (str.length > targetLength) {
     return str;
@@ -20,6 +24,9 @@ function padStart(str: string, targetLength: number, padStr: string) {
   return padStr.slice(0, targetLen) + str;
 }
 
+/**
+ * Creates a reusable transformer function
+ */
 function createTransformer(transformer: (value: string) => string) {
   return function transform(value: string, cursor: number): { value: string; cursor: number } {
     const leftValue = value.slice(0, cursor);
@@ -32,6 +39,9 @@ function createTransformer(transformer: (value: string) => string) {
   };
 }
 
+/**
+ * Gets a patterns for an unbounded mask
+ */
 function getPattern(pattern: string, wildcard: string, valueRawLen: number): string {
   const patternRawLen = pattern.match(new RegExp(wildcard, 'g'))!.length || 0;
   const pFormattingChars = pattern.length - patternRawLen;
@@ -42,6 +52,9 @@ function getPattern(pattern: string, wildcard: string, valueRawLen: number): str
     .join('');
 }
 
+/**
+ * Creates a reusable masking function
+ */
 function createMask(pattern: string, wildcard: string, unbound: boolean) {
   return function mask({ value, cursor }: { value: string; cursor: number }): [string, number] {
     // Unmasked value
