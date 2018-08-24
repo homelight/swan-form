@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import * as PropTypes from 'prop-types';
+// import * as PropTypes from 'prop-types';
 import { asField, Field } from '@swan-form/field';
 
 const states = [
@@ -76,20 +76,20 @@ export interface AddressProps {
 class AddressField extends Component<AddressProps, any> {
   static displayName = 'ComposedAddressField';
 
-  static propTypes = {
-    autoFocus: PropTypes.bool,
-    value: PropTypes.shape({
-      line1: PropTypes.string,
-      line2: PropTypes.string,
-      city: PropTypes.string,
-      state: PropTypes.string,
-      zip: PropTypes.string,
-    }),
-    name: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired,
-    label: PropTypes.string, // eslint-disable-line
-    className: PropTypes.string,
-  };
+  // static propTypes = {
+  //   autoFocus: PropTypes.bool,
+  //   value: PropTypes.shape({
+  //     line1: PropTypes.string,
+  //     line2: PropTypes.string,
+  //     city: PropTypes.string,
+  //     state: PropTypes.string,
+  //     zip: PropTypes.string,
+  //   }),
+  //   name: PropTypes.string.isRequired,
+  //   onChange: PropTypes.func.isRequired,
+  //   label: PropTypes.string, // eslint-disable-line
+  //   className: PropTypes.string,
+  // };
 
   static defaultProps = {
     autoFocus: false,

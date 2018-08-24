@@ -83,7 +83,7 @@ const emptyArray: any[] = [];
 /**
  * Determines initial value for a field based on a few different props
  */
-const getInitialValue = <P extends AsFieldProps>(props: P & ContextProps) => {
+export const getInitialValue = <P extends AsFieldProps>(props: P & ContextProps) => {
   const { defaultValue, value, defaultChecked, checked, type, defaultFormValues = {} } = props;
   const { [props.name]: initialValue } = defaultFormValues;
 

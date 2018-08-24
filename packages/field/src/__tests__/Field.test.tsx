@@ -23,7 +23,7 @@ describe('Determine Initial Value', () => {
   });
 
   it('should default to an array with a single string when it is a multiple select', () => {
-    expect(getInitialValue({ name: 'test', type: 'select', multiple: true })).toEqual(expect.arrayContaining(['']));
+    expect(getInitialValue({ name: 'test', type: 'select', multiple: true })).toEqual(expect.arrayContaining([]));
   });
 
   it('should allow defaultValue to succeed if value is explicitly undefined', () => {
