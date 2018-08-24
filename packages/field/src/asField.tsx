@@ -93,7 +93,7 @@ const getInitialValue = <P extends AsFieldProps>(props: P & ContextProps) => {
 
   switch (type) {
     case 'checkbox':
-      return findValue(!!checked, !!initialValue, !!defaultChecked, false);
+      return findValue(checked, initialValue, defaultChecked, false);
     case 'number':
       return findValue(value, initialValue, defaultValue, null);
     case 'select':
@@ -105,6 +105,7 @@ const getInitialValue = <P extends AsFieldProps>(props: P & ContextProps) => {
 
 const removeProps = [
   'defaultValue',
+  'defaultChecked',
   'registerWithForm',
   'unregisterFromForm',
   'format',
