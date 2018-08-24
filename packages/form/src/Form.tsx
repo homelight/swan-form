@@ -57,6 +57,8 @@ class Form extends React.PureComponent<FormProps, FormState> {
     formAutoComplete: true,
   };
 
+  static displayName = 'Form';
+
   constructor(props: FormProps) {
     super(props);
     this.initialState = {

@@ -2,6 +2,7 @@ import * as React from 'react';
 import { clamp, isFunction } from 'lodash';
 import { Form } from '@swan-form/form';
 import { classes, execIfFunc } from '@swan-form/helpers';
+import { SlideProps } from './Slide';
 
 export interface SliderProps {
   formName?: string;
@@ -15,7 +16,7 @@ export interface SliderProps {
   beforeSubmit?(values: { [key: string]: any } | Promise<{ [key: string]: any }>): Promise<{ [key: string]: any }>;
   onSubmit(values: { [key: string]: any } | Promise<{ [key: string]: any }>): Promise<{ [key: string]: any }>;
   afterSubmit?(values: { [key: string]: any } | Promise<{ [key: string]: any }>): Promise<{ [key: string]: any }>;
-  commonProps?: { [key: string]: any };
+  common?: { [key: string]: any };
   defaultValues?: { [key: string]: any };
 }
 
@@ -44,34 +45,38 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
       nextSlide: this.next,
       prevSlide: this.prev,
       setRef: this.setCurrentSlideRef,
-      ...this.props.commonProps,
+      common: this.props.common!,
     };
 
     this.mounted = false;
   }
 
   static defaultProps = {
-    current: 0,
     autoComplete: 'off',
-    PrevButton: '←',
-    NextButton: '→',
-    FinishButton: '→',
-    beforeSubmit: (values: object | Promise<object>) => Promise.resolve(values),
     afterSubmit: (values: object | Promise<object>) => Promise.resolve(values),
+    beforeSubmit: (values: object | Promise<object>) => Promise.resolve(values),
     commonProps: {},
-    formName: 'slider-form',
+    current: 0,
     defaultValues: {},
+    FinishButton: '→',
+    formName: 'slider-form',
+    NextButton: '→',
+    PrevButton: '←',
   };
+
+  static displayName = 'Slider';
 
   injectSlideProps: {
     getFormValues(): { [key: string]: any };
     nextSlide(): void;
     prevSlide(): void;
     setRef(el: any): void;
-    [key: string]: any;
+    common: { [key: string]: any };
   };
 
+  // This is actually an instantiated slide
   currentSlide: any;
+  // This is a ref to the form
   form: any;
   mounted: boolean;
 
@@ -80,13 +85,6 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
   }
 
   componentDidUpdate(_: SliderProps, prevState: SliderState) {
-    // Since we're using indices to keep track of progress, we _could_ get off track if one
-    // disappears, so we're going to disallow dynamically manipulating the children
-    // invariant(
-    //   React.Children.count(this.props.children) === React.Children.count(prevProps.children),
-    //   'Dynamically adding or removing slides is not supported. This may result in advancing to ' +
-    //     'the wrong slides. Check the render method that uses <Slider />'
-    // );
     // Run any didEnter* slide hooks here
     const { didEnter, didEnterAsPrev, didEnterAsNext } = this.currentSlide.props;
     if (prevState.current > this.state.current && didEnterAsPrev) {
@@ -265,7 +263,7 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
           ref={this.setFormRef}
           defaultValues={defaultValues}
         >
-          {React.cloneElement(slide as any, this.injectSlideProps)}
+          {React.cloneElement(slide as React.ReactElement<SlideProps>, this.injectSlideProps)}
         </Form>
       </div>
     );

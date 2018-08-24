@@ -129,7 +129,8 @@ export const identity = (x: any): any => x;
 /**
  * An easier way to call Object.prototype.hasOwnProperty.call
  */
-export const hasOwnProperty = (obj: any, prop: string): boolean => Object.prototype.hasOwnProperty.call(obj, prop);
+export const hasOwnProperty = (obj: any, prop: string): boolean =>
+  isNull(obj) || !isDefined(obj) ? false : Object.prototype.hasOwnProperty.call(obj, prop);
 
 /**
  * Composes HOCs with some type safety. Composed as (inner, middle, outer)
@@ -167,12 +168,12 @@ export const gatherErrors = (
  * Attempts to transform a ReactNode into a uniqueish key
  */
 export const toKey = (arg: React.ReactNode): string | number => {
-  if (isNull(arg) || isDefined(arg)) {
-    return '';
-  }
-
   if (typeof arg === 'string' || typeof arg === 'number') {
     return arg;
+  }
+
+  if (isNull(arg) || isDefined(arg)) {
+    return '';
   }
 
   if (hasOwnProperty(arg, 'toString')) {

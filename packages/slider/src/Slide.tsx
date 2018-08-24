@@ -10,6 +10,10 @@ const alwaysTrue = () => true;
 
 export interface InjectedProps {
   setRef?(el: any): void;
+  getFormValues?(): { [key: string]: any };
+  nextSlide?(): void;
+  prevSlide?(): void;
+  [key: string]: any;
 }
 
 export interface SlideProps extends InjectedProps {
@@ -20,9 +24,9 @@ export interface SlideProps extends InjectedProps {
   didEnter?: boolean;
   didEnterAsPrev?: boolean;
   didEnterAsNext?: boolean;
-  beforeExit?(props: object): Promise<boolean>;
-  beforeExitToPrev?(props: object): Promise<boolean>;
-  beforeExitToNext?(props: object): Promise<boolean>;
+  beforeExit?(props: SlideProps): Promise<boolean>;
+  beforeExitToPrev?(props: SlideProps): Promise<boolean>;
+  beforeExitToNext?(props: SlideProps): Promise<boolean>;
   render?(slideProps: any): React.ReactNode;
   style?: React.CSSProperties;
   validate?(values: { [key: string]: any }): React.ReactNode[];
@@ -48,12 +52,12 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
     this.fields = {};
     this.getSlideInterface = memoize(this.getSlideInterface.bind(this));
 
+    this.state = { errors: emptyArray };
+
     // maybe move this elsewhere?
     if (isFunction(props.setRef)) {
       props.setRef(this);
     }
-
-    this.state = { errors: emptyArray };
   }
 
   static propTypes = {
@@ -79,6 +83,8 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
     shouldShowIf: alwaysTrue,
     style: emptyObject,
   };
+
+  static displayName = 'Slide';
 
   componentDidMount() {
     this.mounted = true;
@@ -116,8 +122,38 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
     return {
       registerWithSlide: this.registerWithSlide,
       unregisterFromSlide: this.unregisterFromSlide,
+      advance: this.advance,
+      retreat: this.retreat,
     };
   }
+
+  advance = (event: React.KeyboardEvent<any>) => {
+    const fields = Object.keys(this.fields);
+    const field = fields.filter(name => this.fields[name].getRef() === event.target)[0];
+    if (field) {
+      const fieldIndex = fields.indexOf(field);
+      const nextField = fields[fieldIndex + 1];
+      if (nextField) {
+        this.fields[nextField].focus();
+      } else {
+        this.props.nextSlide!();
+      }
+    }
+  };
+
+  retreat = (event: React.KeyboardEvent<any>) => {
+    const fields = Object.keys(this.fields);
+    const field = fields.filter(name => this.fields[name].getRef() === event.target)[0];
+    if (field) {
+      const fieldIndex = fields.indexOf(field);
+      const prevField = fields[fieldIndex - 1];
+      if (prevField) {
+        this.fields[prevField].focus();
+      } else {
+        this.props.prevSlide!();
+      }
+    }
+  };
 
   isSlideValid = () => {
     const fieldErrors = gatherErrors(this.fields, true);

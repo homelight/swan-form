@@ -8,7 +8,7 @@ import { uglify } from 'rollup-plugin-uglify';
 import { terser } from 'rollup-plugin-terser';
 import typescript from 'rollup-plugin-typescript2';
 
-const packages = ['helpers', 'field', 'form', 'slider'];
+const packages = ['helpers', 'field', 'form', 'slider', 'extra-fields'];
 // NOTE: if we add other formats, we need to change the `config` function
 const formats = ['es', 'cjs'];
 
@@ -62,7 +62,14 @@ const config = (pkg, format) => {
       commonjs({
         include: 'node_modules/**',
         namedExports: {
-          'node_modules/react/index.js': ['Component', 'PureComponent', 'Fragment', 'Children', 'createElement'],
+          'node_modules/react/index.js': [
+            'Component',
+            'PureComponent',
+            'Fragment',
+            'Children',
+            'createElement',
+            'createContext',
+          ],
         },
       }),
       typescript({

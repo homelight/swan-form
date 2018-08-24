@@ -9,6 +9,7 @@ export interface Option {
 
 export interface RadiosProps {
   name: string;
+  autoFocus?: boolean;
   [key: string]: any;
 }
 

@@ -7,7 +7,10 @@ import { Form } from '@swan-form/form';
 import { hot } from 'react-hot-loader';
 
 /* eslint-disable no-console */
-const onSubmit = values => console.log(values);
+const onSubmit = values => {
+  console.log(values);
+  return Promise.resolve(values);
+};
 /* eslint-enable no-console */
 
 const toWrap = ({ name, onChange, value, placeholder, setRef }) => (
@@ -31,25 +34,23 @@ class asFieldHOC extends Component {
       aWrappedFormInput: '',
       aWrappedFormInput2: '',
     };
-
-    this.change1 = this.onChange.bind(this, 'aWrappedFormInput');
-    this.change2 = this.onChange.bind(this, 'aWrappedFormInput2');
   }
 
-  onChange(name, value) {
+  onChange = event => {
+    const { name, value } = event.target;
     this.setState(prevState => Object.assign({}, prevState, { [name]: value }));
-  }
+  };
 
   render() {
     return (
       <Form name="test" onSubmit={onSubmit}>
         <p>
           Stateless Input Component Wrapped with HOC:{' '}
-          <Wrapped name="aWrappedFormInput" onChange={this.change1} placeholder="test" />
+          <Wrapped name="aWrappedFormInput" onChange={this.onChange} placeholder="test" />
         </p>
         <p>
           ES6 Class Based Input Component Wrapped with HOC:{' '}
-          <WrappedClass name="aWrappedFormInput2" onChange={this.change2} placeholder="test" />
+          <WrappedClass name="aWrappedFormInput2" onChange={this.onChange} placeholder="test" />
         </p>
         <h4>Values</h4>
         {Object.keys(this.state).map(key => (

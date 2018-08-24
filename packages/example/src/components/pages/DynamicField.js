@@ -13,18 +13,23 @@ class EditableDisplay extends Component {
       editing: false,
       value: props.value,
     };
-    this.onClick = this.onClick.bind(this);
-    this.onBlur = this.onBlur.bind(this);
   }
 
-  onClick() {
+  onClick = () => {
     this.setState(prevState => ({
       ...prevState,
       editing: true,
     }));
-  }
+  };
 
-  onBlur(target) {
+  onKeyDown = event => {
+    if (event.key === 'Enter') {
+      this.onBlur(event);
+    }
+  };
+
+  onBlur = event => {
+    const target = event.target;
     if (target.name !== this.props.name) {
       return;
     }
@@ -35,7 +40,7 @@ class EditableDisplay extends Component {
       editing: false,
       value: target.value,
     }));
-  }
+  };
 
   render() {
     const { name, type } = this.props;
@@ -45,7 +50,7 @@ class EditableDisplay extends Component {
           type={type || 'text'}
           name={name}
           value={this.state.value}
-          handleEnterKey={this.onBlur}
+          onKeyDown={this.onKeyDown}
           onBlur={this.onBlur}
           autoFocus
         />

@@ -16,8 +16,7 @@ export interface FieldProps {
   setRef(el: any): void;
   onChange(event: React.ChangeEvent<any>): void;
   onBlur(event: React.FocusEvent<any>): void;
-  onFocus(event: React.FocusEvent<any>): void;
-  onClick(event: React.MouseEvent<any>): void;
+  setValue(value: any): void;
   style?: React.CSSProperties;
   options?: any;
   isSet?: boolean;
@@ -144,12 +143,14 @@ function renderOptions(options: any | any[]): React.ReactNode {
 /* eslint-enable no-use-before-define */
 
 export class Field extends React.PureComponent<FieldProps, {}> {
+  static displayName = 'Field';
+
   shouldWrapInLabel = () => !NO_WRAP.includes(this.props.type);
 
   getId = () => this.props.id || this.props.name;
 
   getInput = (appliedClasses = '') => {
-    const { errors, className, label, type, icon, setRef, options, ...props } = this.props;
+    const { errors, className, label, type, icon, setRef, options, setValue, ...props } = this.props;
     const id = this.getId();
 
     /**

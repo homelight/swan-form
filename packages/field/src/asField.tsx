@@ -1,7 +1,8 @@
 import * as React from 'react';
-import { isFunction, isEqual } from 'lodash';
+import { isFunction, isEqual, memoize } from 'lodash';
 
 import {
+  AsFieldContext,
   canAccessSelectionStart,
   composeHOCs,
   execIfFunc,
@@ -14,19 +15,23 @@ import {
   isNull,
   maybeApply,
   moveCursor,
-  AsFieldContext,
   withAsField,
   withForm,
   withSlide,
 } from '@swan-form/helpers';
 
-const emptyArray: any[] = [];
+export type RegisterType = {
+  name: string;
+  getValue(): void;
+  setValue(value: any): void;
+  reset(): void;
+  validate(values: { [key: string]: any }, updateErrors: boolean): React.ReactNode[];
+  focus(): void;
+};
 
 export interface AsFieldProps {
   name: string;
-
   type?: string;
-
   autoFocus?: boolean;
   autoComplete?: string;
   defaultValue?: any;
@@ -37,34 +42,34 @@ export interface AsFieldProps {
   validateOnChange?: boolean;
   validateOnBlur?: boolean;
   validateDebounceTimeout?: boolean;
+  register?: boolean;
   format?(value: any, cursor: number | null): [any, number | null];
   unformat?(value: any): any;
   onBlur?(event: React.FocusEvent<any>): void;
-  onFocus?(event: React.FocusEvent<any>): void;
-  onClick?(event: React.MouseEvent<any>): void;
   onChange?(event: React.ChangeEvent<any>): void;
+  onKeyDown?(event: React.KeyboardEvent<any>): void;
   validate?:
     | ((value: any) => React.ReactNode | React.ReactNode[])
     | ((value: any) => React.ReactNode | React.ReactNode[])[];
+  [key: string]: any;
 }
 
 export interface ContextProps {
   // From FormContext
-  registerWithForm?(payload: any): void;
-  unregisterFromForm?(payload: any): void;
+  registerWithForm?(payload: RegisterType): void;
+  unregisterFromForm?(name: string): void;
   formAutoComplete?: boolean;
   defaultFormValues: { [key: string]: any };
 
-  onKeyDown?(event: React.KeyboardEvent<any>): void;
-
   // From SlideContext
-  registerWithSlide?(payload: any): void;
+  registerWithSlide?(payload: RegisterType): void;
   unregisterFromSlide?(name: string): void;
-}
+  advance?(event: React.KeyboardEvent<any>): void;
+  retreat?(event: React.KeyboardEvent<any>): void;
 
-export interface WrapperProps extends ContextProps {
-  doNotRegister?: boolean;
-  [key: string]: any;
+  // From AsFieldContext
+  registerWithField?(payload: RegisterType): void;
+  unregisterFromField?(name: string): void;
 }
 
 export interface AsFieldState {
@@ -72,6 +77,8 @@ export interface AsFieldState {
   value: any;
   cursor?: number | null;
 }
+
+const emptyArray: any[] = [];
 
 /**
  * Determines initial value for a field based on a few different props
@@ -118,13 +125,15 @@ const removeProps = [
   'unregisterFromSlide',
   'registerWithField',
   'unregisterFromField',
+  'defaultFormValues',
+  'register',
+  'advance',
+  'retreat',
 ];
 
 export interface InjectedProps {
-  onBlur(event: React.FocusEvent<any>): void;
-  onFocus(event: React.FocusEvent<any>): void;
+  onBlur?(event: React.FocusEvent<any>): void;
   onChange(event: React.ChangeEvent<any>): void;
-  onClick(event: React.MouseEvent<any>): void;
   setRef(el: any): void;
   autoComplete: string;
   errors: React.ReactNode[];
@@ -152,16 +161,21 @@ const asField = <P extends AsFieldProps>(
         errors: [],
       };
       this.fieldInterface = {
-        registerWithField: this.register,
-        unregisterFromField: this.unregister,
+        registerWithField: this.registerWithField,
+        unregisterFromField: this.unregisterFromField,
       };
+
+      this.getMaybeProps = memoize(this.getMaybeProps.bind(this));
     }
 
     static defaultProps = {
       format: (value: any, cursor: number | null = null) => [value, cursor],
       unformat: identity,
       validateDebounceTimeout: 100,
+      register: true,
     };
+
+    static displayName = `AsField(${WrappedComponent.displayName || 'Component'})`;
 
     autoComplete: string;
     fieldInterface: {
@@ -173,17 +187,25 @@ const asField = <P extends AsFieldProps>(
     initialValue: any;
     innerRef: any;
     validateDebounceTimer: number | undefined;
+    dynamicHandlers: { [key: string]: Function };
 
     componentDidMount() {
-      const { registerWithForm, name, registerWithSlide, autoFocus, type } = this.props;
-      const { getValue, setValue, reset, validate, focus } = this;
-      execIfFunc(registerWithForm, { name, getValue, setValue, reset, validate, focus });
-      execIfFunc(registerWithSlide, { name, getValue, setValue, reset, validate, focus });
+      const { registerWithForm, name, registerWithSlide, registerWithField, autoFocus, type, register } = this.props;
+      const { getValue, setValue, reset, validate, focus, getRef } = this;
 
+      // If the `register` prop is set to false (defaults to true), then we register with any form or slide above
+      // (i.e. we can halt a passthrough)
+      if (register) {
+        execIfFunc(registerWithForm, { name, getValue, setValue, reset, validate, focus, getRef });
+        execIfFunc(registerWithSlide, { name, getValue, setValue, reset, validate, focus, getRef });
+      }
+      // Always register with fields that are above (i.e. there is always passthrough)
+      execIfFunc(registerWithField, { name, getValue, setValue, reset, validate, focus, getRef });
+
+      // Emulate the browser autoFocus if (1) requested and (2) possible
       if (!autoFocus || !this.innerRef) {
         return;
       }
-      // Emulate the browser autoFocus if (1) requested and (2) possible
 
       // Actually focus on the field
       this.innerRef.focus();
@@ -205,21 +227,21 @@ const asField = <P extends AsFieldProps>(
     }
 
     componentWillUnmount() {
-      const { name, unregisterFromForm, unregisterFromSlide } = this.props;
-      execOrMapFn([unregisterFromForm, unregisterFromSlide], name);
+      const { name, unregisterFromForm, unregisterFromSlide, unregisterFromField } = this.props;
+      execOrMapFn([unregisterFromForm, unregisterFromSlide, unregisterFromField], name);
     }
 
     /**
      * Registers sub-fields, passed as a prop through context
      */
-    register = (payload: any) => {
+    registerWithField = (payload: any) => {
       this.fields[payload.name] = { ...payload };
     };
 
     /**
      * Unregisters sub-fields, passed as a prop through context
      */
-    unregister = (name: string) => {
+    unregisterFromField = (name: string) => {
       const { [name]: _, ...rest } = this.fields;
       this.fields = rest;
     };
@@ -238,6 +260,8 @@ const asField = <P extends AsFieldProps>(
       this.setState({ value, cursor });
     };
 
+    getRef = () => this.innerRef;
+
     /**
      * Resets field to initial state
      */
@@ -249,15 +273,38 @@ const asField = <P extends AsFieldProps>(
       Object.keys(fields).forEach(field => execIfFunc(fields[field].reset));
     };
 
-    handleOnKeyDown = (event: React.KeyboardEvent<any>) => {
-      event.persist();
-      maybeApply(this.props.onKeyDown, event);
-    };
-
     /**
      * Convenience function to determine if something is a multiselect
      */
     isMultiSelect = () => this.props.type === 'select' && this.props.multiple;
+
+    /**
+     * These are props (event handlers) that are passed down only if the user supplies certain props
+     */
+    getMaybeProps() {
+      const { onBlur, validateOnBlur } = this.props;
+      const out: { [key: string]: (event: any) => void } = {};
+
+      if (isFunction(onBlur) || validateOnBlur) {
+        out.onBlur = this.handleOnBlur;
+      }
+
+      return out;
+    }
+
+    handleOnKeyDown = (event: React.KeyboardEvent<any>) => {
+      const { advance, retreat, type } = this.props;
+
+      if (isFunction(this.props.onKeyDown)) {
+        event.persist();
+      }
+      if (event.key === 'Enter') {
+        if (!['textarea', 'button', 'submit', 'reset'].includes(type!)) {
+          event.preventDefault();
+        }
+        execIfFunc(event.shiftKey ? retreat : advance, event);
+      }
+    };
 
     /**
      * Generic change event for inner field
@@ -315,17 +362,6 @@ const asField = <P extends AsFieldProps>(
     };
 
     /**
-     * Generic focus handler for user-supplied callback
-     */
-    handleOnFocus = (event: React.FocusEvent<any>) => {
-      const { onFocus } = this.props;
-      if (isFunction(onFocus)) {
-        event.persist();
-        onFocus(event);
-      }
-    };
-
-    /**
      * Generic blur handler for user-supplied callback, also does validation based on validateOnBlur
      */
     handleOnBlur = (event: React.FocusEvent<any>) => {
@@ -338,17 +374,6 @@ const asField = <P extends AsFieldProps>(
 
       if (isFunction(onBlur)) {
         onBlur(event);
-      }
-    };
-
-    /**
-     * Generic click handler for user-supplied callback
-     */
-    handleOnClick = (event: React.MouseEvent<any>) => {
-      const { onClick } = this.props;
-      if (isFunction(onClick)) {
-        event.persist();
-        onClick(event);
       }
     };
 
@@ -412,14 +437,15 @@ const asField = <P extends AsFieldProps>(
         <AsFieldContext.Provider value={this.fieldInterface}>
           <WrappedComponent
             {...props}
+            {...this.getMaybeProps()}
+            {...this.dynamicHandlers}
             autoComplete={autoCompleteValue}
             errors={this.state.errors}
-            onFocus={this.handleOnFocus}
-            onBlur={this.handleOnBlur}
-            onClick={this.handleOnClick}
             onChange={this.handleOnChange}
             value={isDefined(value) && !isNull(value) ? value : ''}
             setRef={this.setRef}
+            setValue={this.setValue}
+            onKeyDown={this.handleOnKeyDown}
           />
         </AsFieldContext.Provider>
       );

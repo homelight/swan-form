@@ -6,7 +6,6 @@ import Field from './Field';
 export interface ResetProps {
   name: string;
   value: string;
-  resetFunction?(): void;
   className?: string;
 }
 
@@ -16,10 +15,6 @@ export default class Reset extends React.Component<ResetProps> {
     value: PropTypes.string,
     resetFunction: PropTypes.func, // eslint-disable-line
     className: PropTypes.string,
-  };
-
-  static contextTypes = {
-    reset: PropTypes.func.isRequired,
   };
 
   static defaultProps = {

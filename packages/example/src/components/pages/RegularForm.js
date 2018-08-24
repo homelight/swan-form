@@ -55,8 +55,8 @@ class RegularForm extends Component {
                 name="minTenField"
                 validate={tenAndAlpha}
                 label="This is a label"
-                asyncValidate
-                validateWhileTyping
+                validateOnBlur
+                validateOnChange
                 placeholder="test"
                 value="testing12345"
                 required
@@ -107,7 +107,7 @@ class RegularForm extends Component {
                 className="remove-fieldset-styling"
                 label="Radio Set"
                 options={[{ label: 'first', value: 'first' }, { label: 'second', value: 'second' }]}
-                value="second"
+                value="first"
               />
               <pre>{fieldSetStyling}</pre>
             </div>
@@ -124,7 +124,7 @@ class RegularForm extends Component {
                 name="withPattern"
                 // validate={threeDigits}
                 pattern="[\d]{3}"
-                asyncValidate
+                validateOnBlur
                 placeholder="test2"
                 value={323}
                 label="field with pattern"
