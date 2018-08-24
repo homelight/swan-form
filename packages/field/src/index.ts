@@ -1,4 +1,3 @@
-export * from './common';
 import { default as asField } from './asField';
 import { default as Field } from './Field';
 import { default as Reset } from './Reset';
