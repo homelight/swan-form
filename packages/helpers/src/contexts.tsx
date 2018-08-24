@@ -26,22 +26,24 @@ export function withAsField<P extends IAsFieldContext>(Component: React.Componen
 }
 
 export interface IFormContext {
-  register: registerType;
-  unregister: unregisterType;
+  registerWithForm: registerType;
+  unregisterFromForm: unregisterType;
   formAutoComplete: boolean;
   isFormSubmitting: boolean;
   hasFormSubmitted: boolean;
+  defaultFormValues: { [key: string]: any };
   formErrors: React.ReactNode[];
 }
 
 const FormContext = React.createContext<IFormContext>({
   // @ts-ignore
-  register: payload => {},
+  registerWithForm: payload => {},
   // @ts-ignore
-  unregister: name => {},
+  unregisterFromForm: name => {},
   formAutoComplete: true,
   isFormSubmitting: false,
   hasFormSubmitted: false,
+  defaultFormValues: {},
   formErrors: [],
 });
 
@@ -58,13 +60,26 @@ export function withFormErrors<P extends { formErrors: React.ReactNode[] }>(Comp
   };
 }
 
-export function withForm<P extends { register: registerType; unregister: unregisterType }>(
-  Component: React.ComponentType<P>,
-) {
+export function withForm<
+  P extends {
+    registerWithForm: registerType;
+    unregisterFromForm: unregisterType;
+    formAutoComplete: boolean;
+    defaultFormValues: { [key: string]: any };
+  }
+>(Component: React.ComponentType<P>) {
   return function FormComponent(props: { [key: string]: any }) {
     return (
       <FormContext.Consumer>
-        {({ register, unregister }) => <Component {...props} register={register} unregister={unregister} />}
+        {({ registerWithForm, unregisterFromForm, formAutoComplete, defaultFormValues }) => (
+          <Component
+            {...props}
+            registerWithForm={registerWithForm}
+            unregisterFromForm={unregisterFromForm}
+            formAutoComplete={formAutoComplete}
+            defaultFormValues={defaultFormValues}
+          />
+        )}
       </FormContext.Consumer>
     );
   };

@@ -85,6 +85,18 @@ export const isDefined = (arg: any) => typeof arg !== 'undefined';
  * Checks if the arg is null
  */
 export const isNull = (arg: any) => arg === null;
+
+/**
+ * Checks if the argument is `thennable`
+ */
+export const isPromise = (obj: any): boolean =>
+  !!obj && ['function', 'object'].includes(typeof obj) && isFunction(obj.then);
+
+/**
+ * Wraps an object in a Promise.resolve if it is not thennable
+ */
+export const maybePromisify = (obj: any) => (isPromise(obj) ? obj : Promise.resolve(obj));
+
 /**
  * Returns first defined value, defaults to empty string
  */

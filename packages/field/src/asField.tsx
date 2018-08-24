@@ -49,12 +49,15 @@ export interface AsFieldProps {
 }
 
 export interface ContextProps {
-  register?(payload: any): void;
-  unregister?(payload: any): void;
+  // From FormContext
+  registerWithForm?(payload: any): void;
+  unregisterFromForm?(payload: any): void;
   formAutoComplete?: boolean;
-  onKeyDown?(event: React.KeyboardEvent<any>): void;
-  initialFormValues: { [key: string]: any };
+  defaultFormValues: { [key: string]: any };
 
+  onKeyDown?(event: React.KeyboardEvent<any>): void;
+
+  // From SlideContext
   registerWithSlide?(payload: any): void;
   unregisterFromSlide?(name: string): void;
 }
@@ -74,8 +77,8 @@ export interface AsFieldState {
  * Determines initial value for a field based on a few different props
  */
 const getInitialValue = <P extends AsFieldProps>(props: P & ContextProps) => {
-  const { defaultValue, value, defaultChecked, checked, type, initialFormValues = {} } = props;
-  const { [props.name]: initialValue } = initialFormValues;
+  const { defaultValue, value, defaultChecked, checked, type, defaultFormValues = {} } = props;
+  const { [props.name]: initialValue } = defaultFormValues;
 
   if (props.multiple) {
     findValue(value, initialValue, defaultValue, []);
@@ -95,8 +98,8 @@ const getInitialValue = <P extends AsFieldProps>(props: P & ContextProps) => {
 
 const removeProps = [
   'defaultValue',
-  'register',
-  'unregister',
+  'registerWithForm',
+  'unregisterFromForm',
   'format',
   'formAutoComplete',
   'unformat',
@@ -172,9 +175,9 @@ const asField = <P extends AsFieldProps>(
     validateDebounceTimer: number | undefined;
 
     componentDidMount() {
-      const { register, name, registerWithSlide, autoFocus, type } = this.props;
+      const { registerWithForm, name, registerWithSlide, autoFocus, type } = this.props;
       const { getValue, setValue, reset, validate, focus } = this;
-      execIfFunc(register, { name, getValue, setValue, reset, validate, focus });
+      execIfFunc(registerWithForm, { name, getValue, setValue, reset, validate, focus });
       execIfFunc(registerWithSlide, { name, getValue, setValue, reset, validate, focus });
 
       if (!autoFocus || !this.innerRef) {
@@ -202,9 +205,8 @@ const asField = <P extends AsFieldProps>(
     }
 
     componentWillUnmount() {
-      const { name, unregister, unregisterFromSlide } = this.props;
-      execIfFunc(unregister, name);
-      execIfFunc(unregisterFromSlide, name);
+      const { name, unregisterFromForm, unregisterFromSlide } = this.props;
+      execOrMapFn([unregisterFromForm, unregisterFromSlide], name);
     }
 
     /**

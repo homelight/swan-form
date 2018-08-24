@@ -23,7 +23,7 @@ export interface FieldProps {
   isSet?: boolean;
 }
 
-const NO_WRAP = ['button', 'submit', 'reset'];
+const NO_WRAP = ['button', 'hidden', 'reset', 'submit'];
 
 const INPUT_TYPES = [
   'button',
