@@ -93,6 +93,7 @@ const getInitialValue = <P extends AsFieldProps>(props: P & ContextProps) => {
 
   switch (type) {
     case 'checkbox':
+    case 'radio':
       return findValue(checked, initialValue, defaultChecked, false);
     case 'number':
       return findValue(value, initialValue, defaultValue, null);
