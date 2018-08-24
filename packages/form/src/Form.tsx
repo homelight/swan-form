@@ -1,153 +1,90 @@
 import * as React from 'react';
-import * as PropTypes from 'prop-types';
-import isFunction from 'lodash/isFunction';
-import { hasOwnProperty, emptyArray, emptyObject } from '@swan-form/helpers';
-
-export type StrFalseArr = (string | false)[];
-
-export interface FieldInterface {
-  name: string;
-  getRef(): HTMLElement;
-  getValue(): any;
-  setValue(value: any): void;
-  validate(): StrFalseArr;
-  isValid(): boolean;
-  reset(): void;
-}
-
+import { classes, gatherErrors, maybePromisify, execIfFunc, isDefined, FormContext } from '@swan-form/helpers';
+import { memoize, isFunction } from 'lodash';
 /**
- * Duck-type check for a promise
+ * Note, since the submit hooks rely on promises, and since promises are not cancelable,
+ * we're wrapping handling them in checks to see if the component is mounted.
+ * Facebook considers this an antipattern.
+ *   (see https://reactjs.org/blog/2015/12/16/ismounted-antipattern.html)
  *
- * @todo  we might consider doing something better than this
- *
- * @param  {object} obj [description]
- * @return {boolean}     [description]
+ * But, since this is a library, we don't want to change how promises work.
  */
-const isPromise = (obj: any): boolean => !!obj && ['function', 'object'].includes(typeof obj) && isFunction(obj.then);
-
-const maybePromisify = (obj: any) => (isPromise(obj) ? obj : Promise.resolve(obj));
-
-// These are fields that we will automatically pull out of the form as they are just the
-// automatically generated names for the submit and reset buttons
-const fieldsToRemove = ['sf--reset', 'sf--submit'];
 
 export interface FormProps {
   name: string;
-  onSubmit(values: object | Promise<object>): object | Promise<object>;
-  children: React.ReactNode;
-  defaultValues?: object;
-  noValidate?: boolean;
-  autoComplete?: 'on' | 'off';
-  beforeSubmit?(values: object | Promise<object>): object | Promise<object>;
-  afterSubmit?(values: object | Promise<object>): object | Promise<object>;
+  onSubmit(values: { [key: string]: any }): Promise<{ [key: string]: any }>;
+
+  beforeSubmit(values: { [key: string]: any }): Promise<{ [key: string]: any }>;
+  afterSubmit(values: { [key: string]: any }): Promise<{ [key: string]: any }>;
+  onError?(error: string | Error | React.ReactNode | React.ReactNode[]): void;
+  autoComplete?: boolean;
   persist?: boolean;
+  style?: React.CSSProperties;
+  className?: string;
+  noValidate?: boolean;
+  defaultValues?: { [key: string]: any };
 }
 
 export interface FormState {
   isSubmitting: boolean;
   hasSubmitted: boolean;
-  hasSubmitError: boolean;
-  errors: StrFalseArr;
-  values: object;
+  formErrors: React.ReactNode[];
 }
 
-export default class Form extends React.PureComponent<FormProps, FormState> {
-  static propTypes = {
-    /**
-     * The name of the form
-     */
-    name: PropTypes.string.isRequired,
-    /**
-     * The function to run on submit
-     */
-    onSubmit: PropTypes.func.isRequired,
-    /**
-     * A preprocessor run on form values after validation but before submit
-     */
-    beforeSubmit: PropTypes.func, // eslint-disable-line
-    /**
-     * A function run after a successful submit
-     */
-    afterSubmit: PropTypes.func, // eslint-disable-line
-    /**
-     * Turn on or off autocomplete for forms (does not always work)
-     */
-    autoComplete: PropTypes.oneOf(['on', 'off']), // maybe change this to bool?
-    /**
-     * Turn off native form validation
-     */
-    noValidate: PropTypes.bool,
-    /**
-     * The form should have some fields
-     */
-    children: PropTypes.any.isRequired, // eslint-disable-line
-    /**
-     * Whether or not to keep the field values after the fields unmount
-     */
-    persist: PropTypes.bool,
-    /**
-     * The default values for the form.
-     *
-     * Note: this can be useful when using with a Slider, but if you're using the Form component
-     *       directly, then it is probably best to provide a `defaultValue` to the Field components
-     *       themselves
-     */
-    defaultValues: PropTypes.object,
-  };
+export type RegisterType = {
+  name: string;
+  getValue(): void;
+  setValue(value: any): void;
+  reset(): void;
+  validate(values: { [key: string]: any }, updateErrors: boolean): React.ReactNode[];
+  focus(): void;
+};
 
-  static childContextTypes = {
-    registerField: PropTypes.func,
-    unregisterField: PropTypes.func,
-    autoComplete: PropTypes.oneOf(['on', 'off']),
-    reset: PropTypes.func,
-    onSubmit: PropTypes.func,
-  };
+const emptyObject = {};
+const emptyArray: any[] = [];
 
+class Form extends React.PureComponent<FormProps, FormState> {
   static defaultProps = {
-    autoComplete: 'on',
+    beforeSubmit: (values: { [key: string]: any } | Promise<{ [key: string]: any }>) => Promise.resolve(values),
+    afterSubmit: (values: { [key: string]: any } | Promise<{ [key: string]: any }>) => Promise.resolve(values),
+    // @ts-ignore
+    onError: (error: string | Error | React.ReactNode | React.ReactNode[]) => {},
     noValidate: false,
     persist: false,
-    defaultValues: {},
+    autoComplete: true,
+    style: emptyObject,
+    defaultFormValues: {},
+    formAutoComplete: true,
   };
-
-  // We're going to keep track of accessors on a class property to avoid rerenders
-  fields: { [name: string]: FieldInterface } = emptyObject;
-  mounted: boolean = false;
-  form: HTMLFormElement;
 
   constructor(props: FormProps) {
     super(props);
-
-    ['acceptCharset', 'action', 'target'].forEach(prop => {
-      // @ts-ignore: this is just extra type checking
-      if (props[prop]) {
-        /* eslint-disable no-console */
-        console.error(
-          `Swan Form Error: Do not provide a '${prop}' prop for a Form. Instead, handle form submission with an onSubmit handler to submit and do any necessary transforms there.`,
-        );
-        /* eslint-enable no-console */
-      }
-    });
-
-    // Fill out with all the things
-    this.state = {
+    this.initialState = {
       isSubmitting: false,
       hasSubmitted: false,
-      hasSubmitError: false,
-      errors: emptyArray,
-      values: props.defaultValues || {},
+      formErrors: emptyArray,
     };
+    this.state = { ...this.initialState };
+
+    this.getFormInterface = memoize(this.getFormInterface.bind(this));
+    this.getSpreadProps = memoize(this.getSpreadProps.bind(this));
+    this.formInterface = this.getFormInterface(this.state);
+    this.mounted = false;
   }
 
-  getChildContext() {
-    return {
-      autoComplete: this.props.autoComplete,
-      onSubmit: this.handleOnSubmit,
-      registerField: this.registerField,
-      reset: this.resetForm,
-      unregisterField: this.unregsiterField,
-    };
-  }
+  fields: { [key: string]: RegisterType } = {};
+  persistedValues: { [key: string]: any } = {};
+  mounted: boolean;
+  initialState: FormState;
+  formInterface: {
+    defaultFormValues: { [key: string]: any };
+    formAutoComplete: boolean;
+    formErrors: any[];
+    hasFormSubmitted: boolean;
+    isFormSubmitting: boolean;
+    registerWithForm(payload: any): void; // FIXME
+    unregisterFromForm(name: string): void; // FIXME
+  };
 
   componentDidMount() {
     this.mounted = true;
@@ -157,164 +94,149 @@ export default class Form extends React.PureComponent<FormProps, FormState> {
     this.mounted = false;
   }
 
-  setRef = (el: HTMLFormElement) => {
-    this.form = el;
+  getSpreadProps(noValidate: boolean) {
+    return isDefined(noValidate) ? { noValidate } : emptyObject;
+  }
+
+  registerWithForm = (payload: RegisterType) => {
+    // Save the field to the internal registry
+    this.fields[payload.name] = payload;
+    // If we are to persist the values, then we'll restore them if we see the field appear again
+    if (this.props.persist) {
+      const previousValue = this.persistedValues[payload.name];
+      if (isDefined(previousValue)) {
+        payload.setValue(previousValue);
+      }
+    }
   };
 
-  getValues = () => ({
-    // If there are any persisted values, hold onto them
-    ...this.state.values,
-    // Get the current values from each field accesor
-    ...Object.keys(this.fields)
-      // Remove some preset fields
-      .filter(field => !fieldsToRemove.includes(field))
-      // Turn it into an object
-      .reduce((acc, field) => ({ ...acc, [field]: this.fields[field].getValue() }), {}),
-  });
+  // This is a function that we bind and memoize for renders. We feed `this.state` into it so that
+  // the Context.Consumer will rerender.
+  getFormInterface(state: FormState) {
+    return {
+      registerWithForm: this.registerWithForm,
+      unregisterFromForm: this.unregisterFromForm,
+      formAutoComplete: this.props.autoComplete!,
+      hasFormSubmitted: state.hasSubmitted,
+      isFormSubmitting: state.isSubmitting,
+      formErrors: state.formErrors,
+      defaultFormValues: this.props.defaultValues!,
+    };
+  }
 
-  getSpreadProps = () =>
-    ['noValidate', 'name'].reduce(
-      // @ts-ignore: this is fine
-      (acc, field) => (hasOwnProperty(this.props, field) ? { ...acc, [field]: this.props[field] } : acc),
-      emptyObject,
+  unregisterFromForm = (name: string) => {
+    const { [name]: fieldInterface, ...rest } = this.fields;
+    this.fields = rest;
+    // Save the value if we have the persist prop
+    if (this.props.persist) {
+      this.persistedValues[name] = fieldInterface.getValue();
+    }
+  };
+
+  getValues = () => {
+    const values = Object.keys(this.fields).reduce(
+      (values: { [key: string]: any }, key: string) => ({
+        ...values,
+        [key]: this.fields[key].getValue(),
+      }),
+      {},
     );
 
-  // If we get more than just this one, then we'll go back to `reduce`.
-  // return hasOwnProperty(this.props, 'noValidate') ? { noValidate: this.props.noValidate } : emptyObject;
+    return { ...this.persistedValues, ...values };
+  };
 
-  handleBeforeSubmit = () => {
-    // Update the state to show that we are currently submitting.
+  handleErrors = (errors: Error | React.ReactNode | React.ReactNode[]) => {
+    const { onError } = this.props;
+    // Force formErrors to be an array
+    const formErrors = (Array.isArray(errors) ? errors : [errors]).filter(Boolean);
+    // Persist the errors
     if (this.mounted) {
-      this.setState(prevState => ({
-        ...prevState,
-        isSubmitting: true,
-      }));
+      this.setState({ formErrors });
     }
+    // Call the supplied error handler
+    execIfFunc(onError, ...formErrors);
+  };
 
+  onReset = (event: React.FormEvent) => {
+    event.preventDefault();
+    // Reset the state
+    this.setState({ ...this.initialState });
+    // Remove persisted values
+    this.persistedValues = {};
+    // Call the reset method on each field
+    Object.keys(this.fields).forEach((key: string) => this.fields[key].reset());
+  };
+
+  onSubmit = (event: React.FormEvent) => {
+    event.preventDefault();
+    this.doSubmit();
+  };
+
+  handleBeforeSubmit = (values: object | Promise<{ [key: string]: any }>) => {
     const { beforeSubmit } = this.props;
 
-    return new Promise((res, rej) => {
-      // First, synchronously validate all the fields. `required` and `pattern` fields that
-      // latch onto the native browser events will block the submit event, so we care only
-      // about user supplied validation functions. This will also make field errors appear
-      // everwhere. (@TODO do something to help identify fields in slider forms)
-      const isValid =
-        Object.keys(this.fields)
-          .map(field => this.fields[field].validate())
-          .filter((x: any) => x !== true).length === 0;
+    if (this.mounted) {
+      this.setState({ isSubmitting: true });
+    }
 
-      if (!isValid) {
-        // Reject the promise and leave the function. We should handle this.
-        return rej(new Error('Fields not valid.'));
-      }
-
-      // Grab all the field values
-      const values = this.getValues();
-
-      // If there a user supplied callback, then run it and resolve on its return.
-      // However, we should probably check to see if it's a promise, or do some
-      // other things here to make the hook better.
-      return isFunction(beforeSubmit) ? res(beforeSubmit(values)) : res(values);
-    });
+    return isFunction(beforeSubmit) ? maybePromisify(beforeSubmit(values)) : Promise.resolve(values);
   };
 
-  handleAfterSubmit = (values: object | Promise<object>) => {
+  handleOnSubmit = (values: object | Promise<{ [key: string]: any }>) => {
+    const { onSubmit } = this.props;
+    return isFunction(onSubmit) ? maybePromisify(onSubmit(values)) : Promise.resolve(values);
+  };
+
+  handleAfterSubmit = (values: object | Promise<{ [key: string]: any }>) => {
     const { afterSubmit } = this.props;
     if (this.mounted) {
-      this.setState(prevState => ({
-        ...prevState,
-        isSubmitting: false,
-        hasSubmitted: true,
-        hasSubmitError: false,
-        errors: emptyArray,
-      }));
+      this.setState({ isSubmitting: false, hasSubmitted: true });
     }
-
-    if (isFunction(afterSubmit)) {
-      // If after submit is a promise, then execute and return
-      return maybePromisify(afterSubmit(values));
-    }
-    // Resolve the promise with the values.
-    return Promise.resolve(values);
+    return isFunction(afterSubmit) ? maybePromisify(afterSubmit(values)) : Promise.resolve(values);
   };
 
-  handleSubmit = (values: object | Promise<object>) => {
-    const result = this.props.onSubmit(values);
-    return maybePromisify(result);
-  };
-
-  handleOnSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    // We can call this event manually, so, we might not always have an event
-    if (event) {
-      // Prevent the form from doing anything native
-      event.preventDefault();
-      event.stopPropagation();
+  doSubmit = (): Promise<{ [key: string]: any } | string | Error> | void => {
+    if (!this.validate()) {
+      return this.handleErrors(['Form is not valid']);
     }
 
-    this.handleBeforeSubmit()
-      .then(this.handleSubmit)
+    this.setState({ isSubmitting: true, formErrors: [] });
+
+    const values = this.getValues();
+
+    return this.handleBeforeSubmit(values)
+      .then(this.handleOnSubmit)
       .then(this.handleAfterSubmit)
-      .catch(errors => {
-        if (this.mounted) {
-          this.setState(prevState => ({
-            ...prevState,
-            isSubmitting: false,
-            hasSubmitError: true,
-            hasSubmitted: true,
-            errors,
-          }));
-        }
-      });
+      .catch(this.handleErrors);
   };
 
-  registerField = ({ name, getRef, getValue, setValue, isValid, validate, reset }: FieldInterface) => {
-    this.fields = {
-      ...this.fields,
-      [name]: { name, getRef, getValue, setValue, validate, isValid, reset },
-    };
-  };
+  getFormValues = () =>
+    Object.keys(this.fields).reduce(
+      (values: { [key: string]: any }, name: string) => ({
+        ...values,
+        [name]: this.fields[name].getValue(),
+      }),
+      {},
+    );
 
-  unregsiterField = (name: string) => {
-    const { [name]: removed, ...remaining } = this.fields;
-    this.fields = remaining;
-
-    // If we were instructed to hold onto values that were being removed, then store them
-    // in the form's state for later access. Note: these can't be validated in the same way.
-    if (this.props.persist) {
-      const value = removed.getValue();
-      if (this.mounted) {
-        this.setState(prevState => ({
-          ...prevState,
-          values: {
-            ...prevState.values,
-            [name]: value,
-          },
-        }));
-      }
-    }
-  };
-
-  handleResetForm = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    this.resetForm();
-  };
-
-  resetForm = () => {
-    // @TODO not quite working for all cases
-    Object.keys(this.fields).forEach(field => isFunction(this.fields[field].reset) && this.fields[field].reset());
-  };
+  validate = () => gatherErrors(this.fields, true).length === 0;
 
   render() {
-    const { autoComplete, children } = this.props;
+    const { autoComplete, className, children, name, style = emptyObject } = this.props;
     return (
       <form
-        onSubmit={this.handleOnSubmit}
-        autoComplete={autoComplete}
-        onReset={this.handleResetForm}
-        {...this.getSpreadProps()}
+        {...this.getSpreadProps(this.props.noValidate!)}
+        name={name}
+        autoComplete={autoComplete ? 'on' : 'off'}
+        onReset={this.onReset}
+        onSubmit={this.onSubmit}
+        className={classes('sf--form', className)}
+        style={style}
       >
-        {children}
+        <FormContext.Provider value={this.getFormInterface(this.state)}>{children}</FormContext.Provider>
       </form>
     );
   }
 }
+
+export default Form;
