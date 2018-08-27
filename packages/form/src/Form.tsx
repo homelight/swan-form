@@ -123,9 +123,13 @@ export class Form extends React.PureComponent<FormProps, FormState> {
       isFormSubmitting: state.isSubmitting,
       formErrors: state.formErrors,
       defaultFormValues: this.props.defaultValues!,
+      getFormValues: this.getValues,
     };
   }
 
+  /**
+   * Function for fields to unregister from the form
+   */
   unregisterFromForm = (name: string) => {
     const { [name]: fieldInterface, ...rest } = this.fields;
     this.fields = rest;
@@ -135,6 +139,9 @@ export class Form extends React.PureComponent<FormProps, FormState> {
     }
   };
 
+  /**
+   * Function to get all the form values
+   */
   getValues = () => {
     const values = Object.keys(this.fields).reduce(
       (values: { [key: string]: any }, key: string) => ({
@@ -147,6 +154,9 @@ export class Form extends React.PureComponent<FormProps, FormState> {
     return { ...this.persistedValues, ...values };
   };
 
+  /**
+   * Error handler for subbmit event
+   */
   handleErrors = (errors: Error | React.ReactNode | React.ReactNode[]) => {
     const { onError } = this.props;
     // Force formErrors to be an array
@@ -159,6 +169,9 @@ export class Form extends React.PureComponent<FormProps, FormState> {
     execIfFunc(onError, ...formErrors);
   };
 
+  /**
+   * Reset handler for the form
+   */
   onReset = (event: React.FormEvent) => {
     event.preventDefault();
     // Reset the state
@@ -169,11 +182,17 @@ export class Form extends React.PureComponent<FormProps, FormState> {
     Object.keys(this.fields).forEach((key: string) => this.fields[key].reset());
   };
 
+  /**
+   * Submit handler
+   */
   onSubmit = (event: React.FormEvent) => {
     event.preventDefault();
     this.doSubmit();
   };
 
+  /**
+   * Called at the start of the submit event
+   */
   handleBeforeSubmit = (values: object | Promise<{ [key: string]: any }>) => {
     const { beforeSubmit } = this.props;
 
@@ -184,11 +203,17 @@ export class Form extends React.PureComponent<FormProps, FormState> {
     return isFunction(beforeSubmit) ? maybePromisify(beforeSubmit(values)) : Promise.resolve(values);
   };
 
+  /**
+   * Called in the middle of the submit event
+   */
   handleOnSubmit = (values: object | Promise<{ [key: string]: any }>) => {
     const { onSubmit } = this.props;
     return isFunction(onSubmit) ? maybePromisify(onSubmit(values)) : Promise.resolve(values);
   };
 
+  /**
+   * Called after a successful submit
+   */
   handleAfterSubmit = (values: object | Promise<{ [key: string]: any }>) => {
     const { afterSubmit } = this.props;
     if (this.mounted) {
@@ -197,6 +222,9 @@ export class Form extends React.PureComponent<FormProps, FormState> {
     return isFunction(afterSubmit) ? maybePromisify(afterSubmit(values)) : Promise.resolve(values);
   };
 
+  /**
+   * Checks validation and then runs the submit lifecycle
+   */
   doSubmit = (): Promise<{ [key: string]: any } | string | Error> | void => {
     if (!this.validate()) {
       return this.handleErrors(['Form is not valid']);
@@ -212,15 +240,9 @@ export class Form extends React.PureComponent<FormProps, FormState> {
       .catch(this.handleErrors);
   };
 
-  getFormValues = () =>
-    Object.keys(this.fields).reduce(
-      (values: { [key: string]: any }, name: string) => ({
-        ...values,
-        [name]: this.fields[name].getValue(),
-      }),
-      {},
-    );
-
+  /**
+   * Runs validation on all current fields
+   */
   validate = () => gatherErrors(this.fields, true).length === 0;
 
   render() {
