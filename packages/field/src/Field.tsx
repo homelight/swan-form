@@ -19,7 +19,6 @@ export interface FieldProps {
   setValue(value: any): void;
   style?: React.CSSProperties;
   options?: any;
-  isSet?: boolean;
 }
 
 const NO_WRAP = ['button', 'hidden', 'reset', 'submit'];
@@ -51,7 +50,10 @@ const INPUT_TYPES = [
 
 const emptyObject = {};
 
-export const getFieldClasses = (props: Partial<FieldProps>) => {
+/**
+ * Gets the classes applied to the outermost node in the field
+ */
+export const getFieldClasses = (props: Partial<FieldProps> & { isSet?: boolean }) => {
   const { type, errors, className, required, icon, isSet } = props;
   return classes(
     isSet ? 'sf--fieldset' : 'sf--field',
@@ -63,6 +65,9 @@ export const getFieldClasses = (props: Partial<FieldProps>) => {
   );
 };
 
+/**
+ * Maps the errors consistently
+ */
 export const getErrors = (errors: React.ReactNode[]) => (
   <span className="sf--errors">
     {errors.map((error: React.ReactNode) => (

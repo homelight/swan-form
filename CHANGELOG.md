@@ -8,6 +8,7 @@ Approaching a v1.0.0.
 - [all] Rewrite with new context api
 - [all] upgrade dependencies
 - [helpers] add `withForm`, `withSlide`, and `withAsField` HOCs to make it easy to consume contexts
+- [helpers] remove deprecated functions
 - [slider] _breaking_ add advance / retreat functionality
 - [slider] _breaking_ stop spreading `commonProps` and instead nest them under the `common`
 - [slider] add slide level validations

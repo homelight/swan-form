@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { classes, gatherErrors, maybePromisify, execIfFunc, isDefined, FormContext } from '@swan-form/helpers';
 import { memoize, isFunction } from 'lodash';
+import { classes, gatherErrors, maybePromisify, execIfFunc, isDefined, FormContext } from '@swan-form/helpers';
+
 /**
  * Note, since the submit hooks rely on promises, and since promises are not cancelable,
  * we're wrapping handling them in checks to see if the component is mounted.
@@ -32,32 +33,31 @@ export interface FormState {
 }
 
 export type RegisterType = {
-  name: string;
-  getValue(): void;
-  setValue(value: any): void;
-  reset(): void;
-  validate(values: { [key: string]: any }, updateErrors: boolean): React.ReactNode[];
   focus(): void;
+  getValue(): void;
+  name: string;
+  reset(): void;
+  setValue(value: any): void;
+  validate(values: { [key: string]: any }, updateErrors: boolean): React.ReactNode[];
 };
 
 const emptyObject = {};
 const emptyArray: any[] = [];
 
 export class Form extends React.PureComponent<FormProps, FormState> {
+  static displayName = 'Form';
+
   static defaultProps = {
     beforeSubmit: (values: { [key: string]: any } | Promise<{ [key: string]: any }>) => Promise.resolve(values),
     afterSubmit: (values: { [key: string]: any } | Promise<{ [key: string]: any }>) => Promise.resolve(values),
     // @ts-ignore
     onError: (error: string | Error | React.ReactNode | React.ReactNode[]) => {},
-    noValidate: false,
-    persist: false,
     autoComplete: true,
-    style: emptyObject,
     defaultFormValues: {},
     formAutoComplete: true,
+    noValidate: false,
+    persist: false,
   };
-
-  static displayName = 'Form';
 
   constructor(props: FormProps) {
     super(props);
@@ -116,14 +116,14 @@ export class Form extends React.PureComponent<FormProps, FormState> {
   // the Context.Consumer will rerender.
   getFormInterface(state: FormState) {
     return {
-      registerWithForm: this.registerWithForm,
-      unregisterFromForm: this.unregisterFromForm,
+      defaultFormValues: this.props.defaultValues!,
       formAutoComplete: this.props.autoComplete!,
+      formErrors: state.formErrors,
+      getFormValues: this.getValues,
       hasFormSubmitted: state.hasSubmitted,
       isFormSubmitting: state.isSubmitting,
-      formErrors: state.formErrors,
-      defaultFormValues: this.props.defaultValues!,
-      getFormValues: this.getValues,
+      registerWithForm: this.registerWithForm,
+      unregisterFromForm: this.unregisterFromForm,
     };
   }
 
