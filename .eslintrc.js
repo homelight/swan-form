@@ -2,8 +2,8 @@ const { resolve } = require('path');
 
 module.exports = {
   extends: ['airbnb', 'prettier'],
-  parser: 'babel-eslint',
-  // parser: 'typescript-eslint-parser',
+  // parser: 'babel-eslint',
+  parser: 'typescript-eslint-parser',
   root: true,
   plugins: ['monorepo'],
   parserOptions: {

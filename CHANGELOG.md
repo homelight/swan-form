@@ -1,5 +1,28 @@
 # Changelog
 
+## 0.3.0
+
+Rewriting for the new context API made a lot of breaking changes, so more things were cleaned up at the same time.
+Approaching a v1.0.0.
+
+- [all] Rewrite with new context api
+- [all] upgrade dependencies
+- [helpers] add `withForm`, `withSlide`, and `withAsField` HOCs to make it easy to consume contexts
+- [helpers] remove deprecated functions
+- [slider] _breaking_ add advance / retreat functionality
+- [slider] _breaking_ stop spreading `commonProps` and instead nest them under the `common`
+- [slider] add slide level validations
+- [form] _breaking_ automatically restore values of re-mounting fields
+- [extra-fields] convert to typescript
+- [field] _breaking_ rename `asyncValidate` to `validateOnBlur`
+- [field] _breaking_ rename `validateWhileTyping` to `validateOnChange`
+- [field] _breaking_ remove auto keyhandling for enter / tab
+- [field] _breaking_ change asField wrapper so it doesn't take options
+- [field] _breaking_ `register` prop (boolean) now determines if a field registers with form / slide
+- [field] _breaking_ change all event handlers to pass through the event instead of the event.target to callback
+- [field] _breaking_ change onChange callback to pass event rather than `(value, name)`
+- [field] _breaking_ default value for multiple select to `[]` from `['']`
+
 ## 0.2.17
 
 - [field] Revert unintentional changes

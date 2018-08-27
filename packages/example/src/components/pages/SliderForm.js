@@ -19,44 +19,39 @@ class SliderForm extends Component {
     return (
       <div>
         <Slider beforeSubmit={beforeSubmit} onSubmit={onSubmit}>
-          <Slide
-            render={props => (
-              <div>
-                <h1>A first question</h1>
-                <Field
-                  type="text"
-                  name="first-question"
-                  validate={required}
-                  size={50}
-                  value={props.getFormValues()['first-question']}
-                  placeholder="This field is required"
-                />
-                <p>
-                  This slider has five slides. This one, two that we skip, and one with a submit button. After we{' '}
-                  <em>press</em> submit, we transform the value in the first to an uppercase string (
-                  <code>beforeSubmit</code>) that is passed to the actual submit (<code>onSubmit</code>) that is then
-                  logged to the console in the after submit method (<code>afterSubmit</code>
-                  ).
-                </p>
-              </div>
+          <Slide>
+            <div>
+              <h1>A first question</h1>
+              <Field
+                type="text"
+                name="first-question"
+                validate={required}
+                size={50}
+                placeholder="This field is required"
+              />
+              <p>
+                This slider has five slides. This one, two that we skip, and one with a submit button. After we{' '}
+                <em>press</em> submit, we transform the value in the first to an uppercase string (
+                <code>beforeSubmit</code>) that is passed to the actual submit (<code>onSubmit</code>) that is then
+                logged to the console in the after submit method (<code>afterSubmit</code>
+                ).
+              </p>
+            </div>
+          </Slide>
+          <Slide>
+            <div>
+              <h1>A second question</h1>
+              <Field
+                name="first-question-a"
+                placeholder="This field is required"
+                size={50}
+                type="text"
+                validate={required}
+              />
+              <p>This is just another random question.</p>
+            </div>
             )}
-          />
-          <Slide
-            render={props => (
-              <div>
-                <h1>A second question</h1>
-                <Field
-                  type="text"
-                  name="first-question-a"
-                  validate={required}
-                  size={50}
-                  value={props.getFormValues()['first-question-a']}
-                  placeholder="This field is required"
-                />
-                <p>This is just another random question.</p>
-              </div>
-            )}
-          />
+          </Slide>
           <Slide
             beforeExitToNext={({ getFormValues }) =>
               new Promise(res => {
@@ -65,29 +60,27 @@ class SliderForm extends Component {
                 res();
               })
             }
-            render={props => (
-              <div>
-                <h2>Decision Tree</h2>
-                <p>
-                  Here are two radio buttons. If you choose the first one, you&apos;ll see the next slide and skip the
-                  one after that. If you choose the other one, you&apos;ll see the reverse.
-                </p>
-                <Radios
-                  validate={required}
-                  name="decisionTree"
-                  options={[{ label: 'Next Slide', value: '0' }, { label: 'The Other One', value: '1' }]}
-                  value={props.getFormValues().decisionTree}
-                />
-              </div>
-            )}
-          />
-          <Slide shouldShowIf={values => values.decisionTree === '0'}>
+          >
+            <div>
+              <h2>Decision Tree</h2>
+              <p>
+                Here are two radio buttons. If you choose the first one, you&apos;ll see the next slide and skip the one
+                after that. If you choose the other one, you&apos;ll see the reverse.
+              </p>
+              <Radios
+                validate={required}
+                name="decisionTree"
+                options={[{ label: 'Next Slide', value: '0' }, { label: 'The Other One', value: '1' }]}
+              />
+            </div>
+          </Slide>
+          <Slide shouldShowIf={({ decisionTree }) => decisionTree === '0'}>
             <div>
               <h2>You chose the first slide.</h2>
               <p>(This is a static message, in case you&apos;re wondering).</p>
             </div>
           </Slide>
-          <Slide shouldShowIf={values => values.decisionTree === '1'}>
+          <Slide shouldShowIf={({ decisionTree }) => decisionTree === '1'}>
             <div>
               <h2>You skipped the last slide.</h2>
               <p>(This is a static message, in case you&apos;re wondering).</p>

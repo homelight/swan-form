@@ -1,11 +1,27 @@
-/* eslint-disable react/require-default-props */
 import * as React from 'react';
-import * as PropTypes from 'prop-types';
-import isObject from 'lodash/isObject';
-import { hasOwnProperty, classes, noop } from '@swan-form/helpers';
+import { isObject } from 'lodash';
 import asField from './asField';
-// @ts-ignore: typescript yells at me if I don't import `AsFieldProps`, but it also yells if I do
-import { AsFieldProps, AsFieldState, FieldInterface, FieldProps } from './common';
+import { classes, hasOwnProperty, noop, toKey } from '@swan-form/helpers';
+
+export interface FieldProps {
+  name: string;
+  type: string;
+
+  required?: boolean;
+  id?: string;
+  errors: React.ReactNode[];
+  className?: string;
+  label?: React.ReactNode;
+  icon?: React.ReactNode;
+  setRef(el: any): void;
+  onChange(event: React.ChangeEvent<any>): void;
+  onBlur(event: React.FocusEvent<any>): void;
+  setValue(value: any): void;
+  style?: React.CSSProperties;
+  options?: any;
+}
+
+const NO_WRAP = ['button', 'hidden', 'reset', 'submit'];
 
 const INPUT_TYPES = [
   'button',
@@ -32,8 +48,35 @@ const INPUT_TYPES = [
   'week',
 ];
 
-// A list of input types not to wrap in a label
-const noWrap = ['button', 'hidden', 'reset', 'submit'];
+const emptyObject = {};
+
+/**
+ * Gets the classes applied to the outermost node in the field
+ */
+export const getFieldClasses = (props: Partial<FieldProps> & { isSet?: boolean }) => {
+  const { type, errors, className, required, icon, isSet } = props;
+  return classes(
+    isSet ? 'sf--fieldset' : 'sf--field',
+    `sf--type-${type || 'text'}`,
+    required && 'sf--required',
+    icon && 'sf--has-icon',
+    errors!.length !== 0 && 'sf--has-errors',
+    className,
+  );
+};
+
+/**
+ * Maps the errors consistently
+ */
+export const getErrors = (errors: React.ReactNode[]) => (
+  <span className="sf--errors">
+    {errors.map((error: React.ReactNode) => (
+      <span key={toKey(error)} className="sf--error">
+        {error}
+      </span>
+    ))}
+  </span>
+);
 
 /* eslint-disable no-use-before-define */
 function renderOption(option: any): React.ReactNode {
@@ -104,180 +147,16 @@ function renderOptions(options: any | any[]): React.ReactNode {
 }
 /* eslint-enable no-use-before-define */
 
-export class Field extends React.PureComponent<FieldProps> {
+export class Field extends React.PureComponent<FieldProps, {}> {
   static displayName = 'Field';
 
-  static propTypes = {
-    /**
-     * Props shipped from the HOC
-     */
-    /**
-     * An array of error messages (false means no error)
-     * @type {Array}
-     */
-    errors: PropTypes.arrayOf(PropTypes.string).isRequired,
-    /**
-     * Whether or not the field's value is valid
-     * @type {Boolean}
-     */
-    isValid: PropTypes.bool.isRequired,
-    /**
-     * The onChange handler, provided by asField
-     * @type {Function}
-     */
-    onChange: PropTypes.func.isRequired,
-    /**
-     * The onFocus handler, provided by asField
-     * @type {Function}
-     */
-    onFocus: PropTypes.func.isRequired,
-    /**
-     * The blur handler, provided by asField
-     * @type {Function}
-     */
-    onBlur: PropTypes.func.isRequired,
-    /**
-     * The onClick handler, provided by asField
-     * @type {Array}
-     */
-    onClick: PropTypes.func.isRequired,
-    /**
-     * The function to set the ref, provided by asField
-     * @type {Array}
-     */
-    setRef: PropTypes.func.isRequired,
-    /**
-     * Gets the value of the field (useful for wrapped components, but not here)
-     * @type{Function}
-     */
-    getValue: PropTypes.func.isRequired,
-    /**
-     * Sets the value of the field (useful for wrapped components, but not here)
-     * @type{Function}
-     */
-    setValue: PropTypes.func.isRequired,
+  shouldWrapInLabel = () => !NO_WRAP.includes(this.props.type);
 
-    /**
-     * Required user props
-     */
-    type: PropTypes.oneOf(['select', 'textarea', ...INPUT_TYPES]).isRequired,
-    /**
-     * If you do not pass a name, then the field will not register with the form. This
-     * is a nice escape-hatch to use form fields as controls. Make sure that you pass an `onChange`
-     * callback.
-     */
-    name: PropTypes.string,
+  getId = () => this.props.id || this.props.name;
 
-    /**
-     * Optional User supplied props. These are handled if not shipped, so we can ignore them
-     */
-
-    /**
-     * Children of the field
-     *
-     * @note this applies mostly to usage with buttons
-     * @type {React.ReactNode}
-     */
-    children: PropTypes.oneOfType([PropTypes.element, PropTypes.string, PropTypes.arrayOf(PropTypes.element)]),
-    /**
-     * The label for the field
-     * @type {String}
-     */
-    label: PropTypes.string,
-    /**
-     * A classname or set of classnames that have been joined with a space
-     * @type {String}
-     */
-    className: PropTypes.string,
-    /**
-     * Whether or not a field is required.
-     * @note this is `required` in browser context. You can also pass in a `required` function as
-     *       a validator.
-     * @type {Boolean}
-     */
-    required: PropTypes.bool,
-    /**
-     * An optional icon component to be merged in with the display
-     * @type {React.ReactNode}
-     */
-    icon: PropTypes.node,
-    /**
-     * Options if this is a select field
-     * @type {Object|Array}
-     */
-    options: PropTypes.oneOfType([PropTypes.object, PropTypes.array]), // eslint-disable-line
-    /**
-     * Any inline styles provided to the component
-     * @type {Object}
-     */
-    style: PropTypes.object, // eslint-disable-line
-  };
-
-  maybeWrapInLabel(input: React.ReactNode) {
-    const { className, icon, name, id, errors, type, label, required, style } = this.props;
-
-    const spread = {} as { htmlFor?: string; style?: React.CSSProperties };
-
-    if (id) {
-      spread.htmlFor = id;
-    } else if (name) {
-      spread.htmlFor = name;
-    }
-    if (style) {
-      spread.style = style;
-    }
-
-    /* eslint-disable jsx-a11y/label-has-for */
-    return (
-      <label
-        className={classes([
-          'sf--field',
-          `sf--type-${type}`,
-          required && 'sf--required',
-          errors.length !== 0 && `sf--has-errors`,
-          icon && 'sf--has-icon',
-          className,
-        ])}
-        {...spread}
-      >
-        <span>
-          {input}
-          <span className="sf--label">{label && label}</span>
-          <span className="sf--icon">{icon && icon}</span>
-          <span className="sf--errors">
-            {errors.map((err: string) => (
-              <span key={err} className="sf--error">
-                {err}
-              </span>
-            ))}
-          </span>
-        </span>
-      </label>
-    );
-  }
-  /* eslint-enable jsx-a11y/label-has-for */
-
-  renderField() {
-    const {
-      type, // we switch on this and send it to `input`
-      setRef, // sets the ref in the HOC
-      errors, // HOC's state.errors, gets sent to a different method, but we'll ignore it here
-      label, // gets sent to a different method, but we'll ignore it here
-      isValid, // gets sent to a different method, but we'll ignore it here
-      className, // gets sent to a different method, but we'll ignore it here
-      options, // valid for selects
-      children,
-      icon,
-      getValue, // we're just going to ignore this
-      setValue, // we're just going to ignore this
-      value,
-      ...spreadProps // the rest of everything that we need to send on
-    } = this.props;
-
-    if (!spreadProps.id && spreadProps.name && type !== 'radio') {
-      // @ts-ignore: this is fine
-      spreadProps.id = spreadProps.name;
-    }
+  getInput = (appliedClasses = '') => {
+    const { errors, className, label, type, icon, setRef, options, setValue, ...props } = this.props;
+    const id = this.getId();
 
     /**
      * This is an experiment. The input event seems to run faster than the change event, but react
@@ -286,73 +165,65 @@ export class Field extends React.PureComponent<FieldProps> {
      *
      * @see  Some discussion https://github.com/facebook/react/issues/3964
      */
-    if (type === 'text') {
+    if (type === 'text' || !type) {
       // @ts-ignore: this is fine
-      spreadProps.onInput = spreadProps.onChange;
-      // @ts-ignore: this is fine
-      spreadProps.onChange = noop; // React complains if there is no `onChange` method
-      return <input ref={setRef} type={type} value={value} {...spreadProps} />;
+      props.onInput = props.onChange;
+      // @ts-ignore: React complains if there is no `onChange` method
+      props.onChange = noop;
     }
 
-    if (type === 'button') {
-      // We do not wrap buttons in labels. So, give them a class.
-      return children ? (
-        <button
-          ref={setRef}
-          type="button"
-          className={classes(['sf--field', 'sf--type-button', className])}
-          value={value}
-          {...spreadProps}
-        >
-          {children}
-        </button>
-      ) : (
-        <button
-          ref={setRef}
-          type="button"
-          className={classes(['sf--field', 'sf--type-button', className])}
-          {...spreadProps}
-        >
-          {spreadProps.value}
-        </button>
-      );
+    if (type === 'checkbox') {
+      // @ts-ignore
+      props.checked = props.value;
     }
 
-    // Make sure we add a ref and a className to the unwrapped element
-    if (type === 'submit' || type === 'reset') {
-      return (
-        <input type={type} ref={setRef} className={classes(['sf--field', className])} value={value} {...spreadProps} />
-      );
+    switch (type) {
+      case 'select':
+        return (
+          <select {...props} ref={setRef} id={id}>
+            {renderOptions(options)}
+          </select>
+        );
+      case 'textarea':
+        return <textarea {...props} className={appliedClasses} ref={setRef} id={id} />;
+      case 'button':
+        return <button {...props} className={appliedClasses} type={type} id={id} ref={setRef} />;
+      case 'submit':
+      case 'reset':
+        return props.children ? (
+          <button {...props} className={appliedClasses} type={type} id={id} ref={setRef} />
+        ) : (
+          <input {...props} className={appliedClasses} type={type} id={id} ref={setRef} />
+        );
+      default:
+        return INPUT_TYPES.includes(type) ? (
+          <input {...props} className={appliedClasses} type={type} id={id} ref={setRef} />
+        ) : (
+          <input {...props} className={appliedClasses} type="text" id={id} ref={setRef} />
+        );
     }
-
-    // If it's an input type, then render the input with the spread spreadProps
-    if (INPUT_TYPES.includes(type)) {
-      return <input ref={setRef} type={type} value={value} {...spreadProps} />;
-    }
-
-    // Text areas get spreadProps too
-    if (type === 'textarea') {
-      return <textarea ref={setRef} value={value} {...spreadProps} />;
-    }
-
-    // For select, we also have to render all the options / optgroups. We've moved these out to
-    // separate functions so that we can call them recursively if needed.
-    if (type === 'select') {
-      return (
-        <select ref={setRef} value={value} {...spreadProps}>
-          {renderOptions(options)}
-        </select>
-      );
-    }
-
-    /* eslint-disable react/no-danger */
-    return <span dangerouslySetInnerHTML={{ __html: `<!-- Unsupported Field Type (${type}) -->` }} />;
-    /* eslint-disable react/no-danger */
-  }
+  };
 
   render() {
-    // Hidden fields are never wrapped in labels
-    return noWrap.includes(this.props.type) ? this.renderField() : this.maybeWrapInLabel(this.renderField());
+    const id = this.getId();
+    const { errors, label, icon, style = emptyObject } = this.props;
+
+    const appliedClasses = getFieldClasses(this.props);
+
+    if (this.shouldWrapInLabel()) {
+      return (
+        <label htmlFor={id} className={appliedClasses} style={style}>
+          <span>
+            {this.getInput()}
+            <span className="sf--label">{label}</span>
+            <span className="sf--icon">{icon}</span>
+            {getErrors(errors)}
+          </span>
+        </label>
+      );
+    }
+
+    return this.getInput(appliedClasses);
   }
 }
 

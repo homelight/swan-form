@@ -24,14 +24,14 @@ class Theme extends Component {
           name="radio-testing2"
           type="radios"
           options={[{ label: 'First', value: 'first' }, { label: 'Second', value: 'second' }]}
-          className={classes([styles.theme, styles.inline])}
+          className={classes(styles.theme, styles.inline)}
         />
 
         <Radios
           name="radio-testing3"
           type="radios"
           options={[{ label: 'First', value: 'first' }, { label: 'Second', value: 'second' }]}
-          className={classes([styles.theme, styles.inline])}
+          className={classes(styles.theme, styles.inline)}
           disabled
           defaultValue="second"
         />
@@ -52,21 +52,21 @@ class Theme extends Component {
           type="checkbox"
           value="something"
           label="Checkbox 4"
-          className={classes([styles.theme, styles.inline])}
+          className={classes(styles.theme, styles.inline)}
         />
         <Field
           name="checkbox5"
           type="checkbox"
           value="something"
           label="Checkbox 5"
-          className={classes([styles.theme, styles.inline])}
+          className={classes(styles.theme, styles.inline)}
         />
         <Field
           name="checkbox6"
           type="checkbox"
           value="something"
           label="Checkbox 6"
-          className={classes([styles.theme, styles.inline])}
+          className={classes(styles.theme, styles.inline)}
           disabled
         />
         <Field
@@ -74,7 +74,7 @@ class Theme extends Component {
           type="checkbox"
           value="something"
           label="Checkbox 7"
-          className={classes([styles.theme, styles.inline])}
+          className={classes(styles.theme, styles.inline)}
           disabled
           defaultChecked
         />
@@ -84,18 +84,18 @@ class Theme extends Component {
           type="checkbox"
           value="something"
           label="Switch 1"
-          className={classes([styles.switch])}
+          className={classes(styles.switch)}
           defaultChecked
         />
 
-        <Field name="switch2" type="checkbox" value="something" label="Switch 2" className={classes([styles.switch])} />
+        <Field name="switch2" type="checkbox" value="something" label="Switch 2" className={classes(styles.switch)} />
 
         <Field
           name="switch3"
           type="checkbox"
           value="something"
           label="Switch 3"
-          className={classes([styles.switch])}
+          className={classes(styles.switch)}
           disabled
           defaultChecked
         />
@@ -105,7 +105,7 @@ class Theme extends Component {
           type="checkbox"
           value="something"
           label="Switch 4"
-          className={classes([styles.switch])}
+          className={classes(styles.switch)}
           disabled
         />
       </div>

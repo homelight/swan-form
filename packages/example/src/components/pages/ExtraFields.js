@@ -16,12 +16,12 @@ class DynamicField extends Component {
   constructor(props) {
     super(props);
     this.state = {};
-    this.onSubmit = this.onSubmit.bind(this);
   }
 
   onSubmit = values => {
     console.log('Setting state with values', values);
     this.setState(values);
+    return values;
   };
 
   render() {
@@ -33,7 +33,7 @@ class DynamicField extends Component {
         </p>
         <Form name="extraFields" onSubmit={this.onSubmit}>
           <Field name="testfield" type="text" value="test" />
-          <AddressField name="addressField" label="Address Field" value={defaultAddress} autoFocus />
+          <AddressField name="addressField" label="Address Field" defaultValue={defaultAddress} autoFocus />
           <hr />
           <Submit />
           <Reset />

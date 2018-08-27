@@ -1,322 +1,346 @@
-/* global document, window */
-/* eslint-disable react/prop-types, react/sort-comp */
-
 import * as React from 'react';
-import * as PropTypes from 'prop-types';
-
-import isEqual from 'lodash/isEqual';
-import isFunction from 'lodash/isFunction';
-import isObject from 'lodash/isObject';
-
-import { hasErrors, hasOwnProperty, keyCodes, moveCursor, emptyArray, runValidations } from '@swan-form/helpers';
+import { isFunction, isEqual, memoize } from 'lodash';
 
 import {
-  FieldInterface,
-  FieldElement,
-  GenericClickEvent,
-  GenericFocusEvent,
-  AsFieldProps,
-  WrappedComponentProps,
-  AsFieldState,
-} from './common';
+  AsFieldContext,
+  canAccessSelectionStart,
+  composeHOCs,
+  execIfFunc,
+  execOrMapFn,
+  filterKeysFromObj,
+  findValue,
+  hasOwnProperty,
+  identity,
+  isDefined,
+  isNull,
+  maybeApply,
+  moveCursor,
+  withAsField,
+  withForm,
+  withSlide,
+} from '@swan-form/helpers';
 
-export interface WrapperOptions {
-  registerWrapped?: boolean;
+export type RegisterType = {
+  name: string;
+  getValue(): void;
+  setValue(value: any): void;
+  reset(): void;
+  validate(values: { [key: string]: any }, updateErrors: boolean): React.ReactNode[];
+  focus(): void;
+};
+
+export interface AsFieldProps {
+  name: string;
+  type?: string;
+  autoFocus?: boolean;
+  autoComplete?: string;
+  defaultValue?: any;
+  value?: any;
+  defaultChecked?: boolean;
+  checked?: boolean;
+  multiple?: boolean;
+  validateOnChange?: boolean;
+  validateOnBlur?: boolean;
+  validateDebounceTimeout?: boolean;
+  register?: boolean;
+  format?(value: any, cursor: number | null): [any, number | null];
+  unformat?(value: any): any;
+  onBlur?(event: React.FocusEvent<any>): void;
+  onChange?(event: React.ChangeEvent<any>): void;
+  onKeyDown?(event: React.KeyboardEvent<any>): void;
+  validate?:
+    | ((value: any) => React.ReactNode | React.ReactNode[])
+    | ((value: any) => React.ReactNode | React.ReactNode[])[];
+  [key: string]: any;
 }
 
-const { ENTER, TAB } = keyCodes;
+export interface ContextProps {
+  // From FormContext
+  registerWithForm?(payload: RegisterType): void;
+  unregisterFromForm?(name: string): void;
+  formAutoComplete?: boolean;
+  defaultFormValues: { [key: string]: any };
 
-export function getInitialValue(props: AsFieldProps): any {
-  if (props.type === 'checkbox') {
-    if (hasOwnProperty(props, 'checked')) {
-      return !!props.checked;
-    }
+  // From SlideContext
+  registerWithSlide?(payload: RegisterType): void;
+  unregisterFromSlide?(name: string): void;
+  advance?(event: React.KeyboardEvent<any>): void;
+  retreat?(event: React.KeyboardEvent<any>): void;
 
-    if (hasOwnProperty(props, 'defaultChecked')) {
-      return !!props.defaultChecked;
-    }
-
-    return false;
-  }
-
-  if (hasOwnProperty(props, 'value') && props.value !== undefined) {
-    return props.value;
-  }
-
-  if (hasOwnProperty(props, 'defaultValue') && props.defaultValue !== undefined) {
-    return props.defaultValue;
-  }
-
-  if (props.type === 'select' && props.multiple === true) {
-    return [''];
-  }
-
-  return '';
+  // From AsFieldContext
+  registerWithField?(payload: RegisterType): void;
+  unregisterFromField?(name: string): void;
 }
 
-const typesWithSelectionStart = ['text', 'search', 'password', 'tel', 'url'];
-const canAccessSelectionStart = (type: string): boolean => typesWithSelectionStart.includes(type);
+export interface AsFieldState {
+  errors: React.ReactNode[];
+  value: any;
+  cursor?: number | null;
+}
 
-const isNotTrue = (value: any) => value !== true;
+const emptyArray: any[] = [];
 
 /**
- * Wraps a component to treat it like a field (a controlled input)
- *
- * This can be used to create complex fields as well
- *
- * @param  {React.Component|React.Element} WrappedComponent The component to turn into a field
- * @param  {Object} options   [description]
- * @return {FieldWrapper}                  [description]
+ * Determines initial value for a field based on a few different props
  */
-const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, wrapperOptions: WrapperOptions = {}) =>
-  class FieldWrapper extends React.PureComponent<AsFieldProps, AsFieldState> {
-    static displayName = `asField(${WrappedComponent.displayName || 'Component'})`;
+export const getInitialValue = <P extends AsFieldProps>(props: P & ContextProps) => {
+  const { defaultValue, value, defaultChecked, checked, type, defaultFormValues = {} } = props;
+  const { [props.name]: initialValue } = defaultFormValues;
 
-    static propTypes = {
-      registerWrapped: PropTypes.bool,
-      /**
-       * Number of ms to delay asyncValidation while typing
-       * @type {Number}
-       */
-      validateDebounceTimeout: PropTypes.number,
-      doNotRegister: PropTypes.bool,
-      name: PropTypes.string.isRequired,
-    };
+  if (props.multiple) {
+    findValue(value, initialValue, defaultValue, []);
+  }
 
-    static defaultProps = {
-      registerWrapped: true,
-      validateDebounceTimeout: 200,
-      doNotRegister: false,
-    };
+  switch (type) {
+    case 'checkbox':
+    case 'radio':
+      return findValue(checked, initialValue, defaultChecked, false);
+    case 'number':
+      return findValue(value, initialValue, defaultValue, null);
+    case 'select':
+      return findValue(value, initialValue, defaultValue, props.multiple ? [] : '');
+    default:
+      return findValue(value, initialValue, defaultValue, '');
+  }
+};
 
-    static contextTypes = {
-      registerField: PropTypes.func,
-      unregisterField: PropTypes.func,
-    };
+const removeProps = [
+  'defaultValue',
+  'defaultChecked',
+  'registerWithForm',
+  'unregisterFromForm',
+  'format',
+  'formAutoComplete',
+  'unformat',
+  'onFocus',
+  'onBlur',
+  'onChange',
+  'onClick',
+  'validate',
+  'validateOnBlur',
+  'validateOnChange',
+  'validateDebounceTimeout',
+  'hasFormSubmitted',
+  'isFormSubmitting',
+  'formErrors',
+  'registerWithSlide',
+  'unregisterFromSlide',
+  'registerWithField',
+  'unregisterFromField',
+  'defaultFormValues',
+  'register',
+  'advance',
+  'retreat',
+];
 
-    static childContextTypes = {
-      registerField: PropTypes.func,
-      unregisterField: PropTypes.func,
-    };
+export interface InjectedProps {
+  onBlur?(event: React.FocusEvent<any>): void;
+  onChange(event: React.ChangeEvent<any>): void;
+  setRef(el: any): void;
+  autoComplete: string;
+  errors: React.ReactNode[];
+  value: any;
+}
 
-    autoComplete: string;
-    isMultipleSelect: boolean;
-    mounted: boolean;
-    debounceValidateTimer: number | undefined;
-    fields: { [key: string]: FieldInterface };
+const rando = (chars: number = 6) =>
+  Math.random()
+    .toString(36)
+    .slice(-chars);
 
-    fieldRef: any; // @todo type this
-    ref: any; // @todo type this
-    initialState: AsFieldState;
-
-    constructor(props: AsFieldProps) {
+const asField = <P extends AsFieldProps>(
+  WrappedComponent: React.ComponentType<P & InjectedProps>,
+  // options = {},
+) => {
+  return class AsField extends React.PureComponent<P & AsFieldProps & ContextProps, AsFieldState> {
+    constructor(props: P & ContextProps) {
       super(props);
 
-      // We'll cache this because it's used in a few places and should not change
-      this.isMultipleSelect = props.type === 'select' && props.multiple === true;
-
-      const [initialValue] = this.format(getInitialValue(props));
-      // Establish the initial state
-      const state: AsFieldState = {
-        value: initialValue,
-        checked: props.checked || props.defaultChecked || false,
-        errors: emptyArray,
-        isValid: !hasErrors(runValidations(props.validate, props.value)),
-        isDirty: false,
-        isTouched: false,
+      const processed = maybeApply(this.format, getInitialValue(props), null);
+      this.initialValue = Array.isArray(processed) ? processed[0] : processed;
+      this.autoComplete = rando();
+      this.state = {
+        value: this.initialValue,
+        errors: [],
+      };
+      this.fieldInterface = {
+        registerWithField: this.registerWithField,
+        unregisterFromField: this.unregisterFromField,
       };
 
-      // Setup the state, and also setup the initialState in case we get a queue to reset
-      // @ts-ignore: this is correct
-      this.state = { ...state };
-      // @ts-ignore: this is correct
-      this.initialState = { ...state };
-
-      // This is used for debouncing validate functions while typing
-      this.debounceValidateTimer = undefined;
-
-      // We collect fields if they aren't registered with the context above, and we manipulate them
-      // that way.
-      this.fields = {};
-
-      // If autocomplete is `off`, then it's most likely passed to the form as `off`, so by
-      // recommendation of the spec, we're going to turn it off in the fields. But, since `off`
-      // isn't actually supported by browsers anymore, we're instead going to generate random
-      // strings and use those for the autocomplete value in order to confuse the browser's
-      // autocomplete feature. It's the best we can do for now.
-      // @see https://developer.mozilla.org/en-US/docs/Web/Security/Securing_your_site/Turning_off_form_autocompletion
-      // In order to make this play well with PureComponents, we're just going to cache the random
-      // value so it doesn't change every render. We'll use this only if context is set to `off`
-      this.autoComplete = Math.random()
-        .toString(36)
-        .slice(-5);
-
-      this.mounted = false;
+      this.getMaybeProps = memoize(this.getMaybeProps.bind(this));
     }
 
-    getChildContext() {
-      return {
-        registerField: this.register,
-        unregisterField: this.unregister,
-      };
-    }
+    static defaultProps = {
+      format: (value: any, cursor: number | null = null) => [value, cursor],
+      unformat: identity,
+      validateDebounceTimeout: 100,
+      register: true,
+    };
+
+    static displayName = `AsField(${WrappedComponent.displayName || 'Component'})`;
+
+    autoComplete: string;
+    fieldInterface: {
+      registerWithField: (payload: any) => void;
+      unregisterFromField: (name: string) => void;
+    };
+    fields: { [key: string]: any } = {};
+    initialErrors: string[];
+    initialValue: any;
+    innerRef: any;
+    validateDebounceTimer: number | undefined;
+    dynamicHandlers: { [key: string]: Function };
 
     componentDidMount() {
-      // Register with the any higher component that needs to keep track of this field
-      this.register();
+      const { registerWithForm, name, registerWithSlide, registerWithField, autoFocus, type, register } = this.props;
+      const { getValue, setValue, reset, validate, focus, getRef } = this;
+
+      // If the `register` prop is set to false (defaults to true), then we register with any form or slide above
+      // (i.e. we can halt a passthrough)
+      if (register) {
+        execIfFunc(registerWithForm, { name, getValue, setValue, reset, validate, focus, getRef });
+        execIfFunc(registerWithSlide, { name, getValue, setValue, reset, validate, focus, getRef });
+      }
+      // Always register with fields that are above (i.e. there is always passthrough)
+      execIfFunc(registerWithField, { name, getValue, setValue, reset, validate, focus, getRef });
 
       // Emulate the browser autoFocus if (1) requested and (2) possible
-      if (this.props.autoFocus && this.fieldRef) {
-        // Actually focus on the field
-        this.fieldRef.focus();
-        // Safari will freak out if we try to access selectionStart on an `<input/>` with many different `types` set.
-        if (canAccessSelectionStart(this.props.type)) {
-          moveCursor(this.fieldRef);
-        }
+      if (!autoFocus || !this.innerRef) {
+        return;
       }
 
-      this.mounted = true;
+      // Actually focus on the field
+      this.innerRef.focus();
+      // Safari will freak out if we try to access selectionStart on an input` with many different types.
+      if (canAccessSelectionStart(type!)) {
+        moveCursor(this.innerRef);
+      }
     }
 
-    componentDidUpdate(_: AsFieldProps, prevState: AsFieldState) {
-      // Safari will freak out if we try to access selectionStart on an `<input/>` with many different `types` set.
-      if (canAccessSelectionStart(this.props.type) && this.fieldRef && this.fieldRef.selectionStart) {
-        const { cursor } = this.state;
-        if (typeof cursor !== 'undefined' && cursor !== prevState.cursor) {
-          this.fieldRef.selectionStart = cursor;
-          this.fieldRef.selectionEnd = cursor;
-        }
+    componentDidUpdate(_: any, prevState: AsFieldState) {
+      if (!this.innerRef || !canAccessSelectionStart(this.props.type!)) {
+        return;
+      }
+
+      const { cursor } = this.state;
+      if (cursor !== prevState.cursor && isDefined(cursor) && !isNull(cursor)) {
+        this.innerRef.selectionStart = this.innerRef.selectionEnd = cursor;
       }
     }
 
     componentWillUnmount() {
-      // Since we're unmounting, unregister from any higher components — this
-      // means that the value will no longer be available
-      this.unregister();
-      this.mounted = false;
+      const { name, unregisterFromForm, unregisterFromSlide, unregisterFromField } = this.props;
+      execOrMapFn([unregisterFromForm, unregisterFromSlide, unregisterFromField], name);
     }
 
-    /** **************************************************************************
-     * Registrations Methods
-     *
-     * Fields register with whatever controls them. So, if they are within a form,
-     * the form can act on all of the fields (via bound functions passed by
-     * context). This enables things like forms to get all the values for a submit
-     * action or to pass all the values to determine if a slide should show, etc..
-     *************************************************************************** */
+    /**
+     * Registers sub-fields, passed as a prop through context
+     */
+    registerWithField = (payload: any) => {
+      this.fields[payload.name] = { ...payload };
+    };
 
     /**
-     * Use the registration function passed by context
-     * @return {void}
+     * Unregisters sub-fields, passed as a prop through context
      */
-    register = (fieldProps?: FieldInterface): void => {
-      const { name, doNotRegister } = this.props;
-      if (fieldProps && wrapperOptions.registerWrapped === false) {
-        // This is where we intercept the fields and control them.
-        this.fields[fieldProps.name] = fieldProps;
-        // Note, if there is no name field, then we don't register with anything in context
-      } else if (name && isFunction(this.context.registerField) && !doNotRegister) {
-        this.context.registerField({
-          // This should be a unique key
-          name,
-          // In case we need to grab the ref @TODO maybe remove
-          getRef: this.getRef,
-          // Gets the value from the field
-          getValue: this.getValue,
-          // setValue can be useful for overwriting a value
-          setValue: this.setValue,
-          // The form must call all the validation functions synchronously
-          validate: this.validate,
-          // Runs the validation functions to see if the field is valid
-          isValid: this.isValid,
-          // Resets the field
-          reset: this.reset,
-        });
+    unregisterFromField = (name: string) => {
+      const { [name]: _, ...rest } = this.fields;
+      this.fields = rest;
+    };
+
+    /**
+     * Gets the unformatted value of the field
+     */
+    getValue = (): any => this.unformat(this.state.value);
+
+    /**
+     * Sets the value internally
+     */
+    setValue = (rawValue: any) => {
+      const rawCursor = rawValue && hasOwnProperty(rawValue, 'length') ? rawValue.length : null;
+      const [value, cursor] = this.format(rawValue, rawCursor);
+      this.setState({ value, cursor });
+    };
+
+    getRef = () => this.innerRef;
+
+    /**
+     * Resets field to initial state
+     */
+    reset = () => {
+      this.setState({ value: this.initialValue, errors: emptyArray });
+
+      // If this is acting as a wrapper to compose fields, then call the reset wrapped fields
+      const { fields } = this;
+      Object.keys(fields).forEach(field => execIfFunc(fields[field].reset));
+    };
+
+    /**
+     * Convenience function to determine if something is a multiselect
+     */
+    isMultiSelect = () => this.props.type === 'select' && this.props.multiple;
+
+    /**
+     * These are props (event handlers) that are passed down only if the user supplies certain props
+     */
+    getMaybeProps() {
+      const { onBlur, validateOnBlur } = this.props;
+      const out: { [key: string]: (event: any) => void } = {};
+
+      if (isFunction(onBlur) || validateOnBlur) {
+        out.onBlur = this.handleOnBlur;
+      }
+
+      return out;
+    }
+
+    /**
+     * Handles onKeyDown
+     *
+     * This is needed so that we prevent the default mechanism for forms to auto-submit if
+     * `ENTER` is pressed while we're in a slide, so we have looser coupling.
+     */
+    handleOnKeyDown = (event: React.KeyboardEvent<any>) => {
+      const { advance, onKeyDown, retreat, type } = this.props;
+
+      // We need to persist the event if there is a callback handler for onKeyDown
+      if (isFunction(onKeyDown)) {
+        event.persist();
+      }
+
+      // We need to handle onKeyDown for slides to prevent them from submitting. Instead,
+      // we just advance / retreat to the next field / slide.
+      if (event.key === 'Enter') {
+        if (!['textarea', 'button', 'submit', 'reset'].includes(type!)) {
+          event.preventDefault();
+        }
+        execIfFunc(event.shiftKey ? retreat : advance, event);
+      }
+
+      // We want to call the event handler only after the slide handling has happened
+      if (isFunction(onKeyDown)) {
+        onKeyDown(event);
       }
     };
 
     /**
-     * Use the unregistration function passed by context
-     * @return {void}
+     * Generic change event for inner field
      */
-    unregister = (name?: string): void => {
-      if (name) {
-        // If this is called with a name, then that means a field is unregistering from this
-        // composed field
-        const { [name]: removed, ...rest } = this.fields;
-        this.fields = rest;
-      } else {
-        if (!this.props.name || this.props.doNotRegister) {
-          // We never registered
-          return;
-        }
-        // Unregister this field itself
-        if (isObject(this.context) && isFunction(this.context.unregisterField)) {
-          this.context.unregisterField(this.props.name);
-        }
-      }
-    };
+    handleOnChange = (event: React.ChangeEvent<any>) => {
+      event.persist();
+      const { checked, options, value } = event.target;
+      const { validateOnChange, validateDebounceTimeout, type, onChange } = this.props;
 
-    /**
-     * Handlers
-     */
-
-    /* eslint-disable consistent-return */
-    /**
-     * Handles changes in value for the component
-     *
-     * Since, this handles all field types,
-     *
-     * @param  {[type]} event [description]
-     * @return {[type]}       [description]
-     */
-    onChange = (event: React.SyntheticEvent<HTMLInputElement & HTMLSelectElement> | any): void => {
-      // We're allowing the pattern for composed fields to call "onChange" with just a value
-      // so, we have to detect whether this method was called from an event that gives us
-      // access to a DOMElement | DOMNode in event.target or if we're just getting an object
-      // or a string...
-      let value;
-      if (event && event.target) {
-        // If we have both event and event.target, check to see if event.target is a DOMElement
-        // or DOMNode. If so, the value is just the value on the target (i.e. we're receiving)
-        // information on a field primitive.
-        if (event.target instanceof Element || event.target instanceof Node) {
-          value = event.target.value; // eslint-disable-line
-        } else {
-          // If not, then the value contained "target" as a key, so the correct value is just the
-          // entire object, or, inappropriately named here as "event"
-          value = event;
-        }
-      } else if (event) {
-        // If `target` is not on the object, then it's not a field primitive, and we should consider
-        // that the entire value is just what is now poorly named as "event"
-        value = event;
+      // Handle checkboxes and radio buttons early and exit
+      if (type === 'checkbox' || type === 'radio') {
+        this.setState({ value: checked });
+        // Call any user supplied callbacks
+        execIfFunc(onChange, event);
+        return;
       }
 
-      const { validateWhileTyping, validateDebounceTimeout } = this.props;
-
-      if (this.props.type === 'checkbox') {
-        // @todo clean this up
-        const { checked } = event.target;
-        return this.setValue(!!checked);
-      }
-
-      if (validateWhileTyping) {
-        // If we are to validate while typing, then we'll debunce it. Basically, just set a timeout,
-        // and, on each change event, clear the timeout and set a new one. The last one will go
-        // through. This should help by not showing errors too early or, if there is a remote call
-        // for the validation, not making too many worthless ajax requests
-        window.clearTimeout(this.debounceValidateTimer);
-        this.debounceValidateTimer = window.setTimeout(() => this.validate(), validateDebounceTimeout);
-      }
-
-      // If this is `<input type='select' multiple, then our values are arrays and need to be
-      // handled differently.
-      if (this.isMultipleSelect) {
-        // Grab the options off of event.target and cycle through all of them, this is an
-        // HTMLOptionsCollection, but it's iterable.
-        const { options } = event.target;
-
+      // Handle multiselects early and exit
+      if (this.isMultiSelect()) {
         const values = [];
         for (let i = 0; i < options.length; i++) {
           // Grab all the options that are selected
@@ -325,388 +349,134 @@ const asField = (WrappedComponent: React.ComponentType<WrappedComponentProps>, w
           }
         }
         // Only update the state value if the arrays are actually different
-        // @TODO consider removing this or doing something better (possible performance drain)
         if (!isEqual(this.state.value, values)) {
           this.setValue(values);
         }
-      } else if (this.state.value !== value) {
-        // Only run the setState method if the value is actually different
-        this.setValue(value);
-      }
-    };
-    /* eslint-enable consistent-return */
-
-    onClick = (event: GenericClickEvent): void => {
-      const { onClick } = this.props;
-
-      if (isFunction(onClick)) {
-        onClick(event.target as FieldElement);
-      }
-    };
-
-    /**
-     * Event Handlers
-     */
-
-    /**
-     * An onFocus handler that can be user defined.
-     *
-     * By default, it maybe binds a fundtion to keyDown to prevent accidental form submission.
-     *
-     * If you're using this wrapper to compose a field out of other FF fields, then you can use this
-     * function as a prop and pass it to all the fields that are relevant if you want to supply
-     * a function as a prop.
-     *
-     */
-    onFocus = (event: GenericFocusEvent): void => {
-      const { onFocus } = this.props;
-      const { target } = event;
-
-      // On most fields, add in a handler to prevent a form submit on enter
-      if (this.fieldRef) {
-        this.fieldRef.addEventListener('keydown', this.handleKey, false);
+        this.setState({ value: values });
+        // Call any user supplied callbacks
+        execIfFunc(onChange, event);
+        return;
       }
 
-      // If this field has yet to be touched, then set it as touched
-      if (this.state.isTouched === false && this.mounted) {
-        this.setState(prevState => ({
-          ...prevState,
-          isTouched: true,
-        }));
+      // Grab the cursor position from the field ref
+      const cursor =
+        this.innerRef && canAccessSelectionStart(type!) && 'selectionStart' in this.innerRef
+          ? this.innerRef.selectionStart
+          : null;
+
+      // Apply the formatter. This is an identity function if there is no user supplied formatter
+      const [newValue, newCursor] = this.format(value, cursor);
+
+      // If we are to validate onChange, then we'll debounce the call
+      if (validateOnChange) {
+        window.clearTimeout(this.validateDebounceTimer);
+        this.validateDebounceTimer = setTimeout(() => this.validate(newValue, true), validateDebounceTimeout);
       }
 
-      // Call user supplied function if given
-      if (isFunction(onFocus)) {
-        onFocus(target);
-      }
+      // Update internal state
+      this.setState({
+        value: newValue,
+        cursor: isDefined(newCursor) ? newCursor : cursor,
+      });
+
+      // Call any user supplied callbacks
+      execIfFunc(onChange, event);
     };
 
     /**
-     * Blur handler that provides some async validation (if specified) and removes event listeners
-     * that are created in onFocus
+     * Generic blur handler for user-supplied callback, also does validation based on validateOnBlur
      */
-    onBlur = (event: GenericFocusEvent): void => {
-      const { onBlur, validate, asyncValidate } = this.props;
-      const { target } = event;
+    handleOnBlur = (event: React.FocusEvent<any>) => {
+      const { onBlur, validateOnBlur } = this.props;
+      event.persist();
 
-      if (this.fieldRef) {
-        this.fieldRef.removeEventListener('keydown', this.handleKey);
+      if (validateOnBlur) {
+        this.validate(event.target.value, true);
       }
 
-      if (asyncValidate && validate) {
-        this.validate();
-      }
-
-      // Call user supplied function if given
       if (isFunction(onBlur)) {
-        onBlur(target);
+        onBlur(event);
       }
     };
 
     /**
-     * [handleKey description]
-     *
-     * @param  {[type]} event [description]
-     * @return {[type]}       [description]
+     * Proxy function to focus on inner field
      */
-    handleKey = (event: React.KeyboardEvent<HTMLInputElement>): void => {
-      const { name, type, handleKeyPress } = this.props;
-      const { handleKey, handleTab } = this.context;
-      const { shiftKey, ctrlKey, altKey } = event;
-
-      if (event.keyCode === ENTER) {
-        // Allow the enter key to function normally on textareas, buttons, submits, and resets.
-        // Otherwise, intercept (likely, this is wrapped in a form, and it will make the form
-        // submit). Note: we intercept only if there is a function in context
-        if (!['textarea', 'button', 'submit', 'reset'].includes(type)) {
-          event.preventDefault();
-          if (isFunction(handleKey)) {
-            handleKey(ENTER, { shiftKey, ctrlKey, altKey }, type, name, this.fieldRef);
-          }
-        }
-      } else if (event.keyCode === TAB && handleTab) {
-        event.preventDefault();
-        if (isFunction(handleKey)) {
-          handleKey(TAB, { shiftKey, ctrlKey, altKey }, type, name, this.fieldRef);
-        }
-      }
-
-      // Let the user supplied function take over
-      if (isFunction(handleKeyPress)) {
-        handleKeyPress(event.keyCode, { shiftKey, ctrlKey, altKey }, type, name, this.fieldRef);
+    focus = () => {
+      if (this.innerRef && isFunction(this.innerRef.focus)) {
+        this.innerRef.focus();
       }
     };
 
     /**
-     * Refs
+     * Formats a value according to prop-supplied function
      */
+    format = (value: any, cursor: number | null = null): [any, number | null] =>
+      maybeApply(this.props.format, value, cursor);
 
-    setRef = (el: HTMLElement): void => {
-      this.fieldRef = el;
+    /**
+     * Removes formatting from value with a prop-supplied function
+     */
+    unformat = (value: any): any => maybeApply(this.props.unformat, value);
 
-      const { setRef } = this.props;
-      // If setRef was sent to to the component as a prop, then also call it with the element
-      if (isFunction(setRef)) {
-        setRef(el);
+    /**
+     * Validates a field based on prop-supplied function
+     *
+     * @todo find a pattern to support asynchronous validations
+     */
+    validate = (value: any, updateErrors: boolean = false): React.ReactNode[] => {
+      const { validate } = this.props;
+
+      const initial = execOrMapFn(validate, value) as React.ReactNode | React.ReactNode[];
+      const errors = Array.isArray(initial) ? initial.filter(Boolean) : [initial].filter(Boolean);
+      if (updateErrors) {
+        this.setState({ errors });
       }
-    };
-
-    getRef = (): void => this.fieldRef;
-
-    /**
-     * Value Functions
-     */
-
-    /**
-     * Gets the value of the field
-     *
-     * A bound version of this method is sent with the register method so that any component that
-     * controls this field can access its value.
-     *
-     * @return {any} the value of the field
-     */
-    getValue = (): any => this.unformat(this.state.value);
-
-    /**
-     * Set the value of the field
-     *
-     * This is a different method because (1) a bit of code reuse, but more importantly (2) the parent
-     * a parent component might want to force update the value, hence, we provide a backdoor to the
-     * setState method. This will be sent as part of the callback in the `register` method, so that
-     * anything that this registers with shall have access to update the value.
-     *
-     * If you're composing fields with this wrapper, then the best practice is to call the onChange
-     * method from the wrapped component.
-     *
-     * @param {any} value the value to set
-     */
-    setValue = (value: any, resetErrors = false, resetTouched = false): void => {
-      if (!this.mounted) {
-        return;
-      }
-
-      const { name, onChange, type } = this.props;
-
-      this.setState(prevState => {
-        const [newValue, cursor] = this.format(value);
-
-        // Call user supplied function if given
-        if (isFunction(onChange)) {
-          onChange(newValue, name);
-        }
-
-        if (['checkbox', 'radio'].includes(type)) {
-          return {
-            ...prevState,
-            cursor: cursor || prevState.cursor,
-            errors: resetErrors === false ? prevState.errors : emptyArray,
-            isDirty: newValue !== this.props.value,
-            isTouched: resetTouched !== true,
-            value: newValue,
-            checked: value,
-          };
-        }
-
-        return {
-          ...prevState,
-          cursor: cursor || prevState.cursor,
-          errors: resetErrors === false ? prevState.errors : emptyArray,
-          isDirty: newValue !== this.props.value,
-          isTouched: resetTouched !== true,
-          value: newValue,
-        };
-      });
+      return errors.length === 0 ? emptyArray : errors;
     };
 
     /**
-     * Reset method called by `reset` buttons to restore the field to its initialState
-     *
+     * Determines if a field is valid according to prop-supplied function
      */
-    reset = (): void => {
-      if (!this.mounted) {
-        return;
-      }
-
-      const { name, onChange } = this.props;
-      const { fields, initialState } = this;
-
-      // Clobber the state by setting back to the initialState
-      this.setState(initialState);
-
-      // If we were provided a change function, then call it with the initial value
-      if (isFunction(onChange)) {
-        onChange(initialState.value, name);
-      }
-
-      // If this is acting as a wrapper to compose fields, then call the reset on the fields it
-      // controls
-      Object.keys(fields).forEach(field => {
-        if (isFunction(fields[field].reset)) {
-          fields[field].reset();
-        }
-      });
-    };
+    isValid = () => this.validate(this.getValue()).length === 0;
 
     /**
-     * Validation and Errors
+     * Prop passed to inner component to set the ref
      */
-
-    validate = () => {
-      if (!this.mounted) {
-        return false;
-      }
-      // We need to get the values of the controlled fields and see if they're
-      // good. Might be buggy.
-      const controlledFields = Object.keys(this.fields)
-        .reduce(
-          (acc, field) => (isFunction(this.fields[field].validate) ? [...acc, ...this.fields[field].validate()] : acc),
-          [],
-        )
-        // This filter is ugly... It sort of mixes concerns and shows how we're repurposing the
-        // method.
-        .filter(isNotTrue);
-      return this.maybeUpdateErrors([...(controlledFields as (string | false)[]), ...this.runValidations()]);
+    setRef = (el: any) => {
+      this.innerRef = el;
     };
-
-    runValidations = () => runValidations(this.props.validate, this.state.value);
-
-    // @todo update this to be aware of controlled fields, or merge it with the other validation
-    // functions
-    isValid = () => !hasErrors(this.runValidations());
-
-    // @TODO type this better
-    wrappedRef = (el: any) => {
-      this.ref = el;
-    };
-
-    /**
-     * [maybeUpdateErrors description]
-     *
-     * @todo  remove return values
-     *
-     * @param  {[type]} msg [description]
-     * @return {[type]}     [description]
-     */
-    maybeUpdateErrors = (msg: false | string | (false | string)[]) => {
-      if (msg === false) {
-        if (this.state.errors.length !== 0) {
-          this.setState(prevState => ({
-            ...prevState,
-            isValid: true,
-            errors: emptyArray,
-          }));
-        }
-        // This means it is valid, which is non-intuitive coming from a method with this name
-        return true;
-      }
-      if (Array.isArray(msg) && msg.every(message => message === false)) {
-        this.setState(prevState => ({
-          ...prevState,
-          isValid: true,
-          errors: emptyArray,
-        }));
-        return true;
-      }
-      // @ts-ignore: the filter makes this correct
-      this.setState(prevState => ({
-        ...prevState,
-        isValid: false,
-        errors: Array.isArray(msg) ? msg.filter(Boolean) : [msg],
-      }));
-      // This means it is not valid, which is non-intuitive coming from a method with this name
-      return false;
-    };
-
-    /**
-     * Formatting
-     */
-
-    /**
-     * Runs the value through a format function
-     *
-     * @todo  we might need to pass in more information here in order to deal with the formatters
-     *        elegantly. Right now, for the google phone number example, pressing `backspace` on
-     *        a delimter (eg, a paren surrounding an area code) returns the extact same string,
-     *        but it should be deleting the last good number. Maybe we can get away with the
-     *        onChange. Otherwise, we might have to do something else.
-     *
-     * @return {[type]} [description]
-     */
-    format = (value: any): any => {
-      const { format, type } = this.props;
-      const { fieldRef } = this;
-
-      // Safari will freak out if we try to access selectionStart on an `<input/>` with many
-      // different `types` set. Second, if no formatting function is supplied, then return the raw
-      // value
-      if (!canAccessSelectionStart(type) || !isFunction(format)) {
-        return [value, null];
-      }
-
-      // If the user has specified a formatter, then call it on the value. If we have a fieldRef
-      // and the fieldRef supports selectionStart, then we'll do automated cursor management.
-      const formatted = fieldRef && fieldRef.selectionStart ? format(value, fieldRef.selectionEnd) : format(value);
-
-      // We might consider expanding this check to make sure that it's `[string, number]`
-      return Array.isArray(formatted) ? formatted : [formatted, null];
-    };
-
-    unformat = (value: any): any => (isFunction(this.props.unformat) ? this.props.unformat(value) : value);
 
     render() {
-      // We are going to pull out the internal things that we need and call the rest `spreadProps`,
-      // and then we'll, well, spread throse props over the component below it.
-      const {
-        onChange,
-        onBlur,
-        onFocus,
-        registerWrapped,
-        value,
-        asyncValidate,
-        validate,
-        validateWhileTyping,
-        validateDebounceTimeout,
-        format,
-        unformat,
-        handleEnterKey,
-        doNotRegister,
-        checked,
-        defaultChecked,
-        defaultValue,
-        ...spreadProps
-      } = this.props;
+      const props = filterKeysFromObj(removeProps, this.props) as P & InjectedProps;
+      const { autoComplete, formAutoComplete } = this.props;
+      const { value } = this.state;
 
-      if (this.context.autoComplete === 'off') {
-        // @ts-ignore: this is fine
-        spreadProps.autoComplete = this.autoComplete;
-      } else if (this.props.autoComplete) {
-        // @ts-ignore: this is fine
-        spreadProps.autoComplete = this.props.autoComplete;
-      }
-
-      if (['checkbox', 'radio'].includes(this.props.type)) {
-        // @ts-ignore: this is fine
-        spreadProps.checked = Boolean(this.state.checked);
-      }
+      const autoCompleteValue = findValue(
+        autoComplete,
+        isDefined(formAutoComplete) && !formAutoComplete ? this.autoComplete : '',
+      );
 
       return (
-        <WrappedComponent
-          onChange={this.onChange}
-          onBlur={this.onBlur}
-          onFocus={this.onFocus}
-          // @ts-ignore: I can't figure out why this isn't working
-          onClick={this.onClick}
-          setRef={this.setRef}
-          getValue={this.getValue}
-          setValue={this.setValue}
-          ref={this.wrappedRef}
-          value={this.state.value}
-          errors={this.state.errors}
-          isValid={this.state.isValid}
-          {...spreadProps}
-        />
+        <AsFieldContext.Provider value={this.fieldInterface}>
+          <WrappedComponent
+            {...props}
+            {...this.getMaybeProps()}
+            {...this.dynamicHandlers}
+            autoComplete={autoCompleteValue}
+            errors={this.state.errors}
+            onChange={this.handleOnChange}
+            onKeyDown={this.handleOnKeyDown}
+            setRef={this.setRef}
+            setValue={this.setValue}
+            value={isDefined(value) && !isNull(value) ? value : ''}
+          />
+        </AsFieldContext.Provider>
       );
     }
   };
+};
 
-export default asField;
+export { asField };
+const Composed = composeHOCs<AsFieldProps>(asField, withAsField, withSlide, withForm);
+export default Composed;

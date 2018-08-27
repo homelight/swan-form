@@ -37,7 +37,7 @@ const tenAndAlpha = [minLenTen, alphaNumeric];
   type="text"
   name="minTenField"
   validate={tenAndAlpha}
-  asyncValidate
+  validateOnBlur
   placeholder="Type Something"
   value="testing_"
   required
@@ -66,7 +66,7 @@ const tenAndAlpha = [minLenTen, alphaNumeric];
             type="text"
             name="minTenField"
             validate={tenAndAlpha}
-            asyncValidate
+            validateOnBlur
             placeholder="Type Something"
             value="testing_"
             required
@@ -79,7 +79,7 @@ const tenAndAlpha = [minLenTen, alphaNumeric];
             name="minTenField"
             className="styled-reverse"
             validate={tenAndAlpha}
-            asyncValidate
+            validateOnBlur
             placeholder="Type Something"
             value="testing_"
             pattern="[a-zA-Z0-9]{10,}"

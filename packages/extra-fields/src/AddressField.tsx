@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import * as PropTypes from 'prop-types';
+// import * as PropTypes from 'prop-types';
 import { asField, Field } from '@swan-form/field';
 
 const states = [
@@ -56,23 +56,40 @@ const states = [
   'WY',
 ];
 
-class AddressField extends Component {
+export interface AddressProps {
+  name: string;
+  value: {
+    line1: string;
+    line2: string;
+    city: string;
+    state: string;
+    zip: string;
+    [key: string]: any;
+  };
+  className?: string;
+  onChange?(event: React.ChangeEvent<any>): void;
+  autoFocus?: boolean;
+  label?: React.ReactNode;
+  setValue?(value: any): void;
+}
+
+class AddressField extends Component<AddressProps, any> {
   static displayName = 'ComposedAddressField';
 
-  static propTypes = {
-    autoFocus: PropTypes.bool,
-    value: PropTypes.shape({
-      line1: PropTypes.string,
-      line2: PropTypes.string,
-      city: PropTypes.string,
-      state: PropTypes.string,
-      zip: PropTypes.string,
-    }),
-    name: PropTypes.string.isRequired,
-    onChange: PropTypes.func.isRequired,
-    label: PropTypes.string, // eslint-disable-line
-    className: PropTypes.string,
-  };
+  // static propTypes = {
+  //   autoFocus: PropTypes.bool,
+  //   value: PropTypes.shape({
+  //     line1: PropTypes.string,
+  //     line2: PropTypes.string,
+  //     city: PropTypes.string,
+  //     state: PropTypes.string,
+  //     zip: PropTypes.string,
+  //   }),
+  //   name: PropTypes.string.isRequired,
+  //   onChange: PropTypes.func.isRequired,
+  //   label: PropTypes.string, // eslint-disable-line
+  //   className: PropTypes.string,
+  // };
 
   static defaultProps = {
     autoFocus: false,
@@ -86,13 +103,15 @@ class AddressField extends Component {
     className: '',
   };
 
-  updatePart = (partValue, name) => {
-    const fieldName = name.replace(`${this.props.name}-`, ''); // eslint-disable-line
-    const { value, onChange } = this.props;
-    if (Object.keys(value).includes(fieldName) && value[fieldName] !== partValue) {
-      onChange({
+  updatePart = (event: React.ChangeEvent<any>) => {
+    const { target } = event;
+    const { name, value, setValue } = this.props;
+    const fieldName = target.name.replace(`${name}-`, ''); // eslint-disable-line
+
+    if (Object.keys(value).includes(fieldName) && value[fieldName] !== target.value) {
+      setValue!({
         ...value,
-        [fieldName]: partValue,
+        [fieldName]: target.value,
       });
     }
   };
@@ -109,6 +128,7 @@ class AddressField extends Component {
           autoComplete="address-line1"
           onChange={this.updatePart}
           value={value.line1}
+          register={false}
           required
           autoFocus={autoFocus}
         />
@@ -118,6 +138,7 @@ class AddressField extends Component {
           onChange={this.updatePart}
           autoComplete="address-line2"
           placeholder="Line 2"
+          register={false}
           value={value.line2}
         />
         <br />
@@ -128,6 +149,7 @@ class AddressField extends Component {
           onChange={this.updatePart}
           placeholder="City"
           value={value.city}
+          register={false}
           required
         />
         <Field
@@ -137,6 +159,7 @@ class AddressField extends Component {
           onChange={this.updatePart}
           autoComplete="address-level1"
           value={value.state}
+          register={false}
           required
         />
         <br />
@@ -147,11 +170,12 @@ class AddressField extends Component {
           onChange={this.updatePart}
           placeholder="Zip"
           value={value.zip}
-          validate={v => (!v.trim() ? 'This field is required' : false)}
+          register={false}
+          validate={(v: string) => (!v.trim() ? 'This field is required' : false)}
         />
       </fieldset>
     );
   }
 }
 
-export default asField(AddressField, { registerWrapped: false });
+export default asField(AddressField);

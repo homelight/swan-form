@@ -1,11 +1,22 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
-import isFunction from 'lodash/isFunction';
-import { classes, moveCursor } from '@swan-form/helpers';
 
+import { classes, gatherErrors, gatherValues, execIfFunc, toKey, SlideContext } from '@swan-form/helpers';
+import { isFunction, memoize } from 'lodash';
+
+const emptyArray: any[] = [];
+const emptyObject = {};
 const alwaysTrue = () => true;
 
-export interface SlideProps {
+export interface InjectedProps {
+  setRef?(el: any): void;
+  getFormValues?(): { [key: string]: any };
+  nextSlide?(): void;
+  prevSlide?(): void;
+  [key: string]: any;
+}
+
+export interface SlideProps extends InjectedProps {
   shouldShowIf?(formValues: { [key: string]: any }): boolean;
   className?: string;
   children?: React.ReactNode;
@@ -13,161 +24,198 @@ export interface SlideProps {
   didEnter?: boolean;
   didEnterAsPrev?: boolean;
   didEnterAsNext?: boolean;
-  beforeExit?(props: object): Promise<boolean>;
-  beforeExitToPrev?(props: object): Promise<boolean>;
-  beforeExitToNext?(props: object): Promise<boolean>;
-  render?(slideProps: any): React.ReactNode | null;
+  beforeExit?(props: SlideProps): Promise<boolean>;
+  beforeExitToPrev?(props: SlideProps): Promise<boolean>;
+  beforeExitToNext?(props: SlideProps): Promise<boolean>;
+  render?(slideProps: any): React.ReactNode;
+  style?: React.CSSProperties;
+  validate?(values: { [key: string]: any }): React.ReactNode[];
 }
 
-// @TODO pull these from a common source rather than redeclaring them
-export type StrFalseArr = (string | false)[];
+export interface SlideState {
+  errors: React.ReactNode[];
+}
 
-export interface FieldInterface {
+export interface RegisterPayload {
   name: string;
-  getRef(): HTMLElement;
+  validate(value: any, updateErrors: boolean): React.ReactNode[];
   getValue(): any;
-  setValue(value: any): void;
-  validate(): StrFalseArr;
-  isValid(): boolean;
   reset(): void;
+  setValue(value: any): void;
+  focus(): void;
+  getRef(): any;
 }
 
-export default class Slide extends React.PureComponent<SlideProps> {
-  static propTypes = {
-    /**
-     * Regular react children.
-     * Note: do not use this with a `render` prop (as the children will be ignored)
-     */
-    children: PropTypes.oneOfType([PropTypes.node, PropTypes.element, PropTypes.string]),
-    /**
-     * A className to put on the slide
-     */
-    className: PropTypes.string,
-    /**
-     * If there is a <Field /> on the slide, then whether autoFocus the first one
-     */
-    autoFocus: PropTypes.bool,
-    /**
-     * Function that determines if the slide will show or be skipped; not used internally, but
-     * used by the Slider component
-     */
-    shouldShowIf: PropTypes.func, // eslint-disable-line
-    /**
-     * A render prop, which gets called by the <Slider /> component
-     * Note: do not use with children as the children will be ignored
-     */
-    render: PropTypes.func, // eslint-disable-line
-  };
-
-  static contextTypes = {
-    registerField: PropTypes.func,
-    unregisterField: PropTypes.func,
-  };
-
-  static childContextTypes = {
-    registerField: PropTypes.func,
-    unregisterField: PropTypes.func,
-  };
-
-  static defaultProps: Partial<SlideProps> = {
-    className: '',
-    autoFocus: true,
-    children: null,
-    shouldShowIf: alwaysTrue,
-  };
-
+class Slide extends React.PureComponent<SlideProps, SlideState> {
   constructor(props: SlideProps) {
     super(props);
     this.fields = {};
+    this.getSlideInterface = memoize(this.getSlideInterface.bind(this));
+
+    this.state = { errors: emptyArray };
+
+    // maybe move this elsewhere?
+    if (isFunction(props.setRef)) {
+      props.setRef(this);
+    }
   }
 
-  fields: { [key: string]: FieldInterface } = {}; // @todo get the FieldInterface
+  static propTypes = {
+    autoFocus: PropTypes.bool,
+    beforeExit: PropTypes.func,
+    beforeExitToNext: PropTypes.func,
+    beforeExitToPrev: PropTypes.func,
+    className: PropTypes.string,
+    didEnter: PropTypes.bool,
+    didEnterAsPrev: PropTypes.bool,
+    didEntereAsNext: PropTypes.bool,
+    render: PropTypes.func,
+    shouldShowIf: PropTypes.func,
+    style: PropTypes.object,
+    validate: PropTypes.func,
+  };
 
-  getChildContext() {
-    // We need to intercept the register field context hook that the Form component so that we can
-    // test that all the fields are valid before moving on to the next slide.
-    return {
-      registerField: this.registerField,
-      unregisterField: this.unregisterField,
-    };
-  }
+  static defaultProps = {
+    // @ts-ignore
+    validate: values => [],
+    className: '',
+    autoFocus: true,
+    shouldShowIf: alwaysTrue,
+    style: emptyObject,
+  };
+
+  static displayName = 'Slide';
 
   componentDidMount() {
+    this.mounted = true;
     this.maybeAutoFocus();
   }
 
-  registerField = ({ name, getRef, getValue, setValue, validate, reset, isValid }: FieldInterface) => {
-    if (isFunction(this.context.registerField)) {
-      this.context.registerField({ name, getRef, getValue, setValue, validate, reset });
-    }
-    this.fields = {
-      ...this.fields,
-      [name]: {
-        name,
-        getRef,
-        getValue,
-        isValid,
-        reset,
-        setValue,
-        validate,
-      },
-    };
+  componentWillUnmount() {
+    this.mounted = false;
+  }
+
+  fields: {
+    [key: string]: RegisterPayload;
   };
 
-  unregisterField = (name: string) => {
-    if (isFunction(this.context.unregisterField)) {
-      this.context.unregisterField(name);
-    }
-    const { [name]: removed, ...remaining } = this.fields;
-    this.fields = remaining;
-  };
+  mounted: boolean;
 
+  /**
+   * Called to autofocus on the first field in a slide if one exists
+   */
   maybeAutoFocus = () => {
-    if (this.props.autoFocus) {
-      const fieldNames = Object.keys(this.fields);
-      if (fieldNames.length > 0) {
-        // Get the element of the first field
-        const firstField = this.fields[fieldNames[0]].getRef();
-        // We need to push this top the next cycle in the event loop; otherwise we focus before
-        // it fully renders (which means, nothing actually happens).
-        if (firstField) {
-          setTimeout(() => {
-            // Call `focus` on the first field that we have
-            firstField.focus();
-            // Move the cursor to the end of the field
-            moveCursor(firstField);
-          }, 0);
-        }
+    const name = Object.keys(this.fields)[0];
+    const field = this.fields[name];
+    if (field) {
+      field.focus();
+    }
+  };
+
+  /**
+   * Passed to fields to register with the slide
+   */
+  registerWithSlide = (payload: RegisterPayload) => {
+    this.fields[payload.name] = { ...payload };
+  };
+
+  /**
+   * Passed to fields to unregister from the slide
+   */
+  unregisterFromSlide = (name: string) => {
+    const { [name]: removed, ...rest } = this.fields;
+    this.fields = rest;
+  };
+
+  /**
+   * This gets passed down in context.
+   */
+  getSlideInterface() {
+    return {
+      registerWithSlide: this.registerWithSlide,
+      unregisterFromSlide: this.unregisterFromSlide,
+      advance: this.advance,
+      retreat: this.retreat,
+    };
+  }
+
+  /**
+   * Advances to the next field or slide
+   */
+  advance = (event: React.KeyboardEvent<any>) => {
+    const fields = Object.keys(this.fields);
+    const field = fields.filter(name => this.fields[name].getRef() === event.target)[0];
+    if (field) {
+      const fieldIndex = fields.indexOf(field);
+      const nextField = fields[fieldIndex + 1];
+      if (nextField) {
+        this.fields[nextField].focus();
+      } else {
+        execIfFunc(this.props.nextSlide);
       }
     }
   };
 
   /**
-   * Checks whether all registered fields on the slide are valid (they pass `validate` functions).
-   *
-   * @return {Boolean} [description]
+   * Retreats to the previous field or slide
    */
-  isValid = () =>
-    Object.keys(this.fields)
-      .map(field => {
-        // Get the validity from the registered field
-        const fieldIsValid = this.fields[field].isValid();
-        if (!fieldIsValid) {
-          // Make the errors appear
-          this.fields[field].validate();
-        }
-        // Return the slide's validity to the slider
-        return fieldIsValid;
-      })
-      .filter(x => x === false).length === 0;
+  retreat = (event: React.KeyboardEvent<any>) => {
+    const fields = Object.keys(this.fields);
+    const field = fields.filter(name => this.fields[name].getRef() === event.target)[0];
+    if (field) {
+      const fieldIndex = fields.indexOf(field);
+      const prevField = fields[fieldIndex - 1];
+      if (prevField) {
+        this.fields[prevField].focus();
+      } else {
+        execIfFunc(this.props.prevSlide);
+      }
+    }
+  };
+
+  /**
+   * Checks if a slide is valid
+   */
+  isSlideValid = () => {
+    const fieldErrors = gatherErrors(this.fields, true);
+    const slideErrors = this.validateSlide(true);
+    return slideErrors.length === 0 && fieldErrors.length === 0;
+  };
+
+  /**
+   * Validates a slide and conditionally updates the errors for the slide
+   */
+  validateSlide = (updateErrors: boolean = false) => {
+    const initial = execIfFunc(this.props.validate, gatherValues(this.fields));
+    const errors = Array.isArray(initial) ? initial : [initial];
+
+    if (this.mounted && updateErrors) {
+      this.setState({ errors: errors.length === 0 ? emptyArray : errors });
+    }
+
+    return errors;
+  };
 
   render() {
-    const { children, render = children } = this.props;
+    const { className, children, style, render = children } = this.props;
+    const { errors } = this.state;
 
     return (
-      <div className={classes([this.props.className, 'sf--slide'])}>
-        {isFunction(render) ? render(this.props) : render}
+      <div className={classes('sf--slide', errors.length && 'sf--slide-has-errors', className)} style={style}>
+        <SlideContext.Provider value={this.getSlideInterface()}>
+          {isFunction(render) ? render(this.props) : render}
+        </SlideContext.Provider>
+        <div className="sf--slide-errors">
+          {errors.map(error => (
+            <div className="sf--slide-error" key={toKey(error)}>
+              {error}
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
 }
+
+export { Slide };
+export default Slide;
