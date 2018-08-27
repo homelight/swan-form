@@ -1,16 +1,10 @@
-import createFormatter from './createFormatter';
-import hasErrors from './hasErrors';
-import keyCodes from './keyCodes';
-import runValidations from './runValidations';
-import { default as required, createRequired } from './required';
+import * as React from 'react';
+import { isFunction, isObject } from 'lodash';
 
 import { AsFieldContext, FormContext, SlideContext, withAsField, withForm, withSlide } from './contexts';
-
-import { isFunction, isObject } from 'lodash';
-import * as React from 'react';
-
-export const emptyArray = [];
-export const emptyObject = {};
+import { default as required, createRequired } from './required';
+import createFormatter from './createFormatter';
+import keyCodes from './keyCodes';
 
 /**
  * Generic Types
@@ -224,10 +218,8 @@ export {
   createFormatter,
   createRequired,
   FormContext,
-  hasErrors,
   keyCodes,
   required,
-  runValidations,
   SlideContext,
   withAsField,
   withForm,

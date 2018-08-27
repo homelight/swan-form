@@ -18,7 +18,7 @@ Pick and choose what packages you want to use.
 npm install --save @swan-form/field
 ```
 
-The main component to use is the `Field` component. If you want to compose fields, then do so with the `asField` HOC.
+The main component to use is the `Field` component. If you want to compose fields or create new ones, then do so with the `asField` HOC.
 
 #### Turning off autoComplete
 
@@ -28,7 +28,26 @@ See [this MDN note](https://developer.mozilla.org/en-US/docs/Web/Security/Securi
 
 #### Formatters
 
-@todo write docs
+Formatters format the value of text fields as you type them. For instance, if you want to make a quick formatter to properly format Social Security Numbers, you can do the following:
+
+```javscript
+import { createFormatter } from '@swan-form/helpers';
+
+const numbersOnly = value => value.replace(/[^0-9]{1,}/gi, '');
+const SSNFormatter = createFormatter(numbersOnly, '___-__-____');
+```
+
+To use it, you would then do the following:
+
+```jsx
+<Field name="ssn" type="text" format={SSNFormatter} />
+```
+
+You can use formatters without the `createFormatter` function. The function signature for formatters is:
+
+```javascript
+const formatter = (value, cursor = null) => [formattedValue, newCursorPosition];
+```
 
 ### Forms
 
@@ -71,8 +90,6 @@ Uses AirBnB's eslint config — one shared across all packages.
 - [ ] Expand Readme
 - [ ] Better docs
 - [ ] Improve test coverage
-- [ ] Ship some esmodules
-- [ ] creating typings
 
 ## License
 

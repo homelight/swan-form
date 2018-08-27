@@ -5,25 +5,26 @@ import { classes, execIfFunc } from '@swan-form/helpers';
 import { SlideProps } from './Slide';
 
 export interface SliderProps {
-  formName?: string;
-  current?: number;
-  autoComplete?: boolean;
-  className?: string;
-  children: React.ReactNode;
-  PrevButton?: React.ReactNode;
-  NextButton?: React.ReactNode;
-  FinishButton?: React.ReactNode;
-  beforeSubmit?(values: { [key: string]: any } | Promise<{ [key: string]: any }>): Promise<{ [key: string]: any }>;
   onSubmit(values: { [key: string]: any } | Promise<{ [key: string]: any }>): Promise<{ [key: string]: any }>;
   afterSubmit?(values: { [key: string]: any } | Promise<{ [key: string]: any }>): Promise<{ [key: string]: any }>;
+  beforeSubmit?(values: { [key: string]: any } | Promise<{ [key: string]: any }>): Promise<{ [key: string]: any }>;
+  autoComplete?: boolean;
+  children?: React.ReactNode;
+  className?: string;
   common?: { [key: string]: any };
+  current?: number;
   defaultValues?: { [key: string]: any };
+  FinishButton?: React.ReactNode;
+  formName?: string;
+  NextButton?: React.ReactNode;
+  PrevButton?: React.ReactNode;
 }
 
 export interface SliderState {
   current: number;
 }
 
+// Used as a fallback
 const alwaysTrue = () => true;
 
 export class Slider extends React.PureComponent<SliderProps, SliderState> {
@@ -67,11 +68,11 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
   static displayName = 'Slider';
 
   injectSlideProps: {
+    common: { [key: string]: any };
     getFormValues(): { [key: string]: any };
     nextSlide(): void;
     prevSlide(): void;
     setRef(el: any): void;
-    common: { [key: string]: any };
   };
 
   // This is actually an instantiated slide
@@ -102,36 +103,61 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     this.mounted = false;
   }
 
+  /**
+   * Sets the ref on the form component
+   */
   setFormRef = (el: any) => {
     this.form = el;
   };
 
+  /**
+   * Sets the ref for the current slide
+   */
   setCurrentSlideRef = (el: any) => {
     this.currentSlide = el;
   };
 
+  /**
+   * Runs validation on the current slide
+   */
   isCurrentSlideValid = () => {
     const { currentSlide } = this;
     return currentSlide && isFunction(currentSlide.isSlideValid) ? currentSlide.isSlideValid() : true;
   };
 
+  /**
+   * Gets the children as an array
+   */
   getChildren = (): any => React.Children.toArray(this.props.children);
 
+  /**
+   * Gets the form values from the form
+   */
   getFormValues = () => (this.form && isFunction(this.form.getValues) ? this.form.getValues() : {});
 
+  /**
+   * Sets the state for the index of the current slider
+   */
   moveTo = (slide: number) => {
     if (this.mounted) {
       this.setState({ current: slide });
     }
   };
 
+  /**
+   * Public function to advance the slide
+   */
   next = () => {
+    // If the current slide is not valid, do not proceed
     if (!this.isCurrentSlideValid()) {
       return;
     }
 
     const { current } = this.state;
+    // Grab the next viable slide index
     const nextSlideIndex = this.findNext();
+
+    // If we are at the end, then handle the end state
     if (nextSlideIndex === this.getChildren().length && nextSlideIndex === current) {
       // Call the submit handler on the form
       if (this.form && isFunction(this.form.handleOnSubmit)) {
@@ -140,6 +166,8 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
       return;
     }
 
+    // Run any beforeExit* slide hooks that we find on the current slide slide
+    // Slide hooks should be promises, and so we call the moveTo in the resolution
     const { beforeExit, beforeExitToNext } = this.currentSlide.props;
     if (isFunction(beforeExitToNext)) {
       return beforeExitToNext(this.injectSlideProps).then(() => {
@@ -153,15 +181,22 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
       });
     }
 
+    // Just move to the next slide
     return this.moveTo(this.findNext());
   };
 
+  /**
+   * Public function to retreat the slide
+   */
   prev = () => {
+    // Find the previous slide
     const prevSlideIndex = this.findPrev();
+    // If it's the same, do nothing
     if (prevSlideIndex === this.state.current) {
       return;
     }
 
+    // Call any beforeExit* slide hooks
     const { beforeExit, beforeExitToPrev } = this.currentSlide.props;
     if (isFunction(beforeExitToPrev)) {
       return beforeExitToPrev(this.injectSlideProps).then(() => this.moveTo(prevSlideIndex));
@@ -171,9 +206,13 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
       return beforeExit(this.injectSlideProps).then(() => this.moveTo(prevSlideIndex));
     }
 
+    // Just move to the previous slide
     this.moveTo(prevSlideIndex);
   };
 
+  /**
+   * Finds the next viable slide to move to
+   */
   findNext = () => {
     const { current } = this.state;
     const children = this.getChildren();
@@ -181,7 +220,6 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     const length = children.length - 1; // eslint-disable-line
     for (let i = current + 1; i <= length; i++) {
       const slide = children[i];
-
       const { shouldShowIf = alwaysTrue } = slide.props;
       if (shouldShowIf!(formValues)) {
         return i;
@@ -193,6 +231,9 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     return length;
   };
 
+  /**
+   * Finds the previous viable slide to move to
+   */
   findPrev = () => {
     const { current } = this.state;
     const children = this.getChildren();
@@ -211,6 +252,9 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     return 0;
   };
 
+  /**
+   * Handles the end state of the slider
+   */
   handleEnd = () => {
     if (this.form) {
       execIfFunc(this.form.doSubmit);

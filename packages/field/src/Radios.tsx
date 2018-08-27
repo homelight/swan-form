@@ -9,16 +9,19 @@ export interface Option {
 
 export interface RadiosProps {
   name: string;
+  options: Option[];
   autoFocus?: boolean;
   [key: string]: any;
 }
 
 const emptyArray: any[] = [];
+const noop = () => {};
 
-function createRadio(option: Option, props: RadiosProps) {
+function createRadio(option: Option, props: RadiosProps, index: number) {
   const id = `${props.name}-${('' + option.value).replace(/[^a-z0-9]{1,}/gi, '')}`;
   const checked = props.value === option.value;
-  const local = { key: id, id, checked, errors: emptyArray, type: 'radio' };
+  // We use these to override some things
+  const local = { key: id, id, checked, errors: emptyArray, type: 'radio', ref: index === 0 ? props.setRef : noop };
   // Reuse the `Field` component as the radio button, but use create a unique id for the field
   // also, override the value and label for the radio with the values passed as the option
   // @ts-ignore
@@ -26,6 +29,8 @@ function createRadio(option: Option, props: RadiosProps) {
 }
 
 class FieldSet extends React.Component<RadiosProps, any> {
+  static displayName = 'Radios';
+
   render() {
     const { errors, className, required, label, options } = this.props;
 
@@ -40,7 +45,7 @@ class FieldSet extends React.Component<RadiosProps, any> {
     return (
       <fieldset className={appliedClasses}>
         {label && <legend>{label}</legend>}
-        {options.map((option: Option) => createRadio(option, this.props))}
+        {options.map((option: Option, index: number) => createRadio(option, this.props, index))}
         {getErrors(errors)}
       </fieldset>
     );

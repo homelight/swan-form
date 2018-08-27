@@ -101,6 +101,9 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
 
   mounted: boolean;
 
+  /**
+   * Called to autofocus on the first field in a slide if one exists
+   */
   maybeAutoFocus = () => {
     const name = Object.keys(this.fields)[0];
     const field = this.fields[name];
@@ -109,15 +112,24 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
     }
   };
 
+  /**
+   * Passed to fields to register with the slide
+   */
   registerWithSlide = (payload: RegisterPayload) => {
     this.fields[payload.name] = { ...payload };
   };
 
+  /**
+   * Passed to fields to unregister from the slide
+   */
   unregisterFromSlide = (name: string) => {
     const { [name]: removed, ...rest } = this.fields;
     this.fields = rest;
   };
 
+  /**
+   * This gets passed down in context.
+   */
   getSlideInterface() {
     return {
       registerWithSlide: this.registerWithSlide,
@@ -127,6 +139,9 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
     };
   }
 
+  /**
+   * Advances to the next field or slide
+   */
   advance = (event: React.KeyboardEvent<any>) => {
     const fields = Object.keys(this.fields);
     const field = fields.filter(name => this.fields[name].getRef() === event.target)[0];
@@ -136,11 +151,14 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
       if (nextField) {
         this.fields[nextField].focus();
       } else {
-        this.props.nextSlide!();
+        execIfFunc(this.props.nextSlide);
       }
     }
   };
 
+  /**
+   * Retreats to the previous field or slide
+   */
   retreat = (event: React.KeyboardEvent<any>) => {
     const fields = Object.keys(this.fields);
     const field = fields.filter(name => this.fields[name].getRef() === event.target)[0];
@@ -150,17 +168,23 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
       if (prevField) {
         this.fields[prevField].focus();
       } else {
-        this.props.prevSlide!();
+        execIfFunc(this.props.prevSlide);
       }
     }
   };
 
+  /**
+   * Checks if a slide is valid
+   */
   isSlideValid = () => {
     const fieldErrors = gatherErrors(this.fields, true);
     const slideErrors = this.validateSlide(true);
     return slideErrors.length === 0 && fieldErrors.length === 0;
   };
 
+  /**
+   * Validates a slide and conditionally updates the errors for the slide
+   */
   validateSlide = (updateErrors: boolean = false) => {
     const initial = execIfFunc(this.props.validate, gatherValues(this.fields));
     const errors = Array.isArray(initial) ? initial : [initial];
@@ -193,5 +217,5 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
   }
 }
 
-export { Slide, SlideContext };
+export { Slide };
 export default Slide;

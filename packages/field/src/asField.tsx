@@ -294,17 +294,32 @@ const asField = <P extends AsFieldProps>(
       return out;
     }
 
+    /**
+     * Handles onKeyDown
+     *
+     * This is needed so that we prevent the default mechanism for forms to auto-submit if
+     * `ENTER` is pressed while we're in a slide, so we have looser coupling.
+     */
     handleOnKeyDown = (event: React.KeyboardEvent<any>) => {
-      const { advance, retreat, type } = this.props;
+      const { advance, onKeyDown, retreat, type } = this.props;
 
-      if (isFunction(this.props.onKeyDown)) {
+      // We need to persist the event if there is a callback handler for onKeyDown
+      if (isFunction(onKeyDown)) {
         event.persist();
       }
+
+      // We need to handle onKeyDown for slides to prevent them from submitting. Instead,
+      // we just advance / retreat to the next field / slide.
       if (event.key === 'Enter') {
         if (!['textarea', 'button', 'submit', 'reset'].includes(type!)) {
           event.preventDefault();
         }
         execIfFunc(event.shiftKey ? retreat : advance, event);
+      }
+
+      // We want to call the event handler only after the slide handling has happened
+      if (isFunction(onKeyDown)) {
+        onKeyDown(event);
       }
     };
 
@@ -319,6 +334,7 @@ const asField = <P extends AsFieldProps>(
       // Handle checkboxes and radio buttons early and exit
       if (type === 'checkbox' || type === 'radio') {
         this.setState({ value: checked });
+        // Call any user supplied callbacks
         execIfFunc(onChange, event);
         return;
       }
@@ -337,29 +353,33 @@ const asField = <P extends AsFieldProps>(
           this.setValue(values);
         }
         this.setState({ value: values });
+        // Call any user supplied callbacks
         execIfFunc(onChange, event);
         return;
       }
 
+      // Grab the cursor position from the field ref
       const cursor =
         this.innerRef && canAccessSelectionStart(type!) && 'selectionStart' in this.innerRef
           ? this.innerRef.selectionStart
           : null;
 
-      const processed = maybeApply(this.format, value, cursor);
-      const newValue = Array.isArray(processed) ? processed[0] : processed;
-      const newCursor = Array.isArray(processed) ? processed[1] : cursor;
+      // Apply the formatter. This is an identity function if there is no user supplied formatter
+      const [newValue, newCursor] = this.format(value, cursor);
 
+      // If we are to validate onChange, then we'll debounce the call
       if (validateOnChange) {
         window.clearTimeout(this.validateDebounceTimer);
         this.validateDebounceTimer = setTimeout(() => this.validate(newValue, true), validateDebounceTimeout);
       }
 
+      // Update internal state
       this.setState({
         value: newValue,
-        cursor: newCursor,
+        cursor: isDefined(newCursor) ? newCursor : cursor,
       });
 
+      // Call any user supplied callbacks
       execIfFunc(onChange, event);
     };
 
@@ -401,6 +421,8 @@ const asField = <P extends AsFieldProps>(
 
     /**
      * Validates a field based on prop-supplied function
+     *
+     * @todo find a pattern to support asynchronous validations
      */
     validate = (value: any, updateErrors: boolean = false): React.ReactNode[] => {
       const { validate } = this.props;
@@ -444,10 +466,10 @@ const asField = <P extends AsFieldProps>(
             autoComplete={autoCompleteValue}
             errors={this.state.errors}
             onChange={this.handleOnChange}
-            value={isDefined(value) && !isNull(value) ? value : ''}
+            onKeyDown={this.handleOnKeyDown}
             setRef={this.setRef}
             setValue={this.setValue}
-            onKeyDown={this.handleOnKeyDown}
+            value={isDefined(value) && !isNull(value) ? value : ''}
           />
         </AsFieldContext.Provider>
       );
@@ -455,6 +477,6 @@ const asField = <P extends AsFieldProps>(
   };
 };
 
-export { asField, AsFieldContext };
+export { asField };
 const Composed = composeHOCs<AsFieldProps>(asField, withAsField, withSlide, withForm);
 export default Composed;

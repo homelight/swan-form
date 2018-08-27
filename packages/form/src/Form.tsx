@@ -43,7 +43,7 @@ export type RegisterType = {
 const emptyObject = {};
 const emptyArray: any[] = [];
 
-class Form extends React.PureComponent<FormProps, FormState> {
+export class Form extends React.PureComponent<FormProps, FormState> {
   static defaultProps = {
     beforeSubmit: (values: { [key: string]: any } | Promise<{ [key: string]: any }>) => Promise.resolve(values),
     afterSubmit: (values: { [key: string]: any } | Promise<{ [key: string]: any }>) => Promise.resolve(values),

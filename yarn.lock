@@ -307,6 +307,13 @@
     "@babel/helper-replace-supers" "7.0.0-rc.3"
     "@babel/plugin-syntax-class-properties" "7.0.0-rc.3"
 
+"@babel/plugin-proposal-decorators@^7.0.0-rc.3":
+  version "7.0.0-rc.3"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-decorators/-/plugin-proposal-decorators-7.0.0-rc.3.tgz#42fd21110fcbf1c0c2d23f9409e22f0cb0ee15ba"
+  dependencies:
+    "@babel/helper-plugin-utils" "7.0.0-rc.3"
+    "@babel/plugin-syntax-decorators" "7.0.0-rc.3"
+
 "@babel/plugin-proposal-export-default-from@^7.0.0-beta.55":
   version "7.0.0-rc.3"
   resolved "https://registry.yarnpkg.com/@babel/plugin-proposal-export-default-from/-/plugin-proposal-export-default-from-7.0.0-rc.3.tgz#8d3d00ea2ff067921c59384e2543098ae2b8cb4a"
@@ -352,6 +359,12 @@
 "@babel/plugin-syntax-class-properties@7.0.0-rc.3":
   version "7.0.0-rc.3"
   resolved "https://registry.yarnpkg.com/@babel/plugin-syntax-class-properties/-/plugin-syntax-class-properties-7.0.0-rc.3.tgz#6a2986f0c12fecded9ceda0fd368811421431d89"
+  dependencies:
+    "@babel/helper-plugin-utils" "7.0.0-rc.3"
+
+"@babel/plugin-syntax-decorators@7.0.0-rc.3":
+  version "7.0.0-rc.3"
+  resolved "https://registry.yarnpkg.com/@babel/plugin-syntax-decorators/-/plugin-syntax-decorators-7.0.0-rc.3.tgz#902e9193d615ed8e7963a1374e4e1fc9daa403e7"
   dependencies:
     "@babel/helper-plugin-utils" "7.0.0-rc.3"
 
