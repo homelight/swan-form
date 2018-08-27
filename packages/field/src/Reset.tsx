@@ -24,6 +24,6 @@ export default class Reset extends React.Component<ResetProps> {
 
   render() {
     const { className = '', name = 'sf--reset', style = emptyObject, value = 'Reset' } = this.props;
-    return <Field type="reset" name={name} value={value} className={classes('sf--reset', className)} />;
+    return <Field type="reset" name={name} value={value} className={classes('sf--reset', className)} style={style} />;
   }
 }
