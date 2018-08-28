@@ -1,5 +1,9 @@
 # Changelog
 
+## master
+
+- [slider] Filter out falsey errors from slide validations
+
 ## 0.3.0
 
 Rewriting for the new context API made a lot of breaking changes, so more things were cleaned up at the same time.
@@ -23,57 +27,57 @@ Approaching a v1.0.0.
 - [field] _breaking_ change onChange callback to pass event rather than `(value, name)`
 - [field] _breaking_ default value for multiple select to `[]` from `['']`
 
-## 0.2.17
+### 0.2.17
 
 - [field] Revert unintentional changes
 
-## 0.2.16
+### 0.2.16
 
 - [field] change the html structure to allow better sibling selectors for the input
 - [field] use the Field component in the Radios component.
 - [exmaple] add material theme example
 - [field] fix icon propType on Field (element -> node)
 
-## 0.2.15
+### 0.2.15
 
 - [field] format initial value if formatter is supplied
 
-## 0.2.14
+### 0.2.14
 
 - [field] fix minor bug when setting initial value
 
-## 0.2.13
+### 0.2.13
 
 - [form] change prop `values` to `defaultValues`
 - [slider] accept `defaultValues` prop and pass through to `Form`
 
-## 0.2.12
+### 0.2.12
 
 - [all] downgrade typescript for better compatibility, export more types
 
-## 0.2.11
+### 0.2.11
 
 - [all] upgrade dependencies
 - [all] turn on stricter typechecking with typescript
 - [field] allow for prop `defaultValue` in `asField` wrapper
 
-## 0.2.10
+### 0.2.10
 
 - [all] include src in package to see if that will fix some typescript issues
 
-## 0.2.9
+### 0.2.9
 
 - [all] change build system
 
-## 0.2.4 - 0.2.8
+### 0.2.4 - 0.2.8
 
 - [all] republish (failure because lerna publishing with 2fa is not supported well)
 
-## 0.2.3
+### 0.2.3
 
 - [slider] call render prop in slide rather than slider so slide lifecycle method does not get skipped
 
-## 0.2.2
+### 0.2.2
 
 - [field] fix problem with detecting `selectionStart` for cursor management
 - [field] fix multiple calls to `setState` on multiple selects
@@ -88,7 +92,7 @@ Approaching a v1.0.0.
 - [helpers] export `required` fn and the `createRequired` fn
 - [field] change type on validate prop
 
-## 0.2.1
+### 0.2.1
 
 - [all] fix problems with the exports
 - [all] fix typings
