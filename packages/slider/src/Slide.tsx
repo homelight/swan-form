@@ -187,7 +187,7 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
    */
   validateSlide = (updateErrors: boolean = false) => {
     const initial = execIfFunc(this.props.validate, gatherValues(this.fields));
-    const errors = Array.isArray(initial) ? initial : [initial];
+    const errors = (Array.isArray(initial) ? initial : [initial]).filter(Boolean);
 
     if (this.mounted && updateErrors) {
       this.setState({ errors: errors.length === 0 ? emptyArray : errors });
