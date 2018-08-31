@@ -1,7 +1,15 @@
 import * as React from 'react';
 import { isFunction, isObject } from 'lodash';
 
-import { AsFieldContext, FormContext, SlideContext, withAsField, withForm, withSlide } from './contexts';
+import {
+  AsFieldContext,
+  FormContext,
+  SlideContext,
+  withAsField,
+  withForm,
+  withSlide,
+  withFormSlideField,
+} from './contexts';
 import { default as required, createRequired } from './required';
 import createFormatter from './createFormatter';
 import keyCodes from './keyCodes';
@@ -224,4 +232,5 @@ export {
   withAsField,
   withForm,
   withSlide,
+  withFormSlideField,
 };

@@ -11,8 +11,8 @@ class Intro extends PureComponent {
         </p>
         <h2>Dependencies</h2>
         <p>
-          The only real dependency is on lodash. It has peer dependencies of react react-dom, and prop-types, which you
-          are probably using anyway.
+          The only real dependency is on lodash. It has peer dependencies of <pre>react</pre>, <pre>react-dom</pre>, and{' '}
+          <pre>prop-types</pre>, which you are probably using anyway.
         </p>
         <h2>Fields</h2>
         <p>
@@ -29,7 +29,7 @@ class Intro extends PureComponent {
         <p>
           A <code>Form</code> component is provided as well.
         </p>
-        <h2>Slider Forms</h2>
+        <h2>Slider Forms (Form Wizards)</h2>
         <p>
           Swan Form was created at Eave in order to handle forms that isolated single questions so that the user can
           focus on one question at a time.
@@ -38,8 +38,7 @@ class Intro extends PureComponent {
         <h2>Other Questions</h2>
         <h3>Can I use it with Redux?</h3>
         <p>
-          Internally, Swan Form just uses React&apos;s <code>setState</code>, but it provides hooks for you to use Redux
-          if you wish.
+          Internally, Swan Form just uses React&apos;s state, but it provides hooks for you to use Redux if you wish.
         </p>
       </div>
     );

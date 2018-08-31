@@ -34,6 +34,10 @@ const fieldSetStyling = `
   padding: 0;
 }`.trim();
 
+const onButtonClick = () => {
+  alert('I was clicked');
+};
+
 class RegularForm extends Component {
   constructor(props) {
     super(props);
@@ -62,6 +66,12 @@ class RegularForm extends Component {
                 required
                 autoFocus
               />
+            </div>
+
+            <div>
+              <Field type="button" name="alertButton" onClick={onButtonClick}>
+                Click me!
+              </Field>
             </div>
 
             <div>

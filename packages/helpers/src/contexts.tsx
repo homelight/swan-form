@@ -111,4 +111,25 @@ export function withSlide<P extends ISlideContext>(Component: React.ComponentTyp
   };
 }
 
+export function withFormSlideField<P extends ISlideContext & IFormContext & IAsFieldContext>(
+  Component: React.ComponentType<P>,
+) {
+  Component.displayName = 'withFormSlideAsField';
+  return function Wrapper(props: { [key: string]: any }) {
+    return (
+      <FormContext.Consumer>
+        {formProps => (
+          <SlideContext.Consumer>
+            {slideProps => (
+              <AsFieldContext.Consumer>
+                {asFieldProps => <Component {...{ ...props, ...formProps, ...slideProps, ...asFieldProps }} />}
+              </AsFieldContext.Consumer>
+            )}
+          </SlideContext.Consumer>
+        )}
+      </FormContext.Consumer>
+    );
+  };
+}
+
 export { AsFieldContext, SlideContext, FormContext };

@@ -19,6 +19,14 @@ export interface FieldProps {
   setValue(value: any): void;
   style?: React.CSSProperties;
   options?: any;
+  /**
+   * Passed by the form context
+   */
+  isFormSubmitting?: boolean;
+  /**
+   * Passed by the form context
+   */
+  hasFormSubmitted?: boolean;
 }
 
 const NO_WRAP = ['button', 'hidden', 'reset', 'submit'];
@@ -155,7 +163,19 @@ export class Field extends React.PureComponent<FieldProps, {}> {
   getId = () => this.props.id || this.props.name;
 
   getInput = (appliedClasses = '') => {
-    const { errors, className, label, type, icon, setRef, options, setValue, ...props } = this.props;
+    const {
+      errors,
+      className,
+      label,
+      type,
+      icon,
+      setRef,
+      options,
+      setValue,
+      isFormSubmitting,
+      hasFormSubmitted,
+      ...props
+    } = this.props;
     const id = this.getId();
 
     /**
@@ -177,6 +197,12 @@ export class Field extends React.PureComponent<FieldProps, {}> {
       props.checked = props.value;
     }
 
+    const submitResetClasses = classes(
+      appliedClasses,
+      isFormSubmitting && 'sf--form-submitting',
+      hasFormSubmitted && 'sf--form-submitted',
+    );
+
     switch (type) {
       case 'select':
         return (
@@ -191,9 +217,9 @@ export class Field extends React.PureComponent<FieldProps, {}> {
       case 'submit':
       case 'reset':
         return props.children ? (
-          <button {...props} className={appliedClasses} type={type} id={id} ref={setRef} />
+          <button {...props} className={submitResetClasses} type={type} id={id} ref={setRef} />
         ) : (
-          <input {...props} className={appliedClasses} type={type} id={id} ref={setRef} />
+          <input {...props} className={submitResetClasses} type={type} id={id} ref={setRef} />
         );
       default:
         return INPUT_TYPES.includes(type) ? (

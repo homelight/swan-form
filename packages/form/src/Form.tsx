@@ -61,11 +61,7 @@ export class Form extends React.PureComponent<FormProps, FormState> {
 
   constructor(props: FormProps) {
     super(props);
-    this.initialState = {
-      isSubmitting: false,
-      hasSubmitted: false,
-      formErrors: emptyArray,
-    };
+    this.initialState = { isSubmitting: false, hasSubmitted: false, formErrors: emptyArray };
     this.state = { ...this.initialState };
 
     this.getFormInterface = memoize(this.getFormInterface.bind(this));
@@ -84,9 +80,9 @@ export class Form extends React.PureComponent<FormProps, FormState> {
     formErrors: any[];
     hasFormSubmitted: boolean;
     isFormSubmitting: boolean;
-    registerWithForm(payload: any): void; // FIXME
-    unregisterFromForm(name: string): void; // FIXME
-  };
+    registerWithForm(payload: any): void;
+    unregisterFromForm(name: string): void;
+  }; // FIXME // FIXME
 
   componentDidMount() {
     this.mounted = true;
@@ -100,6 +96,9 @@ export class Form extends React.PureComponent<FormProps, FormState> {
     return isDefined(noValidate) ? { noValidate } : emptyObject;
   }
 
+  /**
+   * Function for fields to unregister from the form
+   */
   registerWithForm = (payload: RegisterType) => {
     // Save the field to the internal registry
     this.fields[payload.name] = payload;
@@ -112,8 +111,12 @@ export class Form extends React.PureComponent<FormProps, FormState> {
     }
   };
 
-  // This is a function that we bind and memoize for renders. We feed `this.state` into it so that
-  // the Context.Consumer will rerender.
+  /**
+   * We push this into the FormContext
+   *
+   * This is a function that we bind and memoize for renders. We feed `this.state` into it so that
+   * the Context.Consumer will rerender.
+   */
   getFormInterface(state: FormState) {
     return {
       defaultFormValues: this.props.defaultValues!,
@@ -144,10 +147,7 @@ export class Form extends React.PureComponent<FormProps, FormState> {
    */
   getValues = () => {
     const values = Object.keys(this.fields).reduce(
-      (values: { [key: string]: any }, key: string) => ({
-        ...values,
-        [key]: this.fields[key].getValue(),
-      }),
+      (values: { [key: string]: any }, key: string) => ({ ...values, [key]: this.fields[key].getValue() }),
       {},
     );
 

@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router';
 import PropTypes from 'prop-types';
 import { pages } from '../routes';
 import { hide, show } from '../redux/nav';
@@ -29,7 +30,7 @@ class NavBar extends Component {
   };
 
   render() {
-    const { pathname } = window.location;
+    const { pathname } = this.props.location;
     return (
       <div className={[styles.navBar, !this.props.isShowing && styles.hide].filter(O => O).join(' ')}>
         <ul>{pages.map(([path, name, ...ignore]) => createLink(path, name, pathname))}</ul>
@@ -41,10 +42,9 @@ class NavBar extends Component {
   }
 }
 
-export default connect(
-  state => {
-    console.log(state);
-    return { isShowing: state.nav.show };
-  },
-  { hide, show },
-)(NavBar);
+export default withRouter(
+  connect(
+    state => ({ isShowing: state.nav.show }),
+    { hide, show },
+  )(NavBar),
+);

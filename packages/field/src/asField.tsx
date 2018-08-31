@@ -15,9 +15,7 @@ import {
   isNull,
   maybeApply,
   moveCursor,
-  withAsField,
-  withForm,
-  withSlide,
+  withFormSlideField,
 } from '@swan-form/helpers';
 
 export type RegisterType = {
@@ -112,16 +110,14 @@ const removeProps = [
   'format',
   'formAutoComplete',
   'unformat',
-  'onFocus',
   'onBlur',
   'onChange',
-  'onClick',
   'validate',
   'validateOnBlur',
   'validateOnChange',
   'validateDebounceTimeout',
-  'hasFormSubmitted',
-  'isFormSubmitting',
+  // 'hasFormSubmitted',
+  // 'isFormSubmitting',
   'formErrors',
   'registerWithSlide',
   'unregisterFromSlide',
@@ -131,6 +127,7 @@ const removeProps = [
   'register',
   'advance',
   'retreat',
+  'getFormValues',
 ];
 
 export interface InjectedProps {
@@ -478,5 +475,5 @@ const asField = <P extends AsFieldProps>(
 };
 
 export { asField };
-const Composed = composeHOCs<AsFieldProps>(asField, withAsField, withSlide, withForm);
+const Composed = composeHOCs<AsFieldProps>(asField, withFormSlideField);
 export default Composed;
