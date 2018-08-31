@@ -2,7 +2,12 @@
 
 ## master
 
+## 0.3.1
+
 - [slider] Filter out falsey errors from slide validations
+- [field] fix regression sending focus and click handlers
+- [field] stop filtering out isFormSubmitting and hasFormSubmitted
+- [helpers] ship combined hoc to make asField nicer
 
 ## 0.3.0
 

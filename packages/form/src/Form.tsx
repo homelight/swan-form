@@ -82,7 +82,7 @@ export class Form extends React.PureComponent<FormProps, FormState> {
     isFormSubmitting: boolean;
     registerWithForm(payload: any): void;
     unregisterFromForm(name: string): void;
-  }; // FIXME // FIXME
+  };
 
   componentDidMount() {
     this.mounted = true;
