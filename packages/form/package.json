@@ -1,6 +1,6 @@
 {
   "name": "@swan-form/form",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Elegant form handling for React -- contains forms",
   "license": "Apache-2.0",
   "main": "dist/index.cjs.js",
@@ -28,7 +28,7 @@
     "type": "tsc -p ./tsconfig.json"
   },
   "dependencies": {
-    "@swan-form/helpers": "^0.3.0",
+    "@swan-form/helpers": "^0.3.1",
     "lodash": "^4.17.5",
     "prop-types": "^15.6.1"
   },
