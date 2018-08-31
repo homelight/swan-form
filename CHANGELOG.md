@@ -2,6 +2,8 @@
 
 ## master
 
+- [slider] _breaking_ change `next` behavior so that it calls the submit instead of going to the last slide when no viable candidates are found
+
 ## 0.3.1
 
 - [slider] Filter out falsey errors from slide validations

@@ -153,12 +153,11 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
       return;
     }
 
-    const { current } = this.state;
     // Grab the next viable slide index
     const nextSlideIndex = this.findNext();
 
     // If we are at the end, then handle the end state
-    if (nextSlideIndex === this.getChildren().length && nextSlideIndex === current) {
+    if (nextSlideIndex >= this.getChildren().length) {
       // Call the submit handler on the form
       if (this.form && isFunction(this.form.handleOnSubmit)) {
         return execIfFunc(this.form.doSubmit);
@@ -227,8 +226,9 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
       // No valid candidate for next slide, so we test the next
     }
 
-    // We moved through the `for` statement without finding a slide, so default to the last slide
-    return length;
+    // We moved through the `for` statement without finding a slide, so send a greater index, and allow the
+    // `next` function to handle the end state.
+    return length + 1;
   };
 
   /**
