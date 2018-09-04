@@ -101,6 +101,9 @@ class SliderForm extends Component {
               </div>
             )}
           />
+          <Slide shouldShowIf={() => false}>
+            This will never show, and the submit action should happen as we press next.
+          </Slide>
         </Slider>
       </div>
     );
