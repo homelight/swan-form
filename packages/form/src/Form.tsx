@@ -1,6 +1,7 @@
 /* eslint-disable react/sort-comp */
 import * as React from 'react';
-import { memoize, isFunction } from 'lodash';
+import memoize from 'lodash/memoize';
+import isFunction from 'lodash/isFunction';
 import { classes, gatherErrors, maybePromisify, execIfFunc, isDefined, FormContext } from '@swan-form/helpers';
 
 /**

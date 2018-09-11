@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { isFunction, isObject } from 'lodash';
+import isFunction from 'lodash/isFunction';
+import isObject from 'lodash/isObject';
+import isPlainObject from 'lodash/isPlainObject';
 
 import {
   AsFieldContext,
@@ -10,7 +12,7 @@ import {
   withSlide,
   withFormSlideField,
 } from './contexts';
-import { default as required, createRequired } from './required';
+import required, { createRequired } from './required';
 import createFormatter from './createFormatter';
 import keyCodes from './keyCodes';
 
@@ -38,11 +40,13 @@ export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
  */
 export type Subtract<T, K> = Omit<T, keyof K>;
 
+/* eslint-disable no-nested-ternary */
 /**
  * Executes a the first arg as a function if it is a function with supplied arguments
  * Returns the first arg if not a function
  */
 export const execIfFunc = (fn: any, ...args: any[]) => (isFunction(fn) ? (args.length > 0 ? fn(...args) : fn()) : fn);
+/* eslint-enable no-nested-ternary */
 
 /**
  * Executes the first arg if a function with remaining args; else, returns an array of remaining args
@@ -63,7 +67,7 @@ export function classes(...args: any[]) {
     if (Array.isArray(obj)) {
       return [...c, ...obj.filter(Boolean)];
     }
-    if (isObject(obj)) {
+    if (isPlainObject(obj)) {
       return [
         ...c,
         ...Object.keys(obj)
@@ -92,7 +96,7 @@ export const isNull = (arg: any) => arg === null;
  * Checks if the argument is `thennable`
  */
 export const isPromise = (obj: any): boolean =>
-  !!obj && ['function', 'object'].includes(typeof obj) && isFunction(obj.then);
+  obj && ['function', 'object'].includes(typeof obj) && isFunction(obj.then);
 
 /**
  * Wraps an object in a Promise.resolve if it is not thennable
@@ -207,6 +211,7 @@ export function moveCursor(el: any, position = -1) {
   // @ts-ignore
   if (canAccessSelectionStart(el.type)) {
     const pos = position > -1 ? position : el.value.length;
+    // eslint-disable-next-line no-multi-assign
     el.selectionStart = el.selectionEnd = pos;
   } else if ('createTextRange' in el && isFunction(el.createTextRange)) {
     const range = el.createTextRange();
