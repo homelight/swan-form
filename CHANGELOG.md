@@ -3,6 +3,8 @@
 ## master
 
 - [slider] _breaking_ change `next` behavior so that it calls the submit instead of going to the last slide when no viable candidates are found
+- [field] allow for `asField` to set a default value for a field type
+- [field] update file structures to appease the linter
 
 ## 0.3.1
 
