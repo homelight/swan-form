@@ -67,7 +67,7 @@
     "rollup-plugin-typescript2": "^0.16.1",
     "rollup-plugin-uglify": "^4.0.0",
     "typescript": "~2.8.4",
-    "typescript-eslint-parser": "^17.0.1"
+    "typescript-eslint-parser": "^18.0.0"
   },
   "browserslist": {
     "development": [

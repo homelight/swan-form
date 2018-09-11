@@ -76,12 +76,17 @@ export interface AsFieldState {
   cursor?: number | null;
 }
 
+export interface AsFieldOptions {
+  defaultFieldValue?: any;
+  // fieldType?: string;
+}
+
 const emptyArray: any[] = [];
 
 /**
  * Determines initial value for a field based on a few different props
  */
-export const getInitialValue = <P extends AsFieldProps>(props: P & ContextProps) => {
+export const getInitialValue = <P extends AsFieldProps>(props: P & ContextProps, defaultFieldValue = null) => {
   const { defaultValue, value, defaultChecked, checked, type, defaultFormValues = {} } = props;
   const { [props.name]: initialValue } = defaultFormValues;
 
@@ -98,9 +103,15 @@ export const getInitialValue = <P extends AsFieldProps>(props: P & ContextProps)
     case 'select':
       return findValue(value, initialValue, defaultValue, props.multiple ? [] : '');
     default:
-      return findValue(value, initialValue, defaultValue, '');
+      return findValue(value, initialValue, defaultValue, defaultFieldValue);
   }
 };
+
+export const getDefaultOptions = (wrapperOptions: AsFieldOptions): AsFieldOptions => ({
+  defaultFieldValue: '',
+  // fieldType: 'unknown',
+  ...wrapperOptions,
+});
 
 const removeProps = [
   'defaultValue',
@@ -146,27 +157,11 @@ const rando = (chars: number = 6) =>
 
 const asField = <P extends AsFieldProps>(
   WrappedComponent: React.ComponentType<P & InjectedProps>,
-  // options = {},
+  wrapperOptions: AsFieldOptions = {},
 ) => {
+  const asFieldOptions = getDefaultOptions(wrapperOptions);
+
   return class AsField extends React.PureComponent<P & AsFieldProps & ContextProps, AsFieldState> {
-    constructor(props: P & ContextProps) {
-      super(props);
-
-      const processed = maybeApply(this.format, getInitialValue(props), null);
-      this.initialValue = Array.isArray(processed) ? processed[0] : processed;
-      this.autoComplete = rando();
-      this.state = {
-        value: this.initialValue,
-        errors: [],
-      };
-      this.fieldInterface = {
-        registerWithField: this.registerWithField,
-        unregisterFromField: this.unregisterFromField,
-      };
-
-      this.getMaybeProps = memoize(this.getMaybeProps.bind(this));
-    }
-
     static defaultProps = {
       format: (value: any, cursor: number | null = null) => [value, cursor],
       unformat: identity,
@@ -176,17 +171,22 @@ const asField = <P extends AsFieldProps>(
 
     static displayName = `AsField(${WrappedComponent.displayName || 'Component'})`;
 
-    autoComplete: string;
-    fieldInterface: {
-      registerWithField: (payload: any) => void;
-      unregisterFromField: (name: string) => void;
-    };
     fields: { [key: string]: any } = {};
-    initialErrors: string[];
-    initialValue: any;
-    innerRef: any;
-    validateDebounceTimer: number | undefined;
-    dynamicHandlers: { [key: string]: Function };
+
+    constructor(props: P & ContextProps) {
+      super(props);
+
+      const processed = maybeApply(this.format, getInitialValue(props, asFieldOptions.defaultFieldValue), null);
+      this.initialValue = Array.isArray(processed) ? processed[0] : processed;
+      this.autoComplete = rando();
+      this.state = { value: this.initialValue, errors: [] };
+      this.fieldInterface = {
+        registerWithField: this.registerWithField,
+        unregisterFromField: this.unregisterFromField,
+      };
+
+      this.getMaybeProps = memoize(this.getMaybeProps.bind(this));
+    }
 
     componentDidMount() {
       const { registerWithForm, name, registerWithSlide, registerWithField, autoFocus, type, register } = this.props;
@@ -221,6 +221,7 @@ const asField = <P extends AsFieldProps>(
 
       const { cursor } = this.state;
       if (cursor !== prevState.cursor && isDefined(cursor) && !isNull(cursor)) {
+        // eslint-disable-next-line no-multi-assign
         this.innerRef.selectionStart = this.innerRef.selectionEnd = cursor;
       }
     }
@@ -228,6 +229,20 @@ const asField = <P extends AsFieldProps>(
     componentWillUnmount() {
       const { name, unregisterFromForm, unregisterFromSlide, unregisterFromField } = this.props;
       execOrMapFn([unregisterFromForm, unregisterFromSlide, unregisterFromField], name);
+    }
+
+    /**
+     * These are props (event handlers) that are passed down only if the user supplies certain props
+     */
+    getMaybeProps() {
+      const { onBlur, validateOnBlur } = this.props;
+      const out: { [key: string]: (event: any) => void } = {};
+
+      if (isFunction(onBlur) || validateOnBlur) {
+        out.onBlur = this.handleOnBlur;
+      }
+
+      return out;
     }
 
     /**
@@ -276,20 +291,6 @@ const asField = <P extends AsFieldProps>(
      * Convenience function to determine if something is a multiselect
      */
     isMultiSelect = () => this.props.type === 'select' && this.props.multiple;
-
-    /**
-     * These are props (event handlers) that are passed down only if the user supplies certain props
-     */
-    getMaybeProps() {
-      const { onBlur, validateOnBlur } = this.props;
-      const out: { [key: string]: (event: any) => void } = {};
-
-      if (isFunction(onBlur) || validateOnBlur) {
-        out.onBlur = this.handleOnBlur;
-      }
-
-      return out;
-    }
 
     /**
      * Handles onKeyDown
@@ -371,10 +372,7 @@ const asField = <P extends AsFieldProps>(
       }
 
       // Update internal state
-      this.setState({
-        value: newValue,
-        cursor: isDefined(newCursor) ? newCursor : cursor,
-      });
+      this.setState({ value: newValue, cursor: isDefined(newCursor) ? newCursor : cursor });
 
       // Call any user supplied callbacks
       execIfFunc(onChange, event);
@@ -443,6 +441,20 @@ const asField = <P extends AsFieldProps>(
     setRef = (el: any) => {
       this.innerRef = el;
     };
+
+    autoComplete: string;
+
+    fieldInterface: { registerWithField: (payload: any) => void; unregisterFromField: (name: string) => void };
+
+    initialErrors: string[];
+
+    initialValue: any;
+
+    innerRef: any;
+
+    validateDebounceTimer: number | undefined;
+
+    dynamicHandlers: { [key: string]: Function };
 
     render() {
       const props = filterKeysFromObj(removeProps, this.props) as P & InjectedProps;

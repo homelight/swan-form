@@ -1,3 +1,4 @@
+/* eslint-disable react/sort-comp */
 import * as React from 'react';
 import { memoize, isFunction } from 'lodash';
 import { classes, gatherErrors, maybePromisify, execIfFunc, isDefined, FormContext } from '@swan-form/helpers';
@@ -44,6 +45,12 @@ export type RegisterType = {
 const emptyObject = {};
 const emptyArray: any[] = [];
 
+function getSpreadPropsValue(noValidate: boolean) {
+  return isDefined(noValidate) ? { noValidate } : emptyObject;
+}
+
+const getSpreadProps = memoize(getSpreadPropsValue);
+
 export class Form extends React.PureComponent<FormProps, FormState> {
   static displayName = 'Form';
 
@@ -65,15 +72,18 @@ export class Form extends React.PureComponent<FormProps, FormState> {
     this.state = { ...this.initialState };
 
     this.getFormInterface = memoize(this.getFormInterface.bind(this));
-    this.getSpreadProps = memoize(this.getSpreadProps.bind(this));
     this.formInterface = this.getFormInterface(this.state);
     this.mounted = false;
   }
 
   fields: { [key: string]: RegisterType } = {};
+
   persistedValues: { [key: string]: any } = {};
+
   mounted: boolean;
+
   initialState: FormState;
+
   formInterface: {
     defaultFormValues: { [key: string]: any };
     formAutoComplete: boolean;
@@ -90,10 +100,6 @@ export class Form extends React.PureComponent<FormProps, FormState> {
 
   componentWillUnmount() {
     this.mounted = false;
-  }
-
-  getSpreadProps(noValidate: boolean) {
-    return isDefined(noValidate) ? { noValidate } : emptyObject;
   }
 
   /**
@@ -145,14 +151,13 @@ export class Form extends React.PureComponent<FormProps, FormState> {
   /**
    * Function to get all the form values
    */
-  getValues = () => {
-    const values = Object.keys(this.fields).reduce(
+  getValues = () => ({
+    ...this.persistedValues,
+    ...Object.keys(this.fields).reduce(
       (values: { [key: string]: any }, key: string) => ({ ...values, [key]: this.fields[key].getValue() }),
       {},
-    );
-
-    return { ...this.persistedValues, ...values };
-  };
+    ),
+  });
 
   /**
    * Error handler for subbmit event
@@ -249,7 +254,7 @@ export class Form extends React.PureComponent<FormProps, FormState> {
     const { autoComplete, className, children, name, style = emptyObject } = this.props;
     return (
       <form
-        {...this.getSpreadProps(this.props.noValidate!)}
+        {...getSpreadProps(this.props.noValidate!)}
         name={name}
         autoComplete={autoComplete ? 'on' : 'off'}
         onReset={this.onReset}
