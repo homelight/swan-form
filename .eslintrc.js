@@ -28,6 +28,8 @@ module.exports = {
     'import/no-extraneous-dependencies': 0, // ['error', { packageDir: './' }],
     'react/jsx-one-expression-per-line': 0,
     'react/destructuring-assignment': 0,
+    'no-undef': 0,
+    'no-restricted-globals': 0,
   },
   settings: {
     'import/resolver': {
