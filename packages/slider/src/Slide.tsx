@@ -1,7 +1,15 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
 
-import { classes, gatherErrors, gatherValues, execIfFunc, toKey, SlideContext } from '@swan-form/helpers';
+import {
+  classes,
+  gatherErrors,
+  gatherValues,
+  execIfFunc,
+  toKey,
+  SlideContext,
+  alwaysFilteredArray,
+} from '@swan-form/helpers';
 import { isFunction, memoize } from 'lodash';
 
 const emptyArray: any[] = [];
@@ -187,7 +195,7 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
    */
   validateSlide = (updateErrors: boolean = false) => {
     const initial = execIfFunc(this.props.validate, gatherValues(this.fields));
-    const errors = (Array.isArray(initial) ? initial : [initial]).filter(Boolean);
+    const errors = alwaysFilteredArray<React.ReactNode>(initial);
 
     if (this.mounted && updateErrors) {
       this.setState({ errors: errors.length === 0 ? emptyArray : errors });

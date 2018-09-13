@@ -60,25 +60,25 @@ export const execOrMapFn = (fn: any | any[], ...args: any[]) =>
 /**
  * Provide this to be classNames
  */
-export function classes(...args: any[]) {
-  const arr = args.reduce((c: any[], obj) => {
-    if (Array.isArray(obj)) {
-      return [...c, ...obj.filter(Boolean)];
-    }
-    if (isPlainObject(obj)) {
-      return [
-        ...c,
-        ...Object.keys(obj)
-          // @ts-ignore: this is an object
-          .map(k => Boolean(obj[k]) && k)
-          .filter(Boolean),
-      ];
-    }
-
-    return [...c, typeof obj === 'string' ? obj : ''];
-  }, []);
-  return arr.filter(Boolean).join(' ');
-}
+export const classes = (...args: any[]): string =>
+  args
+    .reduce((c: any[], obj) => {
+      if (Array.isArray(obj)) {
+        return [...c, ...obj.filter(Boolean)];
+      }
+      if (isPlainObject(obj)) {
+        return [
+          ...c,
+          ...Object.keys(obj)
+            // @ts-ignore: this is an object
+            .map(k => Boolean(obj[k]) && k)
+            .filter(Boolean),
+        ];
+      }
+      return [...c, typeof obj === 'string' ? obj : ''];
+    }, [])
+    .filter(Boolean)
+    .join(' ');
 
 /**
  * Checks if the argument is defined

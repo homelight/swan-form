@@ -6,7 +6,6 @@ import {
   gatherErrors,
   isDefined,
   maybePromisify,
-  isPromise,
   alwaysFilteredArray,
 } from '@swan-form/helpers';
 import { isFunction, memoize } from 'lodash';
@@ -174,7 +173,7 @@ export class Form extends React.PureComponent<FormProps, FormState> {
   handleErrors = (errors: Error | React.ReactNode | React.ReactNode[]) => {
     const { onError } = this.props;
     // Force formErrors to be an array
-    const formErrors = (Array.isArray(errors) ? errors : [errors]).filter(Boolean);
+    const formErrors = alwaysFilteredArray<React.ReactNode>(errors);
     // Persist the errors
     if (this.mounted) {
       this.setState({ formErrors });
@@ -207,7 +206,7 @@ export class Form extends React.PureComponent<FormProps, FormState> {
   /**
    * Called at the start of the submit event
    */
-  handleBeforeSubmit = (values: { [key: string]: any } | Promise<{ [key: string]: any }>) => {
+  handleBeforeSubmit = (values: object | Promise<{ [key: string]: any }>) => {
     const { beforeSubmit } = this.props;
 
     if (this.mounted) {
@@ -220,7 +219,7 @@ export class Form extends React.PureComponent<FormProps, FormState> {
   /**
    * Called in the middle of the submit event
    */
-  handleOnSubmit = (values: { [key: string]: any } | Promise<{ [key: string]: any }>) => {
+  handleOnSubmit = (values: object | Promise<{ [key: string]: any }>) => {
     const { onSubmit } = this.props;
     return isFunction(onSubmit) ? maybePromisify(onSubmit(values)) : Promise.resolve(values);
   };
@@ -228,7 +227,7 @@ export class Form extends React.PureComponent<FormProps, FormState> {
   /**
    * Called after a successful submit
    */
-  handleAfterSubmit = (values: { [key: string]: any } | Promise<{ [key: string]: any }>) => {
+  handleAfterSubmit = (values: object | Promise<{ [key: string]: any }>) => {
     const { afterSubmit } = this.props;
     if (this.mounted) {
       this.setState({ isSubmitting: false, hasSubmitted: true });
@@ -257,42 +256,7 @@ export class Form extends React.PureComponent<FormProps, FormState> {
   /**
    * Runs validation on all current fields
    */
-  validate = (): Promise<boolean> =>
-    new Promise(res => {
-      const { validate } = this.props;
-      const hasFieldErrors = gatherErrors(this.fields, true).length === 0;
-
-      // If there is no validate function, just validate the fields
-      if (!isFunction(validate)) {
-        return res(hasFieldErrors);
-      }
-
-      // Get the form values (maybe find a way to dedupe this work when gathering field errors)
-      const values = Object.keys(this.fields).reduce(
-        (acc, name: string) => ({ ...acc, [name]: this.fields[name].getValue() }),
-        {},
-      );
-
-      // If it's a promise, then we'll treat it like a promise
-      if (isPromise(validate)) {
-        // @ts-ignore
-        return validate(values).then((err: React.ReactNode | React.ReactNode[]) => {
-          const formErrors = alwaysFilteredArray<React.ReactNode>(err);
-          if (formErrors.length) {
-            this.setState(prevState => ({ ...prevState, formErrors }));
-            return res(false);
-          }
-          return res(hasFieldErrors);
-        });
-      }
-      const formErrors = alwaysFilteredArray<React.ReactNode>(validate(values));
-      if (formErrors.length) {
-        this.setState(prevState => ({ ...prevState, formErrors }));
-        return res(false);
-      }
-
-      return res(hasFieldErrors);
-    });
+  validate = () => gatherErrors(this.fields, true).length === 0;
 
   render() {
     const { autoComplete, className, children, name, style = emptyObject } = this.props;

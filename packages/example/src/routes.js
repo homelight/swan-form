@@ -45,6 +45,11 @@ const DownshiftExample = Loader(
   Loading,
 );
 
+const FormValidation = Loader(
+  () => import(/* webpackChunkName: "form-validation" */ './components/pages/FormValidation'),
+  Loading,
+);
+
 const Dummy = () => <div>@TODO</div>;
 
 export const pages = [
@@ -61,6 +66,7 @@ export const pages = [
   ['/asfield-hoc', 'asField HOC', AsFieldHoc],
   ['/theme', 'Theming', Theme],
   ['/downshift-example', 'Downshift Example', DownshiftExample],
+  ['/form-validation', 'Form Validation', FormValidation],
 ];
 
 class Routes extends PureComponent {
