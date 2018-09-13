@@ -18,6 +18,7 @@ AsFieldContext.Consumer.displayName = 'AsFieldConsumer';
 AsFieldContext.Provider.displayName = 'AsFieldProvider';
 
 export function withAsField<P extends IAsFieldContext>(Component: React.ComponentType<P>) {
+  // eslint-disable-next-line no-param-reassign
   Component.displayName = 'withAsField';
   return function AsFieldComponent(props: { [key: string]: any }) {
     return (
@@ -52,6 +53,7 @@ FormContext.Consumer.displayName = 'FormConsumer';
 FormContext.Provider.displayName = 'FormProvider';
 
 export function withFormErrors<P extends { formErrors: React.ReactNode[] }>(Component: React.ComponentType<P>) {
+  // eslint-disable-next-line no-param-reassign
   Component.displayName = 'withFormErrors';
   return function FormErrorComponent(props: { [key: string]: any }) {
     return (
@@ -71,6 +73,7 @@ export function withForm<
   }
 >(Component: React.ComponentType<P>) {
   return function FormComponent(props: { [key: string]: any }) {
+    // eslint-disable-next-line no-param-reassign
     Component.displayName = 'withForm';
     return (
       <FormContext.Consumer>
@@ -103,6 +106,7 @@ SlideContext.Consumer.displayName = 'SlideConsumer';
 SlideContext.Provider.displayName = 'SlideProvider';
 
 export function withSlide<P extends ISlideContext>(Component: React.ComponentType<P>) {
+  // eslint-disable-next-line no-param-reassign
   Component.displayName = 'withSlide';
   return function SlideComponent(props: { [key: string]: any }) {
     return (
@@ -114,6 +118,7 @@ export function withSlide<P extends ISlideContext>(Component: React.ComponentTyp
 export function withFormSlideField<P extends ISlideContext & IFormContext & IAsFieldContext>(
   Component: React.ComponentType<P>,
 ) {
+  // eslint-disable-next-line no-param-reassign
   Component.displayName = 'withFormSlideAsField';
   return function Wrapper(props: { [key: string]: any }) {
     return (

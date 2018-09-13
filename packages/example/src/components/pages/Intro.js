@@ -11,8 +11,8 @@ class Intro extends PureComponent {
         </p>
         <h2>Dependencies</h2>
         <p>
-          The only real dependency is on lodash. It has peer dependencies of <pre>react</pre>, <pre>react-dom</pre>, and{' '}
-          <pre>prop-types</pre>, which you are probably using anyway.
+          The only real dependency is on lodash. It has peer dependencies of <code>react</code>, <code>react-dom</code>,
+          and <code>prop-types</code>, which you are probably using anyway.
         </p>
         <h2>Fields</h2>
         <p>

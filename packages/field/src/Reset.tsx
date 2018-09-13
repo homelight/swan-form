@@ -4,26 +4,32 @@ import { classes } from '@swan-form/helpers';
 import Field from './Field';
 
 export interface ResetProps {
-  className?: string;
-  name?: string;
-  value?: string;
-  style?: React.CSSProperties;
+  className?: string | null;
+  name?: string | null;
+  value?: string | null;
+  style?: React.CSSProperties | null;
 }
 
 const emptyObject = {};
 
-export default class Reset extends React.Component<ResetProps> {
-  static propTypes = {
-    name: PropTypes.string,
-    value: PropTypes.string,
-    resetFunction: PropTypes.func, // eslint-disable-line
-    className: PropTypes.string,
-  };
+const Reset: React.SFC<ResetProps> = ({ className, name, style, value }) => (
+  <Field type="reset" name={name} value={value} className={classes('sf--reset', className)} style={style} />
+);
 
-  static displayName = 'Reset';
+Reset.displayName = 'Reset';
 
-  render() {
-    const { className = '', name = 'sf--reset', style = emptyObject, value = 'Reset' } = this.props;
-    return <Field type="reset" name={name} value={value} className={classes('sf--reset', className)} style={style} />;
-  }
-}
+Reset.defaultProps = {
+  className: '',
+  name: 'sf--reset',
+  value: 'Reset',
+  style: emptyObject,
+};
+
+Reset.propTypes = {
+  className: PropTypes.string,
+  name: PropTypes.string,
+  value: PropTypes.string,
+  style: PropTypes.object, // eslint-disable-line
+};
+
+export default Reset;

@@ -11,6 +11,8 @@ function repeat(str: string, count: number) {
 
 /**
  * functionally equivalent to String.padStart(length, str);
+ *
+ * Keeps us from shipping a polyfill
  */
 function padStart(str: string, targetLength: number, padStr: string) {
   if (str.length > targetLength) {
@@ -65,6 +67,7 @@ function createMask(pattern: string, wildcard: string, unbound: boolean) {
     let pi = 0;
     for (let vi = 0, plen = p.length, vlen = v.length; pi < plen && vi < vlen; pi++) {
       if (p[pi] === wildcard) {
+        // eslint-disable-next-line no-plusplus
         p[pi] = v[vi++];
       } else if (vi < cursor) {
         delta += 1;
@@ -79,7 +82,7 @@ function createMask(pattern: string, wildcard: string, unbound: boolean) {
  *
  * Note, if you are going to create a formatter that is "unbound," then take special note that you
  * restrict yourself to a charset that does not include anything in the mask. E.g. if the mask looks
- * like "___," — (to put commas every three characters) — then the transformer function should strip
+ * like "___," — (to put commas every three characters) — then the transformer function should strip
  * these out. E.g. `const transformer = (value) => value.replace(/[_-]{1,}/g, '');`
  *
  * @param transformer

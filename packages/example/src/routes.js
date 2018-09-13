@@ -40,6 +40,15 @@ const RegularForm = Loader(
 const Styling = Loader(() => import(/* webpackChunkName: "styling" */ './components/pages/Styling'), Loading);
 const AsFieldHoc = Loader(() => import(/* webpackChunkName: "asfield-hoc" */ './components/pages/asFieldHOC'), Loading);
 const Theme = Loader(() => import(/* webpackChunkName: "theme" */ './components/pages/Theme'), Loading);
+const DownshiftExample = Loader(
+  () => import(/* webpackChunkName: "downshift-example" */ './components/pages/Downshift'),
+  Loading,
+);
+
+const FormValidation = Loader(
+  () => import(/* webpackChunkName: "form-validation" */ './components/pages/FormValidation'),
+  Loading,
+);
 
 const Dummy = () => <div>@TODO</div>;
 
@@ -56,6 +65,8 @@ export const pages = [
   ['/with-react-router', 'With React Router', Dummy],
   ['/asfield-hoc', 'asField HOC', AsFieldHoc],
   ['/theme', 'Theming', Theme],
+  ['/downshift-example', 'Downshift Example', DownshiftExample],
+  ['/form-validation', 'Form Validation', FormValidation],
 ];
 
 class Routes extends PureComponent {

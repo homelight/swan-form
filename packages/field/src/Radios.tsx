@@ -16,9 +16,10 @@ export interface RadiosProps {
 
 const emptyArray: any[] = [];
 const noop = () => {};
+const removeNonAlphaNumeric = (val: string) => val.replace(/[^a-z0-9]{1,}/gi, '');
 
 function createRadio(option: Option, props: RadiosProps, index: number) {
-  const id = `${props.name}-${('' + option.value).replace(/[^a-z0-9]{1,}/gi, '')}`;
+  const id = `${props.name}-${removeNonAlphaNumeric(String(option.value))}`;
   const checked = props.value === option.value;
   // We use these to override some things
   const local = { key: id, id, checked, errors: emptyArray, type: 'radio', ref: index === 0 ? props.setRef : noop };

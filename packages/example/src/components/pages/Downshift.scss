@@ -1,0 +1,137 @@
+$input-height: 2rem;
+$label-height: 1.2rem;
+$border-size: 0.125rem;
+
+$cream: #fffdd0;
+
+@keyframes fade-in-down {
+  0% {
+    opacity: 0;
+    transform: translateY(-$label-height);
+    z-index: 0;
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    z-index: 1;
+  }
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.match {
+  color: red;
+}
+
+.clear-button {
+  outline: 0;
+  background-color: transparent;
+  cursor: pointer;
+  position: absolute;
+  border: 0;
+  top: $label-height;
+  right: 0;
+  transform: translate(25%, 60%);
+}
+
+.toggle-button {
+  outline: 0;
+  background-color: transparent;
+  cursor: pointer;
+  position: absolute;
+  border: $border-size solid gray;
+  border-left: 0;
+  height: $input-height + $border-size * 6;
+  padding: 0.25rem 0;
+  top: $label-height;
+  padding-right: 0.25rem;
+  display: flex;
+  right: 0;
+  transform: translate(100%, 0);
+
+  svg {
+    transition: transform 0.3s ease;
+  }
+
+  &.is-open {
+    svg {
+      transform: rotate(180deg);
+      transform: rotate3d(1, 0, 0, 180deg);
+    }
+  }
+}
+
+.container {
+  position: relative;
+
+  label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: $label-height;
+  }
+
+  input {
+    margin-top: $label-height;
+    line-height: $input-height;
+    border: $border-size solid gray;
+    border-right: 0;
+    outline: 0;
+    padding: 0.25rem 0.5rem;
+    width: 200px;
+  }
+
+  width: 200px;
+}
+
+// :global(.sf--icon) {
+//   pointer-events: none;
+//   position: absolute;
+//   top: ($border-size * 4) + $label-height + ($input-height / 2);
+//   transform: translate(-50%, -50%);
+//   right: 0;
+// }
+
+ul.dropdown {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  background-color: $cream;
+  margin: 0;
+  padding: 0;
+  top: $input-height + $label-height + (5 * $border-size) + $border-size;
+  // transform: translate(0, );
+  width: calc(100% + 2rem);
+  animation: fade-out 0.3s ease-out forwards;
+
+  &.is-open {
+    animation: fade-in-down 0.15s ease-out forwards;
+    border: $border-size solid $cream;
+    box-shadow: 0 2px 6px rgba(black, 0.12), 0 1px 2px rgba(black, 0.24);
+    padding: 0.25rem 0;
+  }
+
+  li {
+    cursor: pointer;
+    list-style-type: none;
+    margin: 0.25rem 0;
+    padding: 1rem;
+    transition: background-color 0.15s ease;
+
+    &.highlighted {
+      background-color: white;
+    }
+
+    &.selected {
+      font-weight: bold;
+    }
+  }
+}

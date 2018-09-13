@@ -1,7 +1,15 @@
 /* eslint-disable react/sort-comp */
+import {
+  classes,
+  execIfFunc,
+  FormContext,
+  gatherErrors,
+  isDefined,
+  maybePromisify,
+  alwaysFilteredArray,
+} from '@swan-form/helpers';
+import { isFunction, memoize } from 'lodash';
 import * as React from 'react';
-import { memoize, isFunction } from 'lodash';
-import { classes, gatherErrors, maybePromisify, execIfFunc, isDefined, FormContext } from '@swan-form/helpers';
 
 /**
  * Note, since the submit hooks rely on promises, and since promises are not cancelable,
@@ -14,10 +22,9 @@ import { classes, gatherErrors, maybePromisify, execIfFunc, isDefined, FormConte
 
 export interface FormProps {
   name: string;
-  onSubmit(values: { [key: string]: any }): Promise<{ [key: string]: any }>;
-
-  beforeSubmit(values: { [key: string]: any }): Promise<{ [key: string]: any }>;
-  afterSubmit(values: { [key: string]: any }): Promise<{ [key: string]: any }>;
+  onSubmit(values: { [key: string]: any }): { [key: string]: any } | Promise<{ [key: string]: any }>;
+  beforeSubmit?(values: { [key: string]: any }): { [key: string]: any } | Promise<{ [key: string]: any }>;
+  afterSubmit?(values: { [key: string]: any }): { [key: string]: any } | Promise<{ [key: string]: any }>;
   onError?(error: string | Error | React.ReactNode | React.ReactNode[]): void;
   autoComplete?: boolean;
   persist?: boolean;
@@ -25,6 +32,7 @@ export interface FormProps {
   className?: string;
   noValidate?: boolean;
   defaultValues?: { [key: string]: any };
+  validate?(values: { [key: string]: any }): string | false | Promise<string | false>;
 }
 
 export interface FormState {
@@ -165,7 +173,7 @@ export class Form extends React.PureComponent<FormProps, FormState> {
   handleErrors = (errors: Error | React.ReactNode | React.ReactNode[]) => {
     const { onError } = this.props;
     // Force formErrors to be an array
-    const formErrors = (Array.isArray(errors) ? errors : [errors]).filter(Boolean);
+    const formErrors = alwaysFilteredArray<React.ReactNode>(errors);
     // Persist the errors
     if (this.mounted) {
       this.setState({ formErrors });

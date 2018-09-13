@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { isFunction, isEqual, memoize } from 'lodash';
+import { isEqual, isFunction, memoize } from 'lodash';
 
 import {
   AsFieldContext,
@@ -16,6 +16,7 @@ import {
   maybeApply,
   moveCursor,
   withFormSlideField,
+  alwaysFilteredArray,
 } from '@swan-form/helpers';
 
 export type RegisterType = {
@@ -423,7 +424,7 @@ const asField = <P extends AsFieldProps>(
       const { validate } = this.props;
 
       const initial = execOrMapFn(validate, value) as React.ReactNode | React.ReactNode[];
-      const errors = Array.isArray(initial) ? initial.filter(Boolean) : [initial].filter(Boolean);
+      const errors = alwaysFilteredArray<React.ReactNode>(initial);
       if (updateErrors) {
         this.setState({ errors });
       }

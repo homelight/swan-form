@@ -30,12 +30,17 @@ module.exports = {
     'react/destructuring-assignment': 0,
     'no-undef': 0,
     'no-restricted-globals': 0,
+    'no-unused-vars': 0, // typescript will take care of this
+    'react/button-has-type': 0, // we're dynamically passing these types in a way they're always set
+    'jsx-a11y/label-has-for': 0, // rule is deprecated
+    'jsx-a11y/label-has-associated-control': 'error',
   },
   settings: {
     'import/resolver': {
       'eslint-import-resolver-lerna': {
         packages: resolve(__dirname, 'packages'),
       },
+      'eslint-import-resolver-typescript': true,
     },
   },
 };

@@ -4,25 +4,27 @@ import { classes } from '@swan-form/helpers';
 import Field from './Field';
 
 export interface SubmitProps {
-  className?: string;
-  name?: string;
-  value?: string;
-  style?: React.CSSProperties;
+  className?: string | null;
+  name?: string | null;
+  value?: string | null;
+  style?: React.CSSProperties | null;
 }
 
 const emptyObject = {};
 
-export default class Submit extends React.PureComponent<SubmitProps, {}> {
-  static propTypes = {
-    name: PropTypes.string,
-    value: PropTypes.string,
-    className: PropTypes.string,
-  };
+const Submit: React.SFC<SubmitProps> = ({ className, name, style, value }) => (
+  <Field name={name} type="submit" className={classes('sf--submit', className)} value={value} style={style} />
+);
 
-  static displayName = 'Submit';
+Submit.displayName = 'Submit';
 
-  render() {
-    const { className = '', name = 'sf--submit', style = emptyObject, value = 'Submit' } = this.props;
-    return <Field name={name} type="submit" className={classes('sf--submit', className)} value={value} style={style} />;
-  }
-}
+Submit.defaultProps = { name: 'sf--submit', value: 'Submit', className: '', style: emptyObject };
+
+Submit.propTypes = {
+  name: PropTypes.string,
+  value: PropTypes.string,
+  className: PropTypes.string,
+  style: PropTypes.object, // eslint-disable-line
+};
+
+export default Submit;
