@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { isFunction, isEqual, memoize } from 'lodash';
+import { isEqual, isFunction, memoize } from 'lodash';
 
 import {
   AsFieldContext,

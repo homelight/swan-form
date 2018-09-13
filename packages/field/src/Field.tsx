@@ -1,6 +1,6 @@
 /* eslint-disable react/button-has-type */
 import * as React from 'react';
-import isObject from 'lodash/isObject';
+import { isObject } from 'lodash';
 import { classes, hasOwnProperty, noop, toKey } from '@swan-form/helpers';
 import asField from './asField';
 

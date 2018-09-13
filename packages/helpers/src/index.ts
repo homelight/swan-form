@@ -1,7 +1,5 @@
 import * as React from 'react';
-import isFunction from 'lodash/isFunction';
-import isObject from 'lodash/isObject';
-import isPlainObject from 'lodash/isPlainObject';
+import { isFunction, isObject, isPlainObject } from 'lodash';
 
 import {
   AsFieldContext,
@@ -169,6 +167,12 @@ export const gatherErrors = (
       return [...errors, ...field.validate(value, updateErrors)];
     }, [])
     .filter(Boolean);
+
+/**
+ * Ensures that a `val` is an array filtered of falsy values
+ */
+export const alwaysFilteredArray = <P extends any>(val: any | any[]): P[] =>
+  (Array.isArray(val) ? val : [val]).filter(Boolean);
 
 /**
  * Attempts to transform a ReactNode into a uniqueish key
