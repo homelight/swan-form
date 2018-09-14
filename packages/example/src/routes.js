@@ -83,6 +83,13 @@ class Routes extends PureComponent {
     history: PropTypes.any, // eslint-disable-line
   };
 
+  componentDidMount() {
+    if (window.location.search) {
+      const [, page] = window.location.search.split('=');
+      this.props.history.push(dedupeSlashes(`${baseName}/${page}`));
+    }
+  }
+
   render() {
     return (
       <Provider store={store}>
