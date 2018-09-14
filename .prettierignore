@@ -5,3 +5,4 @@ package/**/coverage
 packages/**/dist/*
 packages/example/build
 packages/**/node_modules
+docs
