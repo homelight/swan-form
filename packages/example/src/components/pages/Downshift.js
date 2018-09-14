@@ -156,7 +156,7 @@ class SelectDownshift extends React.Component {
   };
 
   render() {
-    const { label, errors, setValue, value, icon, filter } = this.props;
+    const { label, errors, setValue, value, icon, filter, style = {} } = this.props;
 
     const { items } = this.state;
 
@@ -181,9 +181,9 @@ class SelectDownshift extends React.Component {
             getToggleButtonProps,
             clearSelection,
           }) => (
-            <div className={styles.container}>
+            <div className={styles.container} style={style}>
               <label {...getLabelProps()}>{label}</label>
-              <input {...getInputProps()} />
+              <input {...getInputProps()} style={{ width: '100%' }} />
               {getButton({ selectedItem, isOpen, getToggleButtonProps, clearSelection })}
               {/* <ul {...getMenuProps()} className={classes(styles.dropdown, isOpen && styles.isOpen)}> */}
               {isOpen && items.length ? (
@@ -192,9 +192,9 @@ class SelectDownshift extends React.Component {
                   scrollToIndex={highlightedIndex || 0}
                   scrollToAlignment="auto"
                   height={20 + clamp(items.length, 0, 4) * 40}
-                  itemCount={clamp(items.length, 0, 4)}
+                  itemCount={items.length}
                   itemSize={40}
-                  className={styles.dropdown}
+                  className={classes(styles.dropdown, isOpen && styles.isOpen)}
                   renderItem={({ index, style }) => (
                     <div
                       key={items[index].original ? items[index].original.value : items[index].value}
@@ -230,13 +230,106 @@ class SelectDownshift extends React.Component {
 const Select = asField(SelectDownshift);
 
 const random = [
-  'alcohol bureau',
-  'all about eve',
-  'abbot and costello',
-  'any beehive custom',
-  'alcoholic better can-do',
-  'as easy as abc',
-  'abc',
+  'grizzled heptad orchis',
+  'dickens fizgig corgi',
+  'laborer comedian esurient',
+  'clearing boatyard vim',
+  'mukluk champac cowbind',
+  'pear furlough knack',
+  'bedstead gasper sacker',
+  'tympany patch economy',
+  'masseter pruritus fluky',
+  'baa purify brad',
+  'embow invite monodic',
+  'herein wiener stricken',
+  'localism lens mordancy',
+  'attain maidenly it',
+  'dippy frown panda',
+  'micelle adenoma canikin',
+  'danseuse jot raddled',
+  'vinyl untruth guano',
+  'fathom leafage deer',
+  'violable earplug seeing',
+  'cud octuple hobnail',
+  'forth grained headship',
+  'pothole spur belong',
+  'sapless shove lens',
+  'spire nuptial razor',
+  'ulema dago kelly',
+  'lactate ham aglimmer',
+  'uncut abound composer',
+  'wards enervate outwards',
+  'amoretto flunk bluebird',
+  'tigerish sorn gumbotil',
+  'turbojet kermes tamarisk',
+  'gluteus touch scrub',
+  'kickoff deferral accuracy',
+  'sparker dilly casemate',
+  'cowl pewee apiary',
+  'gunlock bushman comrade',
+  'beatific hesitate scalade',
+  'wanting opossum squall',
+  'murphy pyknic venture',
+  'causeway netter camomile',
+  'willing bay ream',
+  'boxcar planking mudstone',
+  'disdain emirate boogie',
+  'keyboard velocity trestle',
+  'whorish fewer marish',
+  'monkey wrote jackeroo',
+  'custos valiancy dobby',
+  'thorns woollen yoghurt',
+  'joke wheezy reindeer',
+  'sanctity fount curiosa',
+  'plectrum viable violable',
+  'beggary ibex lode',
+  'easiness requital abducens',
+  'disagree vetiver hereto',
+  'incident ant lacteal',
+  'sybarite tombolo semen',
+  'wrinkly tushy immunity',
+  'poised blocking pentyl',
+  'jota atomizer ebon',
+  'shote denote gumbo',
+  'mean dermoid vivisect',
+  'shoon manners shiksa',
+  'dyestuff unhandy sanguine',
+  'sleety aye gauge',
+  'camber jotter hallmark',
+  'drill midmost knack',
+  'boomkin dogfight titty',
+  'defrost pled lecture',
+  'could swollen gunfire',
+  'tailwind shalloon unpaged',
+  'hunch academy calendar',
+  'yabber learned vas',
+  'salad drivel mote',
+  'currant hull suspend',
+  'siding renin warn',
+  'mustard liqueur white',
+  'leaf negatron epidote',
+  'confuse askew ovular',
+  'porter hassle decurion',
+  'kishke blotter messy',
+  'roofer mightily fee',
+  'misdo embower oilskin',
+  'ternate planula sanctum',
+  'peacock bullpen feather',
+  'rotator whiskers knowing',
+  'rustler cakewalk striate',
+  'postfix grain lochia',
+  'larch aspirant quality',
+  'praxis grew cry',
+  'aspen fusspot motel',
+  'starry dammar checkup',
+  'washing geode rococo',
+  'decided mood evolve',
+  'epos earache woofer',
+  'punnet dumpish embassy',
+  'illiquid aloe tittup',
+  'torture nurture inurbane',
+  'jarvey fallout varnish',
+  'oriel diner memento',
 ];
 
 class DownshiftExample extends PureComponent {
@@ -245,7 +338,7 @@ class DownshiftExample extends PureComponent {
       <>
         <Select options={normalizeOptions(items)} label="Please enter a fruit" value="kiwi" />
         <Select options={normalizeOptions(states)} label="Please enter a state" value="NY" />
-        <Select options={normalizeOptions(random)} label="Random things" />
+        <Select options={normalizeOptions(random)} label="Random things" style={{ width: '20rem' }} />
       </>
     );
   }

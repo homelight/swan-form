@@ -7,7 +7,7 @@
   <script type="text/javascript">
     if (window.location.hostname === "helloeave.github.io") {
       var url = new URL(window.location);
-      ur.search = ['?page=', url.pathname];
+      url.search = ['?page=', url.pathname];
       url.pathname = '/swan-form/';
       window.location = url.toString();
     }

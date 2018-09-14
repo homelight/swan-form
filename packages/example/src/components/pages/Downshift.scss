@@ -102,6 +102,7 @@ $cream: #fffdd0;
 // }
 
 .dropdown {
+  animation: fade-out 0.3s ease-out forwards;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -112,7 +113,6 @@ $cream: #fffdd0;
   top: $input-height + $label-height + (5 * $border-size) + $border-size;
   width: calc(100% + 2rem);
   z-index: 1;
-  // animation: fade-out 0.3s ease-out forwards;
 
   &.is-open {
     animation: fade-in-down 0.15s ease-out forwards;
