@@ -107,7 +107,7 @@ function factory(environment, analyze = false) {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name]-[hash].js',
     chunkFilename: '[name]-[contenthash].js',
-    publicPath: '/',
+    publicPath: ifProd('/swan-form/', '/'),
   };
 
   config.devtool = 'eval';
@@ -176,7 +176,7 @@ function factory(environment, analyze = false) {
     new HtmlWebpackPlugin({
       inject: true,
       template: './src/index.html',
-      prefix: ifProd('/swan-form/', ''),
+      // prefix: ifProd('/swan-form/', ''),
     }),
 
     ifDev(createHappyPackPlugin('globalScss', [styleLoader, globalCssLoader, gloablScssLoader])),
