@@ -29,12 +29,13 @@ class EditableDisplay extends Component {
   };
 
   onBlur = event => {
-    const target = event.target;
-    if (target.name !== this.props.name) {
+    const { target } = event;
+    const { name, onChange } = this.props;
+    if (target.name !== name) {
       return;
     }
 
-    this.props.onChange({ name: this.props.name, value: target.value });
+    onChange({ name: this.props.name, value: target.value });
     this.setState(prevState => ({
       ...prevState,
       editing: false,

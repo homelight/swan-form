@@ -84,14 +84,12 @@ const createHappyPackPlugin = (id, loaders, debug = false) =>
     verbose: !!debug,
   });
 
-const createCacheLoader = (name, env) => {
-  return {
-    loader: 'cache-loader',
-    options: {
-      cacheDirectory: path.resolve(findCacheDir({ name }), env),
-    },
-  };
-};
+const createCacheLoader = (name, env) => ({
+  loader: 'cache-loader',
+  options: {
+    cacheDirectory: path.resolve(findCacheDir({ name }), env),
+  },
+});
 
 function factory(environment, analyze = false) {
   const env = environment === 'production' ? 'production' : 'development';

@@ -19,7 +19,6 @@ class DynamicField extends Component {
   }
 
   onSubmit = values => {
-    console.log('Setting state with values', values);
     this.setState(values);
     return values;
   };

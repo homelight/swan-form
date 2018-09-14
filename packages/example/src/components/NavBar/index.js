@@ -26,16 +26,17 @@ class NavBar extends Component {
     isShowing: PropTypes.bool.isRequired,
     hide: PropTypes.func.isRequired,
     show: PropTypes.func.isRequired,
+    location: PropTypes.any, // eslint-disable-line
   };
 
   toggle = () => {
-    const { isShowing, hide, show } = this.props;
-    (isShowing ? hide : show)();
+    const { isShowing, hide: doHide, show: doShow } = this.props;
+    (isShowing ? doHide : doShow)();
   };
 
   render() {
     const { pathname } = this.props.location;
-    console.log('styles', styles.navBar, !this.props.isShowing && styles.hide);
+
     return (
       <Portal>
         <div className={classes(styles.navBar, !this.props.isShowing && styles.hide)}>

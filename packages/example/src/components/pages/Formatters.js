@@ -29,11 +29,11 @@ const toUpperCase = value => value.replace(/[_-]{1,}/g, '').toUpperCase();
 const upCase = createFormatter(toUpperCase, '___-', true);
 
 const numbersOnly = value => value.replace(/[^0-9]{1,}/g, '');
-const _moneyFormatter = createFormatter(numbersOnly, '___,', true);
+const fmtMoney = createFormatter(numbersOnly, '___,', true);
 const moneyFormatter = (val, cur) => {
-  const [value, cursor] = _moneyFormatter(val, cur);
+  const [value, cursor] = fmtMoney(val, cur);
   // Since we're prefixing the value, we have to increment the cursor.
-  return ['$' + value, cursor + 1];
+  return [`$${value}`, cursor + 1];
 };
 
 class Formatters extends Component {

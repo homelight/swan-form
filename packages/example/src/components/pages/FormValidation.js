@@ -3,33 +3,21 @@ import Form from '@swan-form/form';
 import Field, { Submit } from '@swan-form/field';
 import { FormContext, required } from '@swan-form/helpers';
 
-const onSubmit = values => {
-  console.log(values);
-  return Promise.resolve(values);
-};
+const onSubmit = values => Promise.resolve(values);
 
 const validateForm = values => {
-  console.log('Called with', values);
   if (!values.testField2) {
-    console.log('There is a problem');
     return 'Fill out testField2';
   }
   return false;
 };
 
-const beforeSubmit = values => {
-  return Promise.reject('This is not right');
-};
-
-const afterSubmit = values => {
-  console.log('In after submit');
-  return values;
-};
+const beforeSubmit = values => Promise.reject('This is not right');
 
 export default class FormValidation extends Component {
   render() {
     return (
-      <Form onSubmit={onSubmit} validate={validateForm} beforeSubmit={beforeSubmit} afterSubmit={afterSubmit}>
+      <Form onSubmit={onSubmit} validate={validateForm} beforeSubmit={beforeSubmit}>
         <div>
           <h5>This has field validation</h5>
           <Field name="textField1" type="text" validate={required} />

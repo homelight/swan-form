@@ -4,8 +4,14 @@ import { classes, hasOwnProperty } from '@swan-form/helpers';
 import { hot } from 'react-hot-loader';
 import Downshift from 'downshift';
 import memoize from 'lodash/memoize';
+import clamp from 'lodash/clamp';
+import VirtualList from 'react-tiny-virtual-list';
+
+import fuzzy from './fuzzy';
 
 import styles from './Downshift.scss';
+
+const mfuzzy = memoize(fuzzy);
 
 const items = [
   { value: 'apple' },
@@ -45,18 +51,20 @@ const normalizeOptions = options => options.map(normalizeOption);
 
 const getOptions = memoize(normalizeOptions);
 
-const getItem = ({ getItemProps, item, index, highlightedIndex, selectedItem }) => (
+const getItem = (item, getItemProps, index, highlightedIndex, selectedItem) => (
   <li
     {...getItemProps({
-      key: item.value,
+      key: item.original.value,
       index,
-      item,
+      item: item.original,
       className: classes(highlightedIndex === index && styles.highlighted, selectedItem === item && styles.selected),
     })}
   >
-    {item.value}
+    {item.string}
   </li>
 );
+
+const mGetItem = memoize(getItem);
 
 const getButton = ({ getToggleButtonProps, isOpen, clearSelection, selectedItem }) =>
   selectedItem ? (
@@ -125,63 +133,121 @@ const states = [
   'WY',
 ];
 
-const SelectDownshift = props => {
-  console.log(props);
-  const { options: _options, label, errors, setValue, value, icon, filter } = props;
+const fuzzyOpts = { extract: item => item.value };
 
-  const options = getOptions(_options);
+function advancedFilter(theItems, value) {
+  return value ? fuzzy(value, theItems, fuzzyOpts) : theItems;
+}
 
-  return (
-    <>
-      <Downshift
-        onChange={loftValue(setValue)}
-        defaultInputValue={value}
-        defaultSelectedItem={value && { value }}
-        itemToString={itemToString}
-      >
-        {({
-          getInputProps,
-          getItemProps,
-          getLabelProps,
-          getMenuProps,
-          isOpen,
-          inputValue,
-          highlightedIndex,
-          selectedItem,
-          getToggleButtonProps,
-          clearSelection,
-        }) => (
-          <div className={styles.container}>
-            <label {...getLabelProps()}>{label}</label>
-            <input {...getInputProps()} />
-            {getButton({ selectedItem, isOpen, getToggleButtonProps, clearSelection })}
-            <ul {...getMenuProps()} className={classes(styles.dropdown, isOpen && styles.isOpen)}>
-              {isOpen
-                ? options
-                    .filter(item => !inputValue || item.value.includes(inputValue))
-                    .map((item, index) => getItem({ getItemProps, item, index, highlightedIndex, selectedItem }))
-                : null}
-            </ul>
-            <span className="sf--errors">
-              {errors.map(error => (
-                <span key={error} className="sf-error">
-                  {error}
-                </span>
-              ))}
-            </span>
-          </div>
-        )}
-      </Downshift>
-      <pre>Value: {JSON.stringify(value, null, 2)}</pre>
-    </>
-  );
-};
+class SelectDownshift extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      items: props.options,
+    };
+  }
+
+  handleStateChange = changes => {
+    if (changes.hasOwnProperty('inputValue')) {
+      const { inputValue } = changes;
+      const items = advancedFilter(this.props.options, inputValue);
+      this.setState({ inputValue, items });
+    }
+  };
+
+  render() {
+    const { label, errors, setValue, value, icon, filter } = this.props;
+
+    const { items } = this.state;
+
+    return (
+      <>
+        <Downshift
+          onChange={loftValue(setValue)}
+          defaultInputValue={value}
+          defaultSelectedItem={value && { value }}
+          itemToString={itemToString}
+          onStateChange={this.handleStateChange}
+        >
+          {({
+            getInputProps,
+            getItemProps,
+            getLabelProps,
+            getMenuProps,
+            isOpen,
+            inputValue,
+            highlightedIndex,
+            selectedItem,
+            getToggleButtonProps,
+            clearSelection,
+          }) => (
+            <div className={styles.container}>
+              <label {...getLabelProps()}>{label}</label>
+              <input {...getInputProps()} />
+              {getButton({ selectedItem, isOpen, getToggleButtonProps, clearSelection })}
+              {/* <ul {...getMenuProps()} className={classes(styles.dropdown, isOpen && styles.isOpen)}> */}
+              {isOpen && items.length ? (
+                <VirtualList
+                  width="calc(100% + 2rem)"
+                  scrollToIndex={highlightedIndex || 0}
+                  scrollToAlignment="auto"
+                  height={20 + clamp(items.length, 0, 4) * 40}
+                  itemCount={clamp(items.length, 0, 4)}
+                  itemSize={40}
+                  className={styles.dropdown}
+                  renderItem={({ index, style }) => (
+                    <div
+                      key={items[index].original ? items[index].original.value : items[index].value}
+                      className={classes(
+                        styles.item,
+                        highlightedIndex === index && styles.highlighted,
+                        selectedItem === (items[index].original || items[index]) && styles.selected,
+                      )}
+                      {...getItemProps({ item: items[index].original || items[index], index, style })}
+                    >
+                      {items[index].original ? items[index].string : items[index].label}
+                    </div>
+                  )}
+                />
+              ) : null}
+              {/* </ul> */}
+              <span className="sf--errors">
+                {errors.map(error => (
+                  <span key={error} className="sf-error">
+                    {error}
+                  </span>
+                ))}
+              </span>
+            </div>
+          )}
+        </Downshift>
+        <pre>Value: {JSON.stringify(value, null, 2)}</pre>
+      </>
+    );
+  }
+}
 
 const Select = asField(SelectDownshift);
 
+const random = [
+  'alcohol bureau',
+  'all about eve',
+  'abbot and costello',
+  'any beehive custom',
+  'alcoholic better can-do',
+  'as easy as abc',
+  'abc',
+];
+
 class DownshiftExample extends PureComponent {
   render() {
-    return <Select options={states} label="Please enter a fruit" value="NY" />;
+    return (
+      <>
+        <Select options={normalizeOptions(items)} label="Please enter a fruit" value="kiwi" />
+        <Select options={normalizeOptions(states)} label="Please enter a state" value="NY" />
+        <Select options={normalizeOptions(random)} label="Random things" />
+      </>
+    );
   }
 }
 

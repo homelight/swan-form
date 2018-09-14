@@ -1,5 +1,6 @@
 import React, { PureComponent } from 'react';
 import { hot } from 'react-hot-loader';
+
 class Intro extends PureComponent {
   render() {
     return (
