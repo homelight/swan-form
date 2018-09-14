@@ -173,7 +173,12 @@ function factory(environment, analyze = false) {
 
   config.plugins = filter([
     analyze && new BundleAnalyzerPlugin(),
-    new HtmlWebpackPlugin({ inject: true, template: './src/index.html' }),
+    new HtmlWebpackPlugin({
+      inject: true,
+      template: './src/index.html',
+      prefix: ifProd('/swan-form/', ''),
+    }),
+
     ifDev(createHappyPackPlugin('globalScss', [styleLoader, globalCssLoader, gloablScssLoader])),
     ifDev(createHappyPackPlugin('css', [styleLoader, globalCssLoader])),
     ifDev(
