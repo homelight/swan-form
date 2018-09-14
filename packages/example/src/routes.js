@@ -76,7 +76,7 @@ export const pages = [
 ];
 
 export const baseName = process.env.NODE_ENV === 'production' ? '/swan-form' : '/';
-export const dedupeSlashes = str => str.replace(/\/{2,}/g, '/');
+export const dedupeSlashes = str => str.replace(/[/]{2,}/g, '/');
 
 class Routes extends PureComponent {
   static propTypes = {
@@ -86,7 +86,7 @@ class Routes extends PureComponent {
   componentDidMount() {
     if (window.location.search) {
       const [, page] = window.location.search.split('=');
-      this.props.history.push(dedupeSlashes(`${baseName}/${page}`));
+      this.props.history.push(dedupeSlashes(`${page}`));
     }
   }
 
