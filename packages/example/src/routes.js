@@ -75,8 +75,8 @@ export const pages = [
   ['/form-validation', 'Form Validation', FormValidation],
 ];
 
-const baseName = process.env.NODE_ENV === 'production' ? '/swan-form' : '/';
-const dedupeSlashes = str => str.replace(/\/{2,}/g, '/');
+export const baseName = process.env.NODE_ENV === 'production' ? '/swan-form' : '/';
+export const dedupeSlashes = str => str.replace(/\/{2,}/g, '/');
 
 class Routes extends PureComponent {
   static propTypes = {

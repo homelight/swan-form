@@ -6,15 +6,17 @@ import { withRouter } from 'react-router';
 import PropTypes from 'prop-types';
 import { classes } from '@swan-form/helpers';
 import Portal from '../Portal';
-import { pages } from '../../routes';
+import { baseName, dedupeSlashes, pages } from '../../routes';
 import { hide, show } from '../../redux/nav';
 
 import styles from './NavBar.scss';
 
 function createLink(path, name, pathname) {
+  const p = dedupeSlashes(`${baseName}/${path}`);
+
   return (
-    <Link key={path} to={path}>
-      <li className={pathname === path ? styles.active : ''}>{name}</li>
+    <Link key={p} to={p}>
+      <li className={pathname === p ? styles.active : ''}>{name}</li>
     </Link>
   );
 }
