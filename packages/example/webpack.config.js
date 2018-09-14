@@ -194,6 +194,9 @@ function factory(environment, analyze = false) {
     ifProd(
       new MiniCssExtractPlugin({ filename: '[name]-[contenthash].css', chunkFilename: '[name]-[contenthash].css' }),
     ),
+    new webpack.DefinePlugin({
+      'process.env.ASSET_PATH': ifProd(JSON.stringify('/swan-form/', '/')),
+    }),
   ]);
 
   return config;
