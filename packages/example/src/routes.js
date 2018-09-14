@@ -83,7 +83,7 @@ class Routes extends PureComponent {
   render() {
     return (
       <Provider store={store}>
-        <Router history={this.props.history}>
+        <Router history={this.props.history} basename={process.env.NODE_ENV === 'production' ? '/swan-form' : '/'}>
           <Switch>
             <Container>
               {pages.map(([path, name, component]) => (
