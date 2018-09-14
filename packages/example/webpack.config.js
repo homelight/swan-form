@@ -197,6 +197,11 @@ function factory(environment, analyze = false) {
     new webpack.DefinePlugin({
       'process.env.ASSET_PATH': ifProd(JSON.stringify('/swan-form/', '/')),
     }),
+    new webpack.DefinePlugin({
+      'process.env': {
+        NODE_ENV: ifProd('"production"', '"development"'),
+      },
+    }),
   ]);
 
   return config;

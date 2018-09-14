@@ -75,6 +75,9 @@ export const pages = [
   ['/form-validation', 'Form Validation', FormValidation],
 ];
 
+const baseName = process.env.NODE_ENV === 'production' ? '/swan-form' : '/';
+const dedupeSlashes = str => str.replace(/\/{2,}/g, '/');
+
 class Routes extends PureComponent {
   static propTypes = {
     history: PropTypes.any, // eslint-disable-line
@@ -87,7 +90,7 @@ class Routes extends PureComponent {
           <Switch>
             <Container>
               {pages.map(([path, name, component]) => (
-                <Route key={name} path={path} component={component} exact />
+                <Route key={name} path={dedupeSlashes(`${baseName}/${path}`)} component={component} exact />
               ))}
             </Container>
           </Switch>
