@@ -1,7 +1,10 @@
 import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
-import NavBar from './NavBar';
+
+import Loader from '../Loader';
 import styles from './Container.scss';
+
+const NavBar = Loader(() => import(/* webpackChunkName: "nav-bar" */ './NavBar'), null);
 
 class Container extends PureComponent {
   render() {

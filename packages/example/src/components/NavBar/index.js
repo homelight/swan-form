@@ -4,10 +4,12 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import PropTypes from 'prop-types';
-import { pages } from '../routes';
-import { hide, show } from '../redux/nav';
+import { classes } from '@swan-form/helpers';
+import Portal from '../Portal';
+import { pages } from '../../routes';
+import { hide, show } from '../../redux/nav';
 
-const styles = require('./NavBar.scss');
+import styles from './NavBar.scss';
 
 function createLink(path, name, pathname) {
   return (
@@ -31,13 +33,16 @@ class NavBar extends Component {
 
   render() {
     const { pathname } = this.props.location;
+    console.log('styles', styles.navBar, !this.props.isShowing && styles.hide);
     return (
-      <div className={[styles.navBar, !this.props.isShowing && styles.hide].filter(O => O).join(' ')}>
-        <ul>{pages.map(([path, name, ...ignore]) => createLink(path, name, pathname))}</ul>
-        <div className={styles.toggler} onClick={this.toggle}>
-          {this.props.isShowing ? '↓ Hide ↓' : '↑ Show ↑'}
+      <Portal>
+        <div className={classes(styles.navBar, !this.props.isShowing && styles.hide)}>
+          <ul>{pages.map(([path, name, ...ignore]) => createLink(path, name, pathname))}</ul>
+          <div className={styles.toggler} onClick={this.toggle}>
+            {this.props.isShowing ? '↓ Hide ↓' : '↑ Show ↑'}
+          </div>
         </div>
-      </div>
+      </Portal>
     );
   }
 }

@@ -1,0 +1,47 @@
+.sf--field--required:after {
+  color: red;
+  content: '*';
+  position: absolute;
+}
+.sf--field--required {
+  margin-right: 1em;
+}
+.sf--field--errors {
+  color: red;
+}
+.fancy-field input {
+  border: 1px solid #a9a9a9;
+  border-radius: 6px;
+  box-shadow: inset 0 0 12px #000;
+  color: #7a7a7a;
+  cursor: pointer;
+  font: 600 18px/24px Open Sans, sans-serif;
+  outline: none;
+  padding: 0.5em 0.75em;
+  text-decoration: underline;
+  transition: background-color 0.2s ease-in-out;
+}
+.fancy-field input:focus {
+  background-color: #afa;
+}
+.fancy-field input:invalid {
+  background-color: #fab;
+}
+.fancy-field {
+  border: 2px solid #000;
+  display: flex;
+  padding: 1rem;
+  position: relative;
+}
+.fancy-field .sf--field--label {
+  display: block;
+  font: 600 40px/40px Montserrat, sans-serif;
+  margin-right: 0.25em;
+}
+.fancy-field .sf--field--label:after {
+  content: ' ';
+  display: block;
+}
+.fancy-field.sf--field--required:after {
+  content: '';
+}

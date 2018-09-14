@@ -1,0 +1,52 @@
+.styled-reverse {
+  display: flex;
+  flex-direction: column-reverse;
+}
+.styled-reverse span {
+  display: flex;
+  position: relative;
+}
+.styled-reverse .sf--field--label {
+  display: block;
+  float: right;
+  font: 400 12px/1.618 Open Sans, sans-serif;
+  font-style: italic;
+  margin-left: 6em;
+}
+.styled-reverse.sf--field--required:after {
+  content: '';
+}
+.styled-reverse.sf--field-has-errors {
+  margin-top: 1em;
+}
+.styled-reverse.sf--field-has-errors:before {
+  border-bottom: 1px solid red;
+  bottom: 1em;
+  content: 'Please fix the following field:';
+  position: absolute;
+}
+.styled-reverse input {
+  background-color: #f0f0f0;
+  border: 0;
+  border-bottom: 1px solid #000;
+  font: 400 24px/1.616 Montserrat, sans-serif;
+  outline: 0;
+  padding: 0.25em 0.5em;
+}
+.styled-reverse:after input:invalid {
+  background-color: red;
+  content: '\2049';
+  display: block;
+  position: absolute;
+  width: 10px;
+}
+.styled-reverse .sf--field--error {
+  clear: both;
+  color: rgba(0, 0, 0, 0);
+  content: ' ' !important;
+  display: block;
+  font: 600 24px/1 sans-serif;
+  position: relative;
+  user-select: none;
+  width: 100%;
+}

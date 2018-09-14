@@ -28,7 +28,7 @@
   "dependencies": {
     "@swan-form/field": "^0.3.2",
     "@swan-form/helpers": "^0.3.2",
-    "lodash": "^4.17.4"
+    "lodash": "^4.17.11"
   },
   "publishConfig": {
     "access": "public"

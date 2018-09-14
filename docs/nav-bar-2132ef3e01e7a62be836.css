@@ -1,0 +1,56 @@
+._2j5V- {
+  -o-transition: transform 0.15s linear;
+  -webkit-transition: -webkit-transform 0.15s linear;
+  background-color: #fff;
+  left: 0;
+  padding: 1rem;
+  position: fixed;
+  top: 0;
+  transition: -webkit-transform 0.15s linear;
+  transition: transform 0.15s linear;
+  transition: transform 0.15s linear, -webkit-transform 0.15s linear;
+  width: 200px;
+}
+._2j5V- ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+._2j5V- li {
+  padding: 0.5rem 0.25rem;
+  width: 100%;
+}
+._2j5V- li:hover {
+  background-color: #dedede;
+}
+._2j5V- a {
+  text-decoration: none;
+}
+._2j5V- a,
+._2j5V- a:visited {
+  color: #000;
+}
+._3bzE9 {
+  background-color: #dedede;
+}
+._3dIgO {
+  -ms-transform: rotate(90deg) translate(100vh, -100%);
+  -ms-transform-origin: top right;
+  -webkit-transform: rotate(90deg) translate(100vh, -100%);
+  -webkit-transform-origin: top right;
+  background-color: orange;
+  cursor: pointer;
+  padding: 0.25rem;
+  position: absolute;
+  right: 0;
+  text-align: center;
+  top: 0;
+  transform: rotate(90deg) translate(100vh, -100%);
+  transform-origin: top right;
+  width: 100vh;
+}
+._3Pcd6 {
+  -ms-transform: translate(-100%);
+  -webkit-transform: translate(-100%);
+  transform: translate(-100%);
+}

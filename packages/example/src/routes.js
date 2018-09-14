@@ -6,11 +6,12 @@ import { hot } from 'react-hot-loader';
 
 import store from './store';
 
-// import Container from './components/Container';
 import Loader from './Loader';
+
 const Loading = <div>Loading...</div>;
 
 const Intro = Loader(() => import(/* webpackChunkName: "intro" */ './components/pages/Intro'), Loading);
+
 const Container = Loader(() => import(/* webpackChunkName: "container" */ './components/Container'), Loading);
 
 const SliderForm = Loader(() => import(/* webpackChunkName: "sliderForm" */ './components/pages/SliderForm'), Loading);
@@ -29,17 +30,22 @@ const DynamicField = Loader(
   () => import(/* webpackChunkName: "dynamic-field" */ './components/pages/DynamicField'),
   Loading,
 );
+
 const ExtraFields = Loader(
   () => import(/* webpackChunkName: "extra-field" */ './components/pages/ExtraFields'),
   Loading,
 );
+
 const RegularForm = Loader(
   () => import(/* webpackChunkName: "regular-form" */ './components/pages/RegularForm'),
   Loading,
 );
 const Styling = Loader(() => import(/* webpackChunkName: "styling" */ './components/pages/Styling'), Loading);
+
 const AsFieldHoc = Loader(() => import(/* webpackChunkName: "asfield-hoc" */ './components/pages/asFieldHOC'), Loading);
+
 const Theme = Loader(() => import(/* webpackChunkName: "theme" */ './components/pages/Theme'), Loading);
+
 const DownshiftExample = Loader(
   () => import(/* webpackChunkName: "downshift-example" */ './components/pages/Downshift'),
   Loading,
