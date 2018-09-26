@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.3
+
+- [field] fixed bug where `validateOnChange` was not working on checkboxes or radio buttons
+
 ## 0.3.2
 
 - [all] update dependencies
