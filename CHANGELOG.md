@@ -3,6 +3,8 @@
 ## 0.3.3
 
 - [field] fixed bug where `validateOnChange` was not working on checkboxes or radio buttons
+- [slider] actually use `autoFocus` props
+- [helpers] export `withFormErrors`
 
 ## 0.3.2
 

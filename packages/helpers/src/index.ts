@@ -9,6 +9,7 @@ import {
   withForm,
   withSlide,
   withFormSlideField,
+  withFormErrors,
 } from './contexts';
 import required, { createRequired } from './required';
 import createFormatter from './createFormatter';
@@ -240,6 +241,7 @@ export {
   SlideContext,
   withAsField,
   withForm,
+  withFormErrors,
   withSlide,
   withFormSlideField,
 };

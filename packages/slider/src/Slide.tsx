@@ -113,9 +113,12 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
    * Called to autofocus on the first field in a slide if one exists
    */
   maybeAutoFocus = () => {
+    const { autoFocus } = this.props;
+
     const name = Object.keys(this.fields)[0];
     const field = this.fields[name];
-    if (field) {
+
+    if (autoFocus && field) {
       field.focus();
     }
   };
