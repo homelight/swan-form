@@ -335,6 +335,10 @@ const asField = <P extends AsFieldProps>(
         this.setState({ value: checked });
         // Call any user supplied callbacks
         execIfFunc(onChange, event);
+
+        if (validateOnChange) {
+          this.validate(checked, true);
+        }
         return;
       }
 
