@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.4
+
+- [helpers] expand default `required` validation to include booleans
+
 ## 0.3.3
 
 - [field] fixed bug where `validateOnChange` was not working on checkboxes or radio buttons
