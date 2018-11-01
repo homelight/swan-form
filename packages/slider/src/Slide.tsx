@@ -76,7 +76,7 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
     className: PropTypes.string,
     didEnter: PropTypes.func,
     didEnterAsPrev: PropTypes.func,
-    didEntereAsNext: PropTypes.func,
+    didEnterAsNext: PropTypes.func,
     render: PropTypes.func,
     shouldShowIf: PropTypes.func,
     style: PropTypes.object,
