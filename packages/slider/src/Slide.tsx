@@ -29,9 +29,9 @@ export interface SlideProps extends InjectedProps {
   className?: string;
   children?: React.ReactNode;
   autoFocus?: boolean;
-  didEnter?: boolean;
-  didEnterAsPrev?: boolean;
-  didEnterAsNext?: boolean;
+  didEnter?(props: SlideProps): void;
+  didEnterAsPrev?(props: SlideProps): void;
+  didEnterAsNext?(props: SlideProps): void;
   beforeExit?(props: SlideProps): Promise<boolean>;
   beforeExitToPrev?(props: SlideProps): Promise<boolean>;
   beforeExitToNext?(props: SlideProps): Promise<boolean>;
@@ -74,9 +74,9 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
     beforeExitToNext: PropTypes.func,
     beforeExitToPrev: PropTypes.func,
     className: PropTypes.string,
-    didEnter: PropTypes.bool,
-    didEnterAsPrev: PropTypes.bool,
-    didEntereAsNext: PropTypes.bool,
+    didEnter: PropTypes.func,
+    didEnterAsPrev: PropTypes.func,
+    didEnterAsNext: PropTypes.func,
     render: PropTypes.func,
     shouldShowIf: PropTypes.func,
     style: PropTypes.object,
