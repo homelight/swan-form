@@ -4,13 +4,11 @@ import { Form } from '@swan-form/form';
 import { classes, execIfFunc } from '@swan-form/helpers';
 import { SlideProps } from './Slide';
 
-export interface SliderProps {
+export interface SliderProps extends React.HTMLAttributes<HTMLDivElement> {
   onSubmit(values: { [key: string]: any } | Promise<{ [key: string]: any }>): Promise<{ [key: string]: any }>;
   afterSubmit?(values: { [key: string]: any } | Promise<{ [key: string]: any }>): Promise<{ [key: string]: any }>;
   beforeSubmit?(values: { [key: string]: any } | Promise<{ [key: string]: any }>): Promise<{ [key: string]: any }>;
   autoComplete?: boolean;
-  children?: React.ReactNode;
-  className?: string;
   common?: { [key: string]: any };
   current?: number;
   defaultValues?: { [key: string]: any };
@@ -273,6 +271,7 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
       beforeSubmit,
       autoComplete,
       defaultValues,
+      ...props
     } = this.props;
 
     // Get the current slide that we're on
@@ -290,7 +289,7 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     const nextFn = isAtEnd ? this.handleEnd : this.next;
 
     return (
-      <div className={classes(['sf--slider', className])}>
+      <div {...props} className={classes(['sf--slider', className])}>
         <button type="button" className={leftClasses} disabled={current === 0} onClick={this.prev}>
           {PrevButton}
         </button>

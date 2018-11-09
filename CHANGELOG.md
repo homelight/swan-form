@@ -1,9 +1,14 @@
 # Changelog
 
+## 0.3.5
+
+- [all] upgrade deps
+- [slider] extend `React.HTMLAttributes<HTMLDivElement>` in types and spread all other props into the slider
+
 ## 0.3.4
 
 - [helpers] expand default `required` validation to include booleans
-- [slider] change `didEnter`, `didEnterAsPrev`, and `didEnterAsNext` prop types from booleans to functions 
+- [slider] change `didEnter`, `didEnterAsPrev`, and `didEnterAsNext` prop types from booleans to functions
 - [slider] fix typo in propType `didEntereAsNext`
 
 ## 0.3.3

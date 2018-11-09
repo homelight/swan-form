@@ -40,7 +40,7 @@ export interface AsFieldProps {
   multiple?: boolean;
   validateOnChange?: boolean;
   validateOnBlur?: boolean;
-  validateDebounceTimeout?: boolean;
+  validateDebounceTimeout?: number;
   register?: boolean;
   format?(value: any, cursor: number | null): [any, number | null];
   unformat?(value: any): any;
@@ -210,13 +210,15 @@ const asField = <P extends AsFieldProps>(
       // Actually focus on the field
       this.innerRef.focus();
       // Safari will freak out if we try to access selectionStart on an input` with many different types.
-      if (canAccessSelectionStart(type!)) {
+      // @ts-ignore
+      if (canAccessSelectionStart(type)) {
         moveCursor(this.innerRef);
       }
     }
 
     componentDidUpdate(_: any, prevState: AsFieldState) {
-      if (!this.innerRef || !canAccessSelectionStart(this.props.type!)) {
+      // @ts-ignore
+      if (!this.innerRef || !canAccessSelectionStart(this.props.type)) {
         return;
       }
 
@@ -310,7 +312,8 @@ const asField = <P extends AsFieldProps>(
       // We need to handle onKeyDown for slides to prevent them from submitting. Instead,
       // we just advance / retreat to the next field / slide.
       if (event.key === 'Enter') {
-        if (!['textarea', 'button', 'submit', 'reset'].includes(type!)) {
+        // @ts-ignore
+        if (!['textarea', 'button', 'submit', 'reset'].includes(type)) {
           event.preventDefault();
         }
         execIfFunc(event.shiftKey ? retreat : advance, event);
@@ -363,7 +366,8 @@ const asField = <P extends AsFieldProps>(
 
       // Grab the cursor position from the field ref
       const cursor =
-        this.innerRef && canAccessSelectionStart(type!) && 'selectionStart' in this.innerRef
+        // @ts-ignore
+        this.innerRef && canAccessSelectionStart(type) && 'selectionStart' in this.innerRef
           ? this.innerRef.selectionStart
           : null;
 

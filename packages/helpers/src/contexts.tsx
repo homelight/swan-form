@@ -14,7 +14,9 @@ const AsFieldContext = React.createContext<IAsFieldContext>({
   // @ts-ignore
   unregisterFromField: name => {},
 });
+// @ts-ignore
 AsFieldContext.Consumer.displayName = 'AsFieldConsumer';
+// @ts-ignore
 AsFieldContext.Provider.displayName = 'AsFieldProvider';
 
 export function withAsField<P extends IAsFieldContext>(Component: React.ComponentType<P>) {
@@ -49,7 +51,9 @@ const FormContext = React.createContext<IFormContext>({
   formErrors: [],
 });
 
+// @ts-ignore
 FormContext.Consumer.displayName = 'FormConsumer';
+// @ts-ignore
 FormContext.Provider.displayName = 'FormProvider';
 
 export function withFormErrors<P extends { formErrors: React.ReactNode[] }>(Component: React.ComponentType<P>) {
@@ -102,7 +106,9 @@ const SlideContext = React.createContext<ISlideContext>({
   unregisterFromSlide: (name: string) => {},
 });
 
+// @ts-ignore
 SlideContext.Consumer.displayName = 'SlideConsumer';
+// @ts-ignore
 SlideContext.Provider.displayName = 'SlideProvider';
 
 export function withSlide<P extends ISlideContext>(Component: React.ComponentType<P>) {
