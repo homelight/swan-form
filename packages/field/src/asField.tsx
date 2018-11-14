@@ -87,7 +87,7 @@ const emptyArray: any[] = [];
 /**
  * Determines initial value for a field based on a few different props
  */
-export const getInitialValue = <P extends AsFieldProps>(props: P & ContextProps, defaultFieldValue = null) => {
+export const getInitialValue = <P extends AsFieldProps>(props: P & ContextProps, defaultFieldValue?: any) => {
   const { defaultValue, value, defaultChecked, checked, type, defaultFormValues = {} } = props;
   const { [props.name]: initialValue } = defaultFormValues;
 
@@ -306,7 +306,7 @@ const asField = <P extends AsFieldProps>(
 
       // We need to persist the event if there is a callback handler for onKeyDown
       if (isFunction(onKeyDown)) {
-        event.persist();
+        event && isFunction(event.persist) && event.persist();
       }
 
       // We need to handle onKeyDown for slides to prevent them from submitting. Instead,
@@ -320,16 +320,14 @@ const asField = <P extends AsFieldProps>(
       }
 
       // We want to call the event handler only after the slide handling has happened
-      if (isFunction(onKeyDown)) {
-        onKeyDown(event);
-      }
+      execIfFunc(onKeyDown, event);
     };
 
     /**
      * Generic change event for inner field
      */
     handleOnChange = (event: React.ChangeEvent<any>) => {
-      event.persist();
+      event && isFunction(event.persist) && event.persist();
       const { checked, options, value } = event.target;
       const { validateOnChange, validateDebounceTimeout, type, onChange } = this.props;
 
@@ -392,15 +390,13 @@ const asField = <P extends AsFieldProps>(
      */
     handleOnBlur = (event: React.FocusEvent<any>) => {
       const { onBlur, validateOnBlur } = this.props;
-      event.persist();
+      event && isFunction(event.persist) && event.persist();
 
       if (validateOnBlur) {
         this.validate(event.target.value, true);
       }
 
-      if (isFunction(onBlur)) {
-        onBlur(event);
-      }
+      execIfFunc(onBlur, event);
     };
 
     /**
@@ -466,7 +462,7 @@ const asField = <P extends AsFieldProps>(
     dynamicHandlers: { [key: string]: Function };
 
     render() {
-      const props = filterKeysFromObj(removeProps, this.props) as P & InjectedProps;
+      const props = filterKeysFromObj(this.props, removeProps) as P & InjectedProps;
       const { autoComplete, formAutoComplete } = this.props;
       const { value } = this.state;
 
@@ -481,7 +477,7 @@ const asField = <P extends AsFieldProps>(
             {...props}
             {...this.getMaybeProps()}
             {...this.dynamicHandlers}
-            autoComplete={autoCompleteValue}
+            {...(autoComplete ? { autoComplete: autoCompleteValue } : {})}
             errors={this.state.errors}
             onChange={this.handleOnChange}
             onKeyDown={this.handleOnKeyDown}
