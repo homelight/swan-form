@@ -44,7 +44,8 @@ export type Subtract<T, K> = Omit<T, keyof K>;
  * Executes a the first arg as a function if it is a function with supplied arguments
  * Returns the first arg if not a function
  */
-export const execIfFunc = (fn: any, ...args: any[]) => (isFunction(fn) ? (args.length > 0 ? fn(...args) : fn()) : fn);
+export const execIfFunc = <T = any>(fn: any, ...args: any[]): T =>
+  isFunction(fn) ? (args.length > 0 ? fn(...args) : fn()) : fn;
 /* eslint-enable no-nested-ternary */
 
 /**
@@ -89,7 +90,7 @@ export const isDefined = (arg: any) => typeof arg !== 'undefined';
 /**
  * Checks if the arg is null
  */
-export const isNull = (arg: any) => arg === null;
+export const isNull = (arg: any): arg is null => arg === null;
 
 /**
  * Checks if the argument is `thennable`
@@ -116,7 +117,7 @@ export const findValue = (...args: any[]) => {
 /**
  * Returns an object sans keys
  */
-export const filterKeysFromObj = (keys: string[], obj: { [key: string]: any }) =>
+export const filterKeysFromObj = (obj: { [key: string]: any }, keys: string[]) =>
   Object.keys(obj)
     .filter(key => !keys.includes(key))
     .reduce((newObj, key) => ({ ...newObj, [key]: obj[key] }), {});
@@ -129,7 +130,7 @@ export const noop = () => {};
 /**
  * Returns the argument
  */
-export const identity = (x: any): any => x;
+export const identity = <T>(x: T): T => x;
 
 /**
  * An easier way to call Object.prototype.hasOwnProperty.call
@@ -172,7 +173,7 @@ export const gatherErrors = (
 /**
  * Ensures that a `val` is an array filtered of falsy values
  */
-export const alwaysFilteredArray = <P extends any>(val: any | any[]): P[] =>
+export const alwaysFilteredArray = <P extends any>(val: P | P[]): P[] =>
   (Array.isArray(val) ? val : [val]).filter(Boolean);
 
 /**
