@@ -8,6 +8,7 @@
     "build:docs": "mv docs/404.html . && rm -fR docs/* && cd packages/example && yarn run build && cp -fR ./dist/ ../../docs && mv ../../404.html ../../docs/",
     "postinstall": "yarn run build",
     "precommit": "lint-staged",
+    "publish": "lerna run publish",
     "prepublish": "yarn build",
     "dev": "nps dev.all",
     "format": "prettier --write '**/*.{json,js,css,md,ts,tsx}'",
