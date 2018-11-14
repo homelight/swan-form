@@ -7,6 +7,7 @@ import {
   isDefined,
   maybePromisify,
   alwaysFilteredArray,
+  filterKeysFromObj,
 } from '@swan-form/helpers';
 import { isFunction, memoize } from 'lodash';
 import * as React from 'react';
@@ -206,7 +207,7 @@ export class Form extends React.PureComponent<FormProps, FormState> {
   /**
    * Called at the start of the submit event
    */
-  handleBeforeSubmit = (values: object | Promise<{ [key: string]: any }>) => {
+  handleBeforeSubmit = (values: object | Promise<{ [key: string]: any }>): Promise<{ [key: string]: any }> => {
     const { beforeSubmit } = this.props;
 
     if (this.mounted) {
@@ -219,7 +220,7 @@ export class Form extends React.PureComponent<FormProps, FormState> {
   /**
    * Called in the middle of the submit event
    */
-  handleOnSubmit = (values: object | Promise<{ [key: string]: any }>) => {
+  handleOnSubmit = (values: object | Promise<{ [key: string]: any }>): Promise<{ [key: string]: any }> => {
     const { onSubmit } = this.props;
     return isFunction(onSubmit) ? maybePromisify(onSubmit(values)) : Promise.resolve(values);
   };
@@ -259,16 +260,30 @@ export class Form extends React.PureComponent<FormProps, FormState> {
   validate = () => gatherErrors(this.fields, true).length === 0;
 
   render() {
-    const { autoComplete, className, children, name, style = emptyObject } = this.props;
+    const removeProps = [
+      'afterSubmit',
+      'beforeSubmit',
+      'children',
+      'className',
+      'defaultFormValues',
+      'name',
+      'onSubmit',
+      'persist',
+      'defaultValues',
+      'formAutoComplete',
+    ];
+    const { autoComplete, className, children, name, ...rest } = this.props;
+
+    const props = filterKeysFromObj(rest, removeProps);
     return (
       <form
         {...getSpreadProps(this.props.noValidate!)}
+        {...props}
         name={name}
         autoComplete={autoComplete ? 'on' : 'off'}
         onReset={this.onReset}
         onSubmit={this.onSubmit}
         className={classes('sf--form', className)}
-        style={style}
       >
         <FormContext.Provider value={this.getFormInterface(this.state)}>{children}</FormContext.Provider>
       </form>

@@ -50,7 +50,6 @@ class SliderForm extends Component {
               />
               <p>This is just another random question.</p>
             </div>
-            )}
           </Slide>
           <Slide
             beforeExitToNext={({ getFormValues }) =>

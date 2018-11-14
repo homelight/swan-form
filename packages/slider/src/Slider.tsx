@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { clamp, isFunction } from 'lodash';
 import { Form } from '@swan-form/form';
-import { classes, execIfFunc } from '@swan-form/helpers';
+import { classes, execIfFunc, filterKeysFromObj } from '@swan-form/helpers';
 import { SlideProps } from './Slide';
 
 export interface SliderProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -271,7 +271,7 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
       beforeSubmit,
       autoComplete,
       defaultValues,
-      ...props
+      ...rest
     } = this.props;
 
     // Get the current slide that we're on
@@ -287,6 +287,9 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
 
     const isAtEnd = children.length - 1 === current;
     const nextFn = isAtEnd ? this.handleEnd : this.next;
+
+    const removeProps = ['defaultFormValues', 'formAutoComplete', 'commonProps', 'defaultValues'];
+    const props = filterKeysFromObj(rest, removeProps);
 
     return (
       <div {...props} className={classes(['sf--slider', className])}>

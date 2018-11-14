@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.6
+
+- [slider] clip unnecessary props from HOCs
+- [slider] loosen validate type's return value to be `React.ReactNode | React.ReactNode[]`
+- [field] duck type events to make it easier to work with things like Downshift
+- [field] don't always put in autocomplete prop on field
+- [helpers] swap order of args in `filterKeysFromObj`
+
 ## 0.3.5
 
 - [all] upgrade deps

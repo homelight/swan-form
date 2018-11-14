@@ -37,7 +37,7 @@ export interface SlideProps extends InjectedProps {
   beforeExitToNext?(props: SlideProps): Promise<boolean>;
   render?(slideProps: any): React.ReactNode;
   style?: React.CSSProperties;
-  validate?(values: { [key: string]: any }): React.ReactNode[];
+  validate?(values: { [key: string]: any }): React.ReactNode | React.ReactNode[];
 }
 
 export interface SlideState {
@@ -118,7 +118,7 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
     const name = Object.keys(this.fields)[0];
     const field = this.fields[name];
 
-    if (autoFocus && field) {
+    if (autoFocus && field && isFunction(field.focus)) {
       field.focus();
     }
   };
@@ -177,7 +177,7 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
       const fieldIndex = fields.indexOf(field);
       const prevField = fields[fieldIndex - 1];
       if (prevField) {
-        this.fields[prevField].focus();
+        execIfFunc(this.fields[prevField].focus);
       } else {
         execIfFunc(this.props.prevSlide);
       }
@@ -197,7 +197,7 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
    * Validates a slide and conditionally updates the errors for the slide
    */
   validateSlide = (updateErrors: boolean = false) => {
-    const initial = execIfFunc(this.props.validate, gatherValues(this.fields));
+    const initial = execIfFunc<React.ReactNode | React.ReactNode[]>(this.props.validate, gatherValues(this.fields));
     const errors = alwaysFilteredArray<React.ReactNode>(initial);
 
     if (this.mounted && updateErrors) {
@@ -213,9 +213,7 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
 
     return (
       <div className={classes('sf--slide', errors.length && 'sf--slide-has-errors', className)} style={style}>
-        <SlideContext.Provider value={this.getSlideInterface()}>
-          {isFunction(render) ? render(this.props) : render}
-        </SlideContext.Provider>
+        <SlideContext.Provider value={this.getSlideInterface()}>{execIfFunc(render, this.props)}</SlideContext.Provider>
         <div className="sf--slide-errors">
           {errors.map(error => (
             <div className="sf--slide-error" key={toKey(error)}>
