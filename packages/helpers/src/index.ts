@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { isFunction, isObject, isPlainObject } from 'lodash';
 
-import {
+export {
   AsFieldContext,
   FormContext,
   SlideContext,
@@ -11,9 +11,9 @@ import {
   withFormSlideField,
   withFormErrors,
 } from './contexts';
-import required, { createRequired } from './required';
-import createFormatter from './createFormatter';
-import keyCodes from './keyCodes';
+export { default as required, createRequired } from './required';
+export { default as createFormatter } from './createFormatter';
+export { default as keyCodes } from './keyCodes';
 
 /**
  * Generic Types
@@ -231,18 +231,3 @@ export function moveCursor(el: any, position = -1) {
   }
   /* eslint-enable no-param-reassign */
 }
-
-export {
-  AsFieldContext,
-  createFormatter,
-  createRequired,
-  FormContext,
-  keyCodes,
-  required,
-  SlideContext,
-  withAsField,
-  withForm,
-  withFormErrors,
-  withSlide,
-  withFormSlideField,
-};

@@ -32,9 +32,9 @@ export interface SlideProps extends InjectedProps {
   didEnter?(props: SlideProps): void;
   didEnterAsPrev?(props: SlideProps): void;
   didEnterAsNext?(props: SlideProps): void;
-  beforeExit?(props: SlideProps): Promise<boolean>;
-  beforeExitToPrev?(props: SlideProps): Promise<boolean>;
-  beforeExitToNext?(props: SlideProps): Promise<boolean>;
+  beforeExit?(props: SlideProps): Promise<any>;
+  beforeExitToPrev?(props: SlideProps): Promise<any>;
+  beforeExitToNext?(props: SlideProps): Promise<any>;
   render?(slideProps: any): React.ReactNode;
   style?: React.CSSProperties;
   validate?(values: { [key: string]: any }): React.ReactNode | React.ReactNode[];

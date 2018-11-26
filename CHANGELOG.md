@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.7
+
+- [slider] relax promise types on slide hooks
+
 ## 0.3.6
 
 - [slider] clip unnecessary props from HOCs
