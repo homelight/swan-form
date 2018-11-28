@@ -19,7 +19,9 @@ class SliderForm extends Component {
     return (
       <div>
         <Slider beforeSubmit={beforeSubmit} onSubmit={onSubmit}>
-          <Slide>
+          <Slide
+            validate={values => Promise.resolve(values['first-question'] === 'test' ? false : 'Make the value `test`')}
+          >
             <div>
               <h1>A first question</h1>
               <Field

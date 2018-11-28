@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.8
+
+- [slider] allow for slide validations to be promises
+
 ## 0.3.7
 
 - [slider] relax promise types on slide hooks

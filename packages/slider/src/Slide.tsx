@@ -187,17 +187,21 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
   /**
    * Checks if a slide is valid
    */
-  isSlideValid = () => {
+  isSlideValid = async () => {
     const fieldErrors = gatherErrors(this.fields, true);
-    const slideErrors = this.validateSlide(true);
+    const slideErrors = await this.validateSlide(true);
     return slideErrors.length === 0 && fieldErrors.length === 0;
   };
 
   /**
    * Validates a slide and conditionally updates the errors for the slide
    */
-  validateSlide = (updateErrors: boolean = false) => {
-    const initial = execIfFunc<React.ReactNode | React.ReactNode[]>(this.props.validate, gatherValues(this.fields));
+  validateSlide = async (updateErrors: boolean = false) => {
+    const initial = await execIfFunc<React.ReactNode | React.ReactNode[]>(
+      this.props.validate,
+      gatherValues(this.fields),
+    );
+
     const errors = alwaysFilteredArray<React.ReactNode>(initial);
 
     if (this.mounted && updateErrors) {

@@ -122,9 +122,12 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
   /**
    * Runs validation on the current slide
    */
-  isCurrentSlideValid = () => {
+  isCurrentSlideValid = async () => {
     const { currentSlide } = this;
-    return currentSlide && isFunction(currentSlide.isSlideValid) ? currentSlide.isSlideValid() : true;
+    if (currentSlide && isFunction(currentSlide.isSlideValid)) {
+      return await currentSlide.isSlideValid();
+    }
+    return true;
   };
 
   /**
@@ -149,9 +152,9 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
   /**
    * Public function to advance the slide
    */
-  next = () => {
+  next = async () => {
     // If the current slide is not valid, do not proceed
-    if (!this.isCurrentSlideValid()) {
+    if (!(await this.isCurrentSlideValid())) {
       return;
     }
 
