@@ -26,6 +26,21 @@ export interface SliderState {
 const alwaysTrue = () => true;
 
 export class Slider extends React.PureComponent<SliderProps, SliderState> {
+  static displayName = 'Slider';
+
+  static defaultProps = {
+    autoComplete: 'off',
+    afterSubmit: (values: object | Promise<object>) => Promise.resolve(values),
+    beforeSubmit: (values: object | Promise<object>) => Promise.resolve(values),
+    commonProps: {},
+    current: 0,
+    defaultValues: {},
+    FinishButton: '→',
+    formName: 'slider-form',
+    NextButton: '→',
+    PrevButton: '←',
+  };
+
   constructor(props: SliderProps) {
     super(props);
     // this.form = {};
@@ -50,21 +65,6 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     this.mounted = false;
   }
 
-  static defaultProps = {
-    autoComplete: 'off',
-    afterSubmit: (values: object | Promise<object>) => Promise.resolve(values),
-    beforeSubmit: (values: object | Promise<object>) => Promise.resolve(values),
-    commonProps: {},
-    current: 0,
-    defaultValues: {},
-    FinishButton: '→',
-    formName: 'slider-form',
-    NextButton: '→',
-    PrevButton: '←',
-  };
-
-  static displayName = 'Slider';
-
   injectSlideProps: {
     common: { [key: string]: any };
     getFormValues(): { [key: string]: any };
@@ -75,8 +75,10 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
 
   // This is actually an instantiated slide
   currentSlide: any;
+
   // This is a ref to the form
   form: any;
+
   mounted: boolean;
 
   componentDidMount() {
@@ -87,13 +89,15 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     // Run any didEnter* slide hooks here
     const { didEnter, didEnterAsPrev, didEnterAsNext } = this.currentSlide.props;
     if (prevState.current > this.state.current && didEnterAsPrev) {
-      return execIfFunc(didEnterAsPrev, this.injectSlideProps);
+      execIfFunc(didEnterAsPrev, this.injectSlideProps);
+      return;
     }
     if (prevState.current < this.state.current && didEnterAsNext) {
-      return execIfFunc(didEnterAsNext, this.injectSlideProps);
+      execIfFunc(didEnterAsNext, this.injectSlideProps);
+      return;
     }
     if (didEnter) {
-      return execIfFunc(didEnter, this.injectSlideProps);
+      execIfFunc(didEnter, this.injectSlideProps);
     }
   }
 
@@ -158,7 +162,8 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     if (nextSlideIndex >= this.getChildren().length) {
       // Call the submit handler on the form
       if (this.form && isFunction(this.form.handleOnSubmit)) {
-        return execIfFunc(this.form.doSubmit);
+        execIfFunc(this.form.doSubmit);
+        return;
       }
       return;
     }
@@ -167,19 +172,17 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     // Slide hooks should be promises, and so we call the moveTo in the resolution
     const { beforeExit, beforeExitToNext } = this.currentSlide.props;
     if (isFunction(beforeExitToNext)) {
-      return beforeExitToNext(this.injectSlideProps).then(() => {
-        this.moveTo(nextSlideIndex);
-      });
+      beforeExitToNext(this.injectSlideProps).then(() => this.moveTo(nextSlideIndex));
+      return;
     }
 
     if (isFunction(beforeExit)) {
-      return beforeExit(this.injectSlideProps).then(() => {
-        this.moveTo(nextSlideIndex);
-      });
+      beforeExit(this.injectSlideProps).then(() => this.moveTo(nextSlideIndex));
+      return;
     }
 
     // Just move to the next slide
-    return this.moveTo(this.findNext());
+    this.moveTo(this.findNext());
   };
 
   /**
@@ -196,11 +199,13 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     // Call any beforeExit* slide hooks
     const { beforeExit, beforeExitToPrev } = this.currentSlide.props;
     if (isFunction(beforeExitToPrev)) {
-      return beforeExitToPrev(this.injectSlideProps).then(() => this.moveTo(prevSlideIndex));
+      beforeExitToPrev(this.injectSlideProps).then(() => this.moveTo(prevSlideIndex));
+      return;
     }
 
     if (isFunction(beforeExit)) {
-      return beforeExit(this.injectSlideProps).then(() => this.moveTo(prevSlideIndex));
+      beforeExit(this.injectSlideProps).then(() => this.moveTo(prevSlideIndex));
+      return;
     }
 
     // Just move to the previous slide
