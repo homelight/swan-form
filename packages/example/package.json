@@ -1,6 +1,6 @@
 {
   "name": "@swan-form/example",
-  "version": "0.3.8",
+  "version": "0.3.9",
   "description": "An Example for Swan Form",
   "main": "index.js",
   "license": "Apache-2.0",
@@ -15,7 +15,7 @@
     "@swan-form/field": "^0.3.7",
     "@swan-form/form": "^0.3.7",
     "@swan-form/helpers": "^0.3.7",
-    "@swan-form/slider": "^0.3.8",
+    "@swan-form/slider": "^0.3.9",
     "downshift": "^2.2.2",
     "foundation-sites": "^6.5.0-rc.3",
     "history": "^4.7.2",
