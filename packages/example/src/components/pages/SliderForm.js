@@ -2,11 +2,16 @@
 import React, { Component } from 'react';
 import { Field, Radios } from '@swan-form/field';
 import { Slide, Slider } from '@swan-form/slider';
-// import '@swan-form/slider/dist/Slider.css';
-// import '@swan-form/slider/dist/Slide.css';
 import { hot } from 'react-hot-loader';
 
-const required = value => (value !== null && value !== undefined && value.trim() !== '' ? false : 'Required');
+const isNull = value => value === null;
+const isDefined = value => typeof value !== 'undefined';
+
+/**
+ * Helper validation
+ */
+const required = value => (isDefined(value) && !isNull(value) && value.trim() ? false : 'Required');
+
 const onSubmit = values => {
   alert(JSON.stringify(values));
   return values;
@@ -15,10 +20,21 @@ const beforeSubmit = values =>
   Promise.resolve(Object.keys(values).reduce((acc, key) => ({ ...acc, [key]: values[key].toUpperCase() }), {}));
 
 class SliderForm extends Component {
+  scrollToTop = () => {
+    if (this.wrapper) {
+      // will probably only work fully in Firefox and Chrome
+      this.wrapper.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+    }
+  };
+
+  setRef = el => {
+    this.wrapper = el;
+  };
+
   render() {
     return (
-      <div>
-        <Slider beforeSubmit={beforeSubmit} onSubmit={onSubmit}>
+      <div ref={this.setRef}>
+        <Slider afterSlideChange={this.scrollToTop} beforeSubmit={beforeSubmit} onSubmit={onSubmit}>
           <Slide
             validate={values => Promise.resolve(values['first-question'] === 'test' ? false : 'Make the value `test`')}
           >

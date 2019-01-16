@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.9
+
+- [slider] add `afterSlideChange` hook on the slide component
+
 ## 0.3.8
 
 - [slider] allow for slide validations to be promises
