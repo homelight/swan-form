@@ -8,6 +8,7 @@ export interface SliderProps extends React.HTMLAttributes<HTMLDivElement> {
   onSubmit(values: { [key: string]: any } | Promise<{ [key: string]: any }>): Promise<{ [key: string]: any }>;
   afterSubmit?(values: { [key: string]: any } | Promise<{ [key: string]: any }>): Promise<{ [key: string]: any }>;
   beforeSubmit?(values: { [key: string]: any } | Promise<{ [key: string]: any }>): Promise<{ [key: string]: any }>;
+  afterSlideChange?(): void;
   autoComplete?: boolean;
   common?: { [key: string]: any };
   current?: number;
@@ -92,10 +93,12 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
       execIfFunc(didEnterAsPrev, this.injectSlideProps);
       return;
     }
+
     if (prevState.current < this.state.current && didEnterAsNext) {
       execIfFunc(didEnterAsNext, this.injectSlideProps);
       return;
     }
+
     if (didEnter) {
       execIfFunc(didEnter, this.injectSlideProps);
     }
@@ -144,8 +147,11 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
    * Sets the state for the index of the current slider
    */
   moveTo = (slide: number) => {
+    const { afterSlideChange } = this.props;
+
     if (this.mounted) {
       this.setState({ current: slide });
+      execIfFunc(afterSlideChange);
     }
   };
 
@@ -279,6 +285,7 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
       beforeSubmit,
       autoComplete,
       defaultValues,
+      afterSlideChange,
       ...rest
     } = this.props;
 
