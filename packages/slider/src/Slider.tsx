@@ -17,6 +17,10 @@ export interface SliderProps extends React.HTMLAttributes<HTMLDivElement> {
   formName?: string;
   NextButton?: React.ReactNode;
   PrevButton?: React.ReactNode;
+  /**
+   * This will set a ref on the slider container
+   */
+  setRef?: (el: HTMLDivElement) => void;
 }
 
 export interface SliderState {
@@ -285,7 +289,6 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
       beforeSubmit,
       autoComplete,
       defaultValues,
-      afterSlideChange,
       ...rest
     } = this.props;
 
@@ -303,8 +306,19 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     const isAtEnd = children.length - 1 === current;
     const nextFn = isAtEnd ? this.handleEnd : this.next;
 
-    const removeProps = ['defaultFormValues', 'formAutoComplete', 'commonProps', 'defaultValues'];
-    const props = filterKeysFromObj(rest, removeProps);
+    const removeProps = [
+      'afterSlideChange',
+      'defaultFormValues',
+      'formAutoComplete',
+      'commonProps',
+      'defaultValues',
+      'setRef',
+    ];
+
+    const props = {
+      ...filterKeysFromObj(rest, removeProps),
+      ...(typeof this.props.setRef === 'function' ? { ref: this.props.setRef } : {}),
+    };
 
     return (
       <div {...props} className={classes(['sf--slider', className])}>

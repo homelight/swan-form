@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.10
+
+- [slider] add `setRef` prop to forward ref to Slider's div container
+
 ## 0.3.9
 
 - [slider] add `afterSlideChange` hook on the slide component
