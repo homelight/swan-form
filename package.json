@@ -93,6 +93,9 @@
       "git add"
     ]
   },
+  "resolutions": {
+    "event-stream": "3.3.4"
+  },
   "prettier": {
     "printWidth": 120,
     "singleQuote": true,
