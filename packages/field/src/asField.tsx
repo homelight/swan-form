@@ -427,8 +427,9 @@ const asField = <P extends AsFieldProps>(
     validate = (value: any, updateErrors: boolean = false): React.ReactNode[] => {
       const { validate } = this.props;
 
-      const initial = execOrMapFn(validate, value) as React.ReactNode | React.ReactNode[];
-      const errors = alwaysFilteredArray<React.ReactNode>(initial);
+      // Validate the unformated
+      const errors = alwaysFilteredArray<React.ReactNode>(execOrMapFn(validate, this.unformat(value)));
+
       if (updateErrors) {
         this.setState({ errors });
       }

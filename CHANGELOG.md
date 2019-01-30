@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.11
+
+- [field] fix validations so that we always call `unformat` on the value before validating
+
 ## 0.3.10
 
 - [slider] add `setRef` prop to forward ref to Slider's div container
