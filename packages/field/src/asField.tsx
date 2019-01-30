@@ -375,7 +375,10 @@ const asField = <P extends AsFieldProps>(
       // If we are to validate onChange, then we'll debounce the call
       if (validateOnChange) {
         window.clearTimeout(this.validateDebounceTimer);
-        this.validateDebounceTimer = setTimeout(() => this.validate(newValue, true), validateDebounceTimeout);
+        this.validateDebounceTimer = setTimeout(
+          () => this.validate(this.unformat(newValue), true),
+          validateDebounceTimeout,
+        );
       }
 
       // Update internal state
@@ -393,7 +396,7 @@ const asField = <P extends AsFieldProps>(
       event && isFunction(event.persist) && event.persist();
 
       if (validateOnBlur) {
-        this.validate(event.target.value, true);
+        this.validate(this.unformat(event.target.value), true);
       }
 
       execIfFunc(onBlur, event);
@@ -427,7 +430,7 @@ const asField = <P extends AsFieldProps>(
     validate = (value: any, updateErrors: boolean = false): React.ReactNode[] => {
       const { validate } = this.props;
 
-      const initial = execOrMapFn(validate, value) as React.ReactNode | React.ReactNode[];
+      const initial = execOrMapFn(validate, this.unformat(value)) as React.ReactNode | React.ReactNode[];
       const errors = alwaysFilteredArray<React.ReactNode>(initial);
       if (updateErrors) {
         this.setState({ errors });
