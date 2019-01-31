@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.12
+
+- [form] stop spreading `validate` into the form dom node
+
 ## 0.3.11
 
 - [field] fix validations so that we always call `unformat` on the value before validating

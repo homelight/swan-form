@@ -266,11 +266,12 @@ export class Form extends React.PureComponent<FormProps, FormState> {
       'children',
       'className',
       'defaultFormValues',
+      'defaultValues',
+      'formAutoComplete',
       'name',
       'onSubmit',
       'persist',
-      'defaultValues',
-      'formAutoComplete',
+      'validate',
     ];
     const { autoComplete, className, children, name, ...rest } = this.props;
 
