@@ -1,6 +1,6 @@
 {
   "name": "@swan-form/slider",
-  "version": "0.3.10",
+  "version": "0.3.12",
   "description": "Decompose forms into sliders",
   "license": "Apache-2.0",
   "files": [
@@ -28,7 +28,7 @@
     "type": "tsc -p ./tsconfig.json"
   },
   "dependencies": {
-    "@swan-form/form": "^0.3.7",
+    "@swan-form/form": "^0.3.12",
     "@swan-form/helpers": "^0.3.7",
     "invariant": "^2.2.4",
     "lodash": "^4.17.11",
