@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.13
+
+- [form] fix form validations not firing
+- [all] rebuild documentation
+
 ## 0.3.12
 
 - [form] stop spreading `validate` into the form dom node
