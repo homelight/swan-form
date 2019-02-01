@@ -240,13 +240,26 @@ export class Form extends React.PureComponent<FormProps, FormState> {
    * Checks validation and then runs the submit lifecycle
    */
   doSubmit = (): Promise<{ [key: string]: any } | string | Error> | void => {
+    const { validate } = this.props;
+
+    // Validate each of the fields
     if (!this.validate()) {
       return this.handleErrors(['Form is not valid']);
     }
 
-    this.setState({ isSubmitting: true, formErrors: [] });
-
+    // Grab all the values
     const values = this.getValues();
+
+    // If the
+    if (isFunction(validate)) {
+      const errors = alwaysFilteredArray<React.ReactNode>(validate(values));
+
+      if (errors.length) {
+        return this.handleErrors(errors);
+      }
+    }
+
+    this.setState({ isSubmitting: true, formErrors: [] });
 
     return this.handleBeforeSubmit(values)
       .then(this.handleOnSubmit)
