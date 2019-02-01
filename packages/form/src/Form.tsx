@@ -3,6 +3,7 @@ import {
   classes,
   execIfFunc,
   FormContext,
+  IFormContext,
   gatherErrors,
   isDefined,
   maybePromisify,
@@ -34,6 +35,7 @@ export interface FormProps {
   noValidate?: boolean;
   defaultValues?: { [key: string]: any };
   validate?(values: { [key: string]: any }): string | false | Promise<string | false>;
+  render?(props: IFormContext): React.ReactNode;
 }
 
 export interface FormState {
@@ -286,9 +288,10 @@ export class Form extends React.PureComponent<FormProps, FormState> {
       'persist',
       'validate',
     ];
-    const { autoComplete, className, children, name, ...rest } = this.props;
+    const { autoComplete, className, children, render = children, name, ...rest } = this.props;
 
     const props = filterKeysFromObj(rest, removeProps);
+
     return (
       <form
         {...getSpreadProps(this.props.noValidate!)}
@@ -299,7 +302,9 @@ export class Form extends React.PureComponent<FormProps, FormState> {
         onSubmit={this.onSubmit}
         className={classes('sf--form', className)}
       >
-        <FormContext.Provider value={this.getFormInterface(this.state)}>{children}</FormContext.Provider>
+        <FormContext.Provider value={this.getFormInterface(this.state)}>
+          {isFunction(children) ? children(this.getFormInterface(this.state)) : children}
+        </FormContext.Provider>
       </form>
     );
   }

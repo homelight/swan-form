@@ -1,10 +1,8 @@
 /* eslint-disable react/prefer-stateless-function */
 import React, { Component } from 'react';
 import { Field } from '@swan-form/field';
-import SyntaxHighlighter, { registerLanguage } from 'react-syntax-highlighter/prism-light';
-import jsx from 'react-syntax-highlighter/languages/prism/jsx';
-import css from 'react-syntax-highlighter/languages/prism/css';
-import prism from 'react-syntax-highlighter/styles/prism/prism';
+import { Prism } from 'react-syntax-highlighter';
+import { light } from 'react-syntax-highlighter/dist/styles/prism';
 import { hot } from 'react-hot-loader';
 
 import './Styling.css';
@@ -25,7 +23,7 @@ class Styling extends Component {
           The <code>Field</code> component creates HTML that is easily manipulable with CSS to make the fields pretty.
         </p>
         <p>For instance, using the following code snippet (with the input triggering the validation errors),</p>
-        <SyntaxHighlighter language="jsx" style={prism}>
+        <Prism language="jsx" style={light}>
           {`
 /* Validation functions */
 const minLenTen = value => (value.length > 9 ? false : 'Min len 10');
@@ -44,9 +42,9 @@ const tenAndAlpha = [minLenTen, alphaNumeric];
   autoFocus
 />
         `.trim()}
-        </SyntaxHighlighter>
+        </Prism>
         <p>will create the following HTML:</p>
-        <SyntaxHighlighter language="jsx" style={prism}>
+        <Prism language="jsx" style={light}>
           {`
 <label class="sf--field sf--field--required sf--field-has-errors">
   <span class="sf--field--label">A Field</span>
@@ -58,7 +56,7 @@ const tenAndAlpha = [minLenTen, alphaNumeric];
     <span class="flowform-field-error">Alpha Numeric</span>
   </span>
 </label>`.trim()}
-        </SyntaxHighlighter>
+        </Prism>
 
         <div>
           <Field

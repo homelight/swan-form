@@ -132,7 +132,7 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
   isCurrentSlideValid = async () => {
     const { currentSlide } = this;
     if (currentSlide && isFunction(currentSlide.isSlideValid)) {
-      return await currentSlide.isSlideValid();
+      return currentSlide.isSlideValid();
     }
     return true;
   };

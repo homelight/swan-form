@@ -72,7 +72,7 @@ class SliderForm extends Component {
           <Slide
             beforeExitToNext={({ getFormValues }) =>
               new Promise(res => {
-                console.log('In beforeExitToNext hook');
+                console.log('In beforeExitToNext hook'); // eslint-disable-line
                 alert(`You chose ${getFormValues().decisionTree}`);
                 res();
               })

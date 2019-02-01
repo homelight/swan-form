@@ -5,6 +5,7 @@ export {
   AsFieldContext,
   FormContext,
   SlideContext,
+  IFormContext,
   withAsField,
   withForm,
   withSlide,

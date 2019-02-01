@@ -60,7 +60,7 @@ const cssModules = {
     camelCase: true,
     localIdentName: '[hash:base64:5]',
     importLoaders: 2,
-    sourceMaps: true,
+    sourceMap: true,
   },
 };
 

@@ -2,12 +2,11 @@ import React, { Component } from 'react';
 import { Field } from '@swan-form/field';
 import { AsYouType } from 'libphonenumber-js';
 import { createFormatter } from '@swan-form/helpers';
-import SyntaxHighlighter, { registerLanguage } from 'react-syntax-highlighter/prism-light';
-import jsx from 'react-syntax-highlighter/languages/prism/jsx';
-import prism from 'react-syntax-highlighter/styles/prism/prism';
+import { Prism } from 'react-syntax-highlighter';
+import { atomDark as codeStyle } from 'react-syntax-highlighter/dist/styles/prism';
 import { hot } from 'react-hot-loader';
 
-registerLanguage('jsx', jsx);
+// registerLanguage('jsx', jsx);
 
 const stripNonNumeric = value => {
   let str = '';
@@ -59,9 +58,9 @@ class Formatters extends Component {
       <div>
         <h1>Using Formatters</h1>
         <p>Formatters can be supplied to fields, and they should be pure functions like:</p>
-        <SyntaxHighlighter language="javascript" style={prism}>
+        <Prism language="javascript" style={codeStyle}>
           {`const formatter = (value) => value.toUpperCase();`}
-        </SyntaxHighlighter>
+        </Prism>
         <p>E.g. the following field will type in all caps.</p>
         <p>
           <Field
@@ -101,7 +100,7 @@ class Formatters extends Component {
           </li>
         </ul>
         <p>The code is pretty simple:</p>
-        <SyntaxHighlighter language="javascript" style={prism}>
+        <Prism language="javascript" style={codeStyle}>
           {`
 import { AsYouType } from 'libphonenumber-js';
 
@@ -132,7 +131,7 @@ const stripNonNumeric = value => {
   unformatter={stripNonNumeric}
 />
           `.trim()}
-        </SyntaxHighlighter>
+        </Prism>
         <Field label="Formatted Currency: " format={moneyFormatter} type="text" name="formattedCurrency" />
       </div>
     );

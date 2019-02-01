@@ -24,7 +24,12 @@ export function withAsField<P extends IAsFieldContext>(Component: React.Componen
   Component.displayName = 'withAsField';
   return function AsFieldComponent(props: { [key: string]: any }) {
     return (
-      <AsFieldContext.Consumer>{asFieldProps => <Component {...props} {...asFieldProps} />}</AsFieldContext.Consumer>
+      <AsFieldContext.Consumer>
+        {asFieldProps => (
+          // @ts-ignore
+          <Component {...props} {...asFieldProps} />
+        )}
+      </AsFieldContext.Consumer>
     );
   };
 }
@@ -62,7 +67,10 @@ export function withFormErrors<P extends { formErrors: React.ReactNode[] }>(Comp
   return function FormErrorComponent(props: { [key: string]: any }) {
     return (
       <FormContext.Consumer>
-        {({ formErrors }) => <Component {...props} formErrors={formErrors} />}
+        {({ formErrors }) => (
+          // @ts-ignore
+          <Component {...props} formErrors={formErrors} />
+        )}
       </FormContext.Consumer>
     );
   };
@@ -82,6 +90,7 @@ export function withForm<
     return (
       <FormContext.Consumer>
         {({ registerWithForm, unregisterFromForm, formAutoComplete, defaultFormValues }) => (
+          // @ts-ignore
           <Component
             {...props}
             registerWithForm={registerWithForm}
@@ -116,6 +125,7 @@ export function withSlide<P extends ISlideContext>(Component: React.ComponentTyp
   Component.displayName = 'withSlide';
   return function SlideComponent(props: { [key: string]: any }) {
     return (
+      // @ts-ignore
       <SlideContext.Consumer>{slideInterface => <Component {...props} {...slideInterface} />}</SlideContext.Consumer>
     );
   };
@@ -133,7 +143,10 @@ export function withFormSlideField<P extends ISlideContext & IFormContext & IAsF
           <SlideContext.Consumer>
             {slideProps => (
               <AsFieldContext.Consumer>
-                {asFieldProps => <Component {...{ ...props, ...formProps, ...slideProps, ...asFieldProps }} />}
+                {asFieldProps => (
+                  // @ts-ignore
+                  <Component {...{ ...props, ...formProps, ...slideProps, ...asFieldProps }} />
+                )}
               </AsFieldContext.Consumer>
             )}
           </SlideContext.Consumer>
