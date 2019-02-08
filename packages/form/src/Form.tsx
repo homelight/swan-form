@@ -69,7 +69,7 @@ export class Form extends React.PureComponent<FormProps, FormState> {
     // @ts-ignore
     onError: (error: string | Error | React.ReactNode | React.ReactNode[]) => {},
     autoComplete: true,
-    defaultFormValues: {},
+    defaultValues: {},
     formAutoComplete: true,
     noValidate: false,
     persist: false,

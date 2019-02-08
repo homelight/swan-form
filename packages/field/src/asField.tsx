@@ -445,7 +445,12 @@ const asField = <P extends AsFieldProps>(
      * Prop passed to inner component to set the ref
      */
     setRef = (el: any) => {
+      const { setRef } = this.props;
+
       this.innerRef = el;
+
+      // If we were passed a `setRef` function, then we should call it
+      execIfFunc(setRef, el);
     };
 
     autoComplete: string;

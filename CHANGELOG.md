@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.14
+
+- [form] fix defaultProp key
+- [field] optionally call a passed in `setRef` function in `asField`
+
 ## 0.3.13
 
 - [form] fix form validations not firing
