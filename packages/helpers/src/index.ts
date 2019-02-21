@@ -43,7 +43,7 @@ export type Subtract<T, K> = Omit<T, keyof K>;
 /**
  * Check if something is a function
  */
-const isFunction = (arg: any): arg is Function => typeof arg === 'function';
+export const isFunction = (arg: any): arg is Function => typeof arg === 'function';
 
 /**
  * Checks if the argument is defined
@@ -186,11 +186,7 @@ export const gatherErrors = (
   updateErrors = false,
 ): React.ReactNode[] =>
   Object.keys(set)
-    .reduce((errors, name) => {
-      const field = set[name];
-      const value = field.getValue();
-      return [...errors, ...field.validate(value, updateErrors)];
-    }, [])
+    .reduce((errors, name) => [...errors, ...set[name].validate(set[name].getValue(), updateErrors)], [])
     .filter(Boolean);
 
 /**

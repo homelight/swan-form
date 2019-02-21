@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.15
+
+- [helpers] add some lodash-esque functions
+- [all] use direct imports from lodash or new lodash-esque functions
+- [all] depend on lodash `^4.0.0` to better match lodash in a host bundle
+
 ## 0.3.14
 
 - [form] fix defaultProp key
