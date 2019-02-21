@@ -9,8 +9,9 @@ import {
   toKey,
   SlideContext,
   alwaysFilteredArray,
+  isFunction,
 } from '@swan-form/helpers';
-import { isFunction, memoize } from 'lodash';
+import memoize from 'lodash/memoize';
 
 const emptyArray: any[] = [];
 const emptyObject = {};

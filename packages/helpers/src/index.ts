@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { isFunction, isObject, isPlainObject } from 'lodash';
+import isObject from 'lodash/isObject';
+import isPlainObject from 'lodash/isPlainObject';
 
 export {
   AsFieldContext,
@@ -38,6 +39,33 @@ export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
  * Subtracts keys from an existing type
  */
 export type Subtract<T, K> = Omit<T, keyof K>;
+
+/**
+ * Check if something is a function
+ */
+const isFunction = (arg: any): arg is Function => typeof arg === 'function';
+
+/**
+ * Checks if the argument is defined
+ */
+export const isDefined = (arg: any) => typeof arg !== 'undefined';
+
+export const clamp = (value: number, min: number = -Infinity, max: number = Infinity) =>
+  Math.max(min, Math.min(max, value));
+
+export const arraysAreEqual = (arr1: any[], arr2: any[]) => {
+  if (arr1.length !== arr2.length) {
+    return false;
+  }
+
+  for (let i = 0; i < arr1.length; i++) {
+    if (arr1[i] !== arr2[i]) {
+      return false;
+    }
+  }
+
+  return true;
+};
 
 /* eslint-disable no-nested-ternary */
 /**
@@ -81,11 +109,6 @@ export const classes = (...args: any[]): string =>
     }, [])
     .filter(Boolean)
     .join(' ');
-
-/**
- * Checks if the argument is defined
- */
-export const isDefined = (arg: any) => typeof arg !== 'undefined';
 
 /**
  * Checks if the arg is null

@@ -8,8 +8,9 @@ import {
   maybePromisify,
   alwaysFilteredArray,
   filterKeysFromObj,
+  isFunction,
 } from '@swan-form/helpers';
-import { isFunction, memoize } from 'lodash';
+import memoize from 'lodash/memoize';
 import * as React from 'react';
 
 /**
