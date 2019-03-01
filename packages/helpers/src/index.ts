@@ -1,15 +1,6 @@
 import * as React from 'react';
 
-export {
-  AsFieldContext,
-  FormContext,
-  SlideContext,
-  withAsField,
-  withForm,
-  withSlide,
-  withFormSlideField,
-  withFormErrors,
-} from './contexts';
+export * from './contexts';
 export { default as required, createRequired } from './required';
 export { default as createFormatter } from './createFormatter';
 export { default as keyCodes } from './keyCodes';
