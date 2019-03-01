@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { isEqual, isFunction, memoize } from 'lodash';
 
 import {
   AsFieldContext,
@@ -17,6 +16,8 @@ import {
   moveCursor,
   withFormSlideField,
   alwaysFilteredArray,
+  arraysAreEqual,
+  isFunction,
 } from '@swan-form/helpers';
 
 export type RegisterType = {
@@ -177,16 +178,18 @@ const asField = <P extends AsFieldProps>(
     constructor(props: P & ContextProps) {
       super(props);
 
+      // Format the initial value if `this.format` is defined
       const processed = maybeApply(this.format, getInitialValue(props, asFieldOptions.defaultFieldValue), null);
+
       this.initialValue = Array.isArray(processed) ? processed[0] : processed;
       this.autoComplete = rando();
+
       this.state = { value: this.initialValue, errors: [] };
+
       this.fieldInterface = {
         registerWithField: this.registerWithField,
         unregisterFromField: this.unregisterFromField,
       };
-
-      this.getMaybeProps = memoize(this.getMaybeProps.bind(this));
     }
 
     componentDidMount() {
@@ -237,7 +240,7 @@ const asField = <P extends AsFieldProps>(
     /**
      * These are props (event handlers) that are passed down only if the user supplies certain props
      */
-    getMaybeProps() {
+    getMaybeProps = () => {
       const { onBlur, validateOnBlur } = this.props;
       const out: { [key: string]: (event: any) => void } = {};
 
@@ -246,7 +249,7 @@ const asField = <P extends AsFieldProps>(
       }
 
       return out;
-    }
+    };
 
     /**
      * Registers sub-fields, passed as a prop through context
@@ -353,7 +356,7 @@ const asField = <P extends AsFieldProps>(
           }
         }
         // Only update the state value if the arrays are actually different
-        if (!isEqual(this.state.value, values)) {
+        if (!arraysAreEqual(this.state.value, values)) {
           this.setValue(values);
         }
         this.setState({ value: values });

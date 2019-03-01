@@ -1,5 +1,4 @@
 import * as React from 'react';
-import { isFunction, isObject, isPlainObject } from 'lodash';
 
 export {
   AsFieldContext,
@@ -39,6 +38,54 @@ export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
  */
 export type Subtract<T, K> = Omit<T, keyof K>;
 
+export const tag = (obj: any) => Object.prototype.toString.call(obj);
+
+export const isObject = (arg: any) => tag(arg) === '[object Object]';
+
+/**
+ * Check if something is a function
+ */
+export const isFunction = (arg: any): arg is Function => typeof arg === 'function';
+
+/**
+ * Checks if the argument is defined
+ */
+export const isDefined = (arg: any) => typeof arg !== 'undefined';
+
+export const clamp = (value: number, min: number = -Infinity, max: number = Infinity) =>
+  Math.max(min, Math.min(max, value));
+
+export const arraysAreEqual = (arr1: any[], arr2: any[]) => {
+  if (arr1.length !== arr2.length) {
+    return false;
+  }
+
+  for (let i = 0; i < arr1.length; i++) {
+    if (arr1[i] !== arr2[i]) {
+      return false;
+    }
+  }
+
+  return true;
+};
+
+/**
+ * Cheap memoize function. We don't need it for anything too advanced
+ */
+export const memoize = (fn: Function) => {
+  const cache: { [key: string]: any } = {};
+
+  return (...args: any[]) => {
+    const key = JSON.stringify(args);
+    if (cache[key]) {
+      return cache[key];
+    }
+
+    cache[key] = fn(...args);
+    return cache[key];
+  };
+};
+
 /* eslint-disable no-nested-ternary */
 /**
  * Executes a the first arg as a function if it is a function with supplied arguments
@@ -68,7 +115,7 @@ export const classes = (...args: any[]): string =>
       if (Array.isArray(obj)) {
         return [...c, ...obj.filter(Boolean)];
       }
-      if (isPlainObject(obj)) {
+      if (isObject(obj)) {
         return [
           ...c,
           ...Object.keys(obj)
@@ -81,11 +128,6 @@ export const classes = (...args: any[]): string =>
     }, [])
     .filter(Boolean)
     .join(' ');
-
-/**
- * Checks if the argument is defined
- */
-export const isDefined = (arg: any) => typeof arg !== 'undefined';
 
 /**
  * Checks if the arg is null
@@ -163,11 +205,7 @@ export const gatherErrors = (
   updateErrors = false,
 ): React.ReactNode[] =>
   Object.keys(set)
-    .reduce((errors, name) => {
-      const field = set[name];
-      const value = field.getValue();
-      return [...errors, ...field.validate(value, updateErrors)];
-    }, [])
+    .reduce((errors, name) => [...errors, ...set[name].validate(set[name].getValue(), updateErrors)], [])
     .filter(Boolean);
 
 /**

@@ -1,7 +1,6 @@
 import * as React from 'react';
-import { clamp, isFunction } from 'lodash';
 import { Form } from '@swan-form/form';
-import { classes, execIfFunc, filterKeysFromObj } from '@swan-form/helpers';
+import { classes, clamp, isFunction, execIfFunc, filterKeysFromObj } from '@swan-form/helpers';
 import { SlideProps } from './Slide';
 
 export interface SliderProps extends React.HTMLAttributes<HTMLDivElement> {

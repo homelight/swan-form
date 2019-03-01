@@ -9,8 +9,9 @@ import {
   toKey,
   SlideContext,
   alwaysFilteredArray,
+  isFunction,
+  memoize,
 } from '@swan-form/helpers';
-import { isFunction, memoize } from 'lodash';
 
 const emptyArray: any[] = [];
 const emptyObject = {};
@@ -57,16 +58,11 @@ export interface RegisterPayload {
 class Slide extends React.PureComponent<SlideProps, SlideState> {
   constructor(props: SlideProps) {
     super(props);
-    this.fields = {};
-    this.getSlideInterface = memoize(this.getSlideInterface.bind(this));
-
-    this.state = { errors: emptyArray };
-
     // maybe move this elsewhere?
-    if (isFunction(props.setRef)) {
-      props.setRef(this);
-    }
+    execIfFunc(props.setRef, this);
   }
+
+  state = { errors: emptyArray };
 
   static propTypes = {
     autoFocus: PropTypes.bool,
@@ -105,7 +101,7 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
 
   fields: {
     [key: string]: RegisterPayload;
-  };
+  } = {};
 
   mounted: boolean;
 
@@ -141,14 +137,12 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
   /**
    * This gets passed down in context.
    */
-  getSlideInterface() {
-    return {
-      registerWithSlide: this.registerWithSlide,
-      unregisterFromSlide: this.unregisterFromSlide,
-      advance: this.advance,
-      retreat: this.retreat,
-    };
-  }
+  getSlideInterface = memoize(() => ({
+    registerWithSlide: this.registerWithSlide,
+    unregisterFromSlide: this.unregisterFromSlide,
+    advance: this.advance,
+    retreat: this.retreat,
+  }));
 
   /**
    * Advances to the next field or slide
@@ -173,14 +167,11 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
   retreat = (event: React.KeyboardEvent<any>) => {
     const fields = Object.keys(this.fields);
     const field = fields.filter(name => this.fields[name].getRef() === event.target)[0];
+
     if (field) {
       const fieldIndex = fields.indexOf(field);
       const prevField = fields[fieldIndex - 1];
-      if (prevField) {
-        execIfFunc(this.fields[prevField].focus);
-      } else {
-        execIfFunc(this.props.prevSlide);
-      }
+      execIfFunc(prevField ? this.fields[prevField].focus : this.props.prevSlide);
     }
   };
 
@@ -205,7 +196,7 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
     const errors = alwaysFilteredArray<React.ReactNode>(initial);
 
     if (this.mounted && updateErrors) {
-      this.setState({ errors: errors.length === 0 ? emptyArray : errors });
+      this.setState({ errors: errors.length ? errors : emptyArray });
     }
 
     return errors;

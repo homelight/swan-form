@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.15
+
+- [helpers] add some lodash-esque functions
+- [all] remove lodash to decrease bundle size
+
 ## 0.3.14
 
 - [form] fix defaultProp key
