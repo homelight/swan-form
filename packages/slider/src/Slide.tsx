@@ -10,8 +10,8 @@ import {
   SlideContext,
   alwaysFilteredArray,
   isFunction,
+  memoize,
 } from '@swan-form/helpers';
-import memoize from 'lodash/memoize';
 
 const emptyArray: any[] = [];
 const emptyObject = {};

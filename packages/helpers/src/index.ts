@@ -1,6 +1,4 @@
 import * as React from 'react';
-import isObject from 'lodash/isObject';
-import isPlainObject from 'lodash/isPlainObject';
 
 export {
   AsFieldContext,
@@ -40,6 +38,10 @@ export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
  */
 export type Subtract<T, K> = Omit<T, keyof K>;
 
+export const tag = (obj: any) => Object.prototype.toString.call(obj);
+
+export const isObject = (arg: any) => tag(arg) === '[object Object]';
+
 /**
  * Check if something is a function
  */
@@ -65,6 +67,23 @@ export const arraysAreEqual = (arr1: any[], arr2: any[]) => {
   }
 
   return true;
+};
+
+/**
+ * Cheap memoize function. We don't need it for anything too advanced
+ */
+export const memoize = (fn: Function) => {
+  const cache: { [key: string]: any } = {};
+
+  return (...args: any[]) => {
+    const key = JSON.stringify(args);
+    if (cache[key]) {
+      return cache[key];
+    }
+
+    cache[key] = fn(...args);
+    return cache[key];
+  };
 };
 
 /* eslint-disable no-nested-ternary */
@@ -96,7 +115,7 @@ export const classes = (...args: any[]): string =>
       if (Array.isArray(obj)) {
         return [...c, ...obj.filter(Boolean)];
       }
-      if (isPlainObject(obj)) {
+      if (isObject(obj)) {
         return [
           ...c,
           ...Object.keys(obj)

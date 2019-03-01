@@ -9,8 +9,9 @@ import {
   alwaysFilteredArray,
   filterKeysFromObj,
   isFunction,
+  memoize,
 } from '@swan-form/helpers';
-import memoize from 'lodash/memoize';
+
 import * as React from 'react';
 
 /**
