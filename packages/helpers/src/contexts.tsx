@@ -1,3 +1,4 @@
+// Note: https://github.com/Microsoft/TypeScript/issues/28938 breaks typing hocs well
 import * as React from 'react';
 
 export type registerType = (payload: object) => void;
@@ -7,6 +8,8 @@ export interface IAsFieldContext {
   registerWithField: registerType;
   unregisterFromField: unregisterType;
 }
+
+type Omit<T, K extends string> = Pick<T, Exclude<keyof T, K>>;
 
 const AsFieldContext = React.createContext<IAsFieldContext>({
   // @ts-ignore
@@ -55,11 +58,24 @@ const FormContext = React.createContext<IFormContext>({
 FormContext.Consumer.displayName = 'FormConsumer';
 // @ts-ignore
 FormContext.Provider.displayName = 'FormProvider';
+// function hoc<P extends Props>(Component: ComponentType<P>): ComponentType<Omit<P, keyof Props>> {
 
-export function withFormErrors<P extends { formErrors: React.ReactNode[] }>(Component: React.ComponentType<P>) {
+export interface FormErrors {
+  formErrors: React.ReactNode[];
+}
+
+export interface StringObject {
+  [key: string]: any;
+}
+
+export function withFormErrors<P extends FormErrors>(
+  Component: React.ComponentType<P>,
+): React.ComponentType<Omit<P, keyof FormErrors>> {
   // eslint-disable-next-line no-param-reassign
   Component.displayName = 'withFormErrors';
-  return function FormErrorComponent(props: { [key: string]: any }) {
+  // @todo so, P works here, but that means that we'd have to pass the formErrors object each time,
+  // which COMPLETELY defeats the damn purpose.
+  return function FormErrorComponent(props: P) {
     return (
       <FormContext.Consumer>
         {({ formErrors }) => <Component {...props} formErrors={formErrors} />}
