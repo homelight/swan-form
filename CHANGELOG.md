@@ -3,7 +3,10 @@
 ## 0.3.15
 
 - [helpers] add some lodash-esque functions
+- [helpers] fix types after upgrading typescript
 - [all] remove lodash to decrease bundle size
+- [all] upgrade all dev deps
+- [all] export all interfaces and types
 
 ## 0.3.14
 
