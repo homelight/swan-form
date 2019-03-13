@@ -90,13 +90,10 @@ function createMask(pattern: string, wildcard: string, unbound: boolean) {
  * @param unbound
  * @param wildcard
  */
-export default function createFormatter(
-  transformer: (value: any) => string,
-  pattern: string,
-  unbound = false,
-  wildcard = '_',
-) {
+export function createFormatter(transformer: (value: any) => string, pattern: string, unbound = false, wildcard = '_') {
   const transform = createTransformer(transformer);
   const mask = createMask(pattern, wildcard, unbound);
   return (value: string, cursor: number) => mask(transform(value, cursor));
 }
+
+export default createFormatter;
