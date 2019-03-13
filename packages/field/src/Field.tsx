@@ -1,7 +1,7 @@
 /* eslint-disable react/button-has-type */
 import * as React from 'react';
 import { classes, hasOwnProperty, isObject, noop, toKey } from '@swan-form/helpers';
-import asField from './asField';
+import { asField, InjectedProps } from './asField';
 
 export interface FieldProps {
   name: string;
@@ -9,14 +9,14 @@ export interface FieldProps {
 
   required?: boolean;
   id?: string;
-  errors: React.ReactNode[];
+  // errors?: React.ReactNode[];
   className?: string;
   label?: React.ReactNode;
   icon?: React.ReactNode;
-  setRef(el: any): void;
-  onChange(event: React.ChangeEvent<any>): void;
-  onBlur(event: React.FocusEvent<any>): void;
-  setValue(value: any): void;
+  // setRef?(el: any): void;
+  // onChange?(event: React.ChangeEvent<any>): void;
+  // onBlur?(event: React.FocusEvent<any>): void;
+  // setValue?(value: any): void;
   style?: React.CSSProperties;
   options?: any;
   /**
@@ -61,7 +61,7 @@ const emptyObject = {};
 /**
  * Gets the classes applied to the outermost node in the field
  */
-export const getFieldClasses = (props: Partial<FieldProps> & { isSet?: boolean }) => {
+export const getFieldClasses = (props: Partial<FieldProps & InjectedProps> & { isSet?: boolean }) => {
   const { type, errors, className, required, icon, isSet } = props;
   return classes(
     isSet ? 'sf--fieldset' : 'sf--field',
@@ -155,7 +155,7 @@ function renderOptions(options: any | any[]): React.ReactNode {
 }
 /* eslint-enable no-use-before-define */
 
-export class Field extends React.PureComponent<FieldProps, {}> {
+export class FieldRender extends React.PureComponent<FieldProps & InjectedProps, {}> {
   static displayName = 'Field';
 
   shouldWrapInLabel = () => !NO_WRAP.includes(this.props.type);
@@ -222,10 +222,14 @@ export class Field extends React.PureComponent<FieldProps, {}> {
           <input {...props} className={submitResetClasses} type={type} id={id} ref={setRef} />
         );
       default:
-        return INPUT_TYPES.includes(type) ? (
-          <input {...props} className={appliedClasses} type={type} id={id} ref={setRef} />
-        ) : (
-          <input {...props} className={appliedClasses} type="text" id={id} ref={setRef} />
+        return (
+          <input
+            {...props}
+            className={appliedClasses}
+            type={INPUT_TYPES.includes(type) ? type : 'text'}
+            id={id}
+            ref={setRef}
+          />
         );
     }
   };
@@ -253,4 +257,5 @@ export class Field extends React.PureComponent<FieldProps, {}> {
   }
 }
 
-export default asField(Field);
+export const Field = asField<FieldProps>(FieldRender);
+export default Field;

@@ -1,20 +1,30 @@
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
 import { classes } from '@swan-form/helpers';
-import Field from './Field';
+import { Field, FieldProps } from './Field';
 
-export interface ResetProps {
-  className?: string | null;
-  name?: string | null;
-  value?: string | null;
-  style?: React.CSSProperties | null;
-}
+type Overwrite<T1, T2> = { [P in Exclude<keyof T1, keyof T2>]: T1[P] } & T2;
+
+type ResetProps = Overwrite<
+  FieldProps,
+  {
+    name: string | undefined;
+    value: string | undefined;
+  }
+>;
+
+// export interface ResetProps extends FieldProps {
+//   className?: string | null;
+//   name?: string | null;
+//   value?: string | null;
+//   style?: React.CSSProperties | null;
+// }
 
 const emptyObject = {};
 
-const Reset: React.SFC<ResetProps> = ({ className, name, style, value }) => (
-  <Field type="reset" name={name} value={value} className={classes('sf--reset', className)} style={style} />
-);
+const Reset: React.SFC<ResetProps> = ({ className, name = 'sf--reset', style, value }) => {
+  return <Field type="reset" name={name} value={value} className={classes('sf--reset', className)} style={style} />;
+};
 
 Reset.displayName = 'Reset';
 

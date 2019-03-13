@@ -1,6 +1,8 @@
 // Note: https://github.com/Microsoft/TypeScript/issues/28938 breaks typing hocs well
 import * as React from 'react';
 
+const noop = () => {};
+
 export type registerType = (payload: object) => void;
 export type unregisterType = (name: string) => void;
 
@@ -11,21 +13,19 @@ export interface IAsFieldContext {
 
 type Omit<T, K extends string> = Pick<T, Exclude<keyof T, K>>;
 
-const AsFieldContext = React.createContext<IAsFieldContext>({
+export const AsFieldContext = React.createContext<IAsFieldContext>({
   // @ts-ignore
-  registerWithField: payload => {},
+  registerWithField: noop,
   // @ts-ignore
-  unregisterFromField: name => {},
+  unregisterFromField: noop,
 });
 // @ts-ignore
-AsFieldContext.Consumer.displayName = 'AsFieldConsumer';
-// @ts-ignore
-AsFieldContext.Provider.displayName = 'AsFieldProvider';
+AsFieldContext.displayName = 'AsFieldContext';
 
 export function withAsField<P extends IAsFieldContext>(Component: React.ComponentType<P>) {
   // eslint-disable-next-line no-param-reassign
   Component.displayName = 'withAsField';
-  return function AsFieldComponent(props: { [key: string]: any }) {
+  return function AsFieldComponent(props: P) {
     return (
       <AsFieldContext.Consumer>{asFieldProps => <Component {...props} {...asFieldProps} />}</AsFieldContext.Consumer>
     );
@@ -42,11 +42,11 @@ export interface IFormContext {
   formErrors: React.ReactNode[];
 }
 
-const FormContext = React.createContext<IFormContext>({
+export const FormContext = React.createContext<IFormContext>({
   // @ts-ignore
-  registerWithForm: payload => {},
+  registerWithForm: noop,
   // @ts-ignore
-  unregisterFromForm: name => {},
+  unregisterFromForm: noop,
   formAutoComplete: true,
   isFormSubmitting: false,
   hasFormSubmitted: false,
@@ -55,9 +55,8 @@ const FormContext = React.createContext<IFormContext>({
 });
 
 // @ts-ignore
-FormContext.Consumer.displayName = 'FormConsumer';
-// @ts-ignore
-FormContext.Provider.displayName = 'FormProvider';
+FormContext.displayName = 'FormContext';
+
 // function hoc<P extends Props>(Component: ComponentType<P>): ComponentType<Omit<P, keyof Props>> {
 
 export interface FormErrors {
@@ -92,7 +91,7 @@ export function withForm<
     defaultFormValues: { [key: string]: any };
   }
 >(Component: React.ComponentType<P>) {
-  return function FormComponent(props: { [key: string]: any }) {
+  return function FormComponent(props: P) {
     // eslint-disable-next-line no-param-reassign
     Component.displayName = 'withForm';
     return (
@@ -112,44 +111,43 @@ export function withForm<
 }
 
 export interface ISlideContext {
-  registerWithSlide(payload: object): void;
-  unregisterFromSlide(name: string): void;
+  registerWithSlide: (payload: object) => void;
+  unregisterFromSlide: (name: string) => void;
 }
-const SlideContext = React.createContext<ISlideContext>({
+export const SlideContext = React.createContext<ISlideContext>({
   // @ts-ignore
-  registerWithSlide: (payload: object) => {},
+  registerWithSlide: noop,
   // @ts-ignore
-  unregisterFromSlide: (name: string) => {},
+  unregisterFromSlide: noop,
 });
 
-// @ts-ignore
-SlideContext.Consumer.displayName = 'SlideConsumer';
-// @ts-ignore
-SlideContext.Provider.displayName = 'SlideProvider';
+SlideContext.displayName = 'SlideContext';
 
 export function withSlide<P extends ISlideContext>(Component: React.ComponentType<P>) {
   // eslint-disable-next-line no-param-reassign
   Component.displayName = 'withSlide';
-  return function SlideComponent(props: { [key: string]: any }) {
+  return function SlideComponent(props: P) {
     return (
       <SlideContext.Consumer>{slideInterface => <Component {...props} {...slideInterface} />}</SlideContext.Consumer>
     );
   };
 }
 
+const combine = (...objs: { [key: string]: any }[]) => Object.assign({}, ...objs);
+
 export function withFormSlideField<P extends ISlideContext & IFormContext & IAsFieldContext>(
   Component: React.ComponentType<P>,
 ) {
   // eslint-disable-next-line no-param-reassign
   Component.displayName = 'withFormSlideAsField';
-  return function Wrapper(props: { [key: string]: any }) {
+  return function Wrapper(props: P) {
     return (
       <FormContext.Consumer>
-        {formProps => (
+        {form => (
           <SlideContext.Consumer>
-            {slideProps => (
+            {slide => (
               <AsFieldContext.Consumer>
-                {asFieldProps => <Component {...{ ...props, ...formProps, ...slideProps, ...asFieldProps }} />}
+                {field => <Component {...{ ...combine(props, form, slide, field) }} />}
               </AsFieldContext.Consumer>
             )}
           </SlideContext.Consumer>
@@ -158,5 +156,3 @@ export function withFormSlideField<P extends ISlideContext & IFormContext & IAsF
     );
   };
 }
-
-export { AsFieldContext, SlideContext, FormContext };

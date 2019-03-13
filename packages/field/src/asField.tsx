@@ -20,37 +20,124 @@ import {
   isFunction,
 } from '@swan-form/helpers';
 
+/**
+ * A registration contract for fields
+ */
 export type RegisterType = {
+  /**
+   * The `name` of the field; used to save the field value with forms / sliders
+   */
   name: string;
-  getValue(): void;
-  setValue(value: any): void;
-  reset(): void;
-  validate(values: { [key: string]: any }, updateErrors: boolean): React.ReactNode[];
-  focus(): void;
+  /**
+   * A `getter` for the value
+   */
+  getValue: () => void;
+  /**
+   * A `setter` for the value
+   */
+  setValue: (value: any) => void;
+  /**
+   * A `setter` for the value to reset to the initial state
+   */
+  reset: () => void;
+  /**
+   * A validation function
+   */
+  validate: (values: { [key: string]: any }, updateErrors: boolean) => React.ReactNode[];
+  /**
+   * An interface to `focus` the field
+   */
+  focus: () => void;
 };
 
 export interface AsFieldProps {
+  /**
+   * The `name` of the field
+   */
   name: string;
+  /**
+   * The type of field; these are used for the regular field types for inputs / textareas / selects
+   */
   type?: string;
+  /**
+   * Whether or not to autofocus the field
+   */
   autoFocus?: boolean;
+  /**
+   * The autocomplete type for the field
+   */
   autoComplete?: string;
+  /**
+   * The default value of the field
+   */
   defaultValue?: any;
+  /**
+   * The value of the field (this differs from defaultValue)
+   */
   value?: any;
+  /**
+   * The defaultChecked state of the field (for toggles like checkboxes or radiobuttons)
+   */
   defaultChecked?: boolean;
+  /**
+   * Whether or not the field is checked
+   */
   checked?: boolean;
+  /**
+   * Whether or not the field accepts multiple values (for multi-selects and file inputs)
+   */
   multiple?: boolean;
+  /**
+   * Run validations on the change event
+   */
   validateOnChange?: boolean;
+  /**
+   * Run validations on the blur event
+   */
   validateOnBlur?: boolean;
+  /**
+   * Change validations are debounced, control the debouncer timer with this
+   */
   validateDebounceTimeout?: number;
+  /**
+   * Whether or not to register with parent forms / fields / slides
+   */
   register?: boolean;
+  /**
+   * How to format the value
+   */
   format?(value: any, cursor: number | null): [any, number | null];
+  /**
+   * How to unformat the value
+   */
   unformat?(value: any): any;
+  /**
+   * onBlur event handler
+   *
+   * This is called after the library does what it needs to do internally for blur events
+   */
   onBlur?(event: React.FocusEvent<any>): void;
+  /**
+   * onChange event handler
+   *
+   * This is called after the library does what it needs to do internally for change events
+   */
   onChange?(event: React.ChangeEvent<any>): void;
+  /**
+   * onKeyDown event handler
+   *
+   * This is called after the library does what it needs to do internally for keydown events
+   */
   onKeyDown?(event: React.KeyboardEvent<any>): void;
+  /**
+   * A validate function or array of functions
+   */
   validate?:
     | ((value: any) => React.ReactNode | React.ReactNode[])
     | ((value: any) => React.ReactNode | React.ReactNode[])[];
+  /**
+   * All other props will be passed down to the wrapped component
+   */
   [key: string]: any;
 }
 
@@ -59,17 +146,17 @@ export interface ContextProps {
   registerWithForm?(payload: RegisterType): void;
   unregisterFromForm?(name: string): void;
   formAutoComplete?: boolean;
-  defaultFormValues: { [key: string]: any };
+  defaultFormValues?: { [key: string]: any };
 
   // From SlideContext
-  registerWithSlide?(payload: RegisterType): void;
-  unregisterFromSlide?(name: string): void;
-  advance?(event: React.KeyboardEvent<any>): void;
-  retreat?(event: React.KeyboardEvent<any>): void;
+  registerWithSlide?: (payload: RegisterType) => void;
+  unregisterFromSlide?: (name: string) => void;
+  advance?: (event: React.KeyboardEvent<any>) => void;
+  retreat?: (event: React.KeyboardEvent<any>) => void;
 
   // From AsFieldContext
-  registerWithField?(payload: RegisterType): void;
-  unregisterFromField?(name: string): void;
+  registerWithField?: (payload: RegisterType) => void;
+  unregisterFromField?: (name: string) => void;
 }
 
 export interface AsFieldState {
@@ -129,8 +216,6 @@ const removeProps = [
   'validateOnBlur',
   'validateOnChange',
   'validateDebounceTimeout',
-  // 'hasFormSubmitted',
-  // 'isFormSubmitting',
   'formErrors',
   'registerWithSlide',
   'unregisterFromSlide',
@@ -144,20 +229,26 @@ const removeProps = [
 ];
 
 export interface InjectedProps {
-  onBlur?(event: React.FocusEvent<any>): void;
-  onChange(event: React.ChangeEvent<any>): void;
-  setRef(el: any): void;
+  setValue: (value: any) => void;
+  onBlur?: (event: React.FocusEvent<any>) => void;
+  onChange: (event: React.ChangeEvent<any>) => void;
+  setRef: (el: any) => void;
   autoComplete: string;
   errors: React.ReactNode[];
   value: any;
 }
 
-const rando = (chars: number = 6) =>
+export interface Props {
+  name: string;
+  [key: string]: any;
+}
+
+const rando = (x: number = 6) =>
   Math.random()
     .toString(36)
-    .slice(-chars);
+    .slice(-x);
 
-const asField = <P extends AsFieldProps>(
+const asField = <P extends Props>(
   WrappedComponent: React.ComponentType<P & InjectedProps>,
   wrapperOptions: AsFieldOptions = {},
 ) => {
@@ -309,6 +400,7 @@ const asField = <P extends AsFieldProps>(
 
       // We need to persist the event if there is a callback handler for onKeyDown
       if (isFunction(onKeyDown)) {
+        // eslint-disable-next-line
         event && isFunction(event.persist) && event.persist();
       }
 
@@ -330,6 +422,7 @@ const asField = <P extends AsFieldProps>(
      * Generic change event for inner field
      */
     handleOnChange = (event: React.ChangeEvent<any>) => {
+      // eslint-disable-next-line
       event && isFunction(event.persist) && event.persist();
       const { checked, options, value } = event.target;
       const { validateOnChange, validateDebounceTimeout, type, onChange } = this.props;
@@ -393,6 +486,7 @@ const asField = <P extends AsFieldProps>(
      */
     handleOnBlur = (event: React.FocusEvent<any>) => {
       const { onBlur, validateOnBlur } = this.props;
+      // eslint-disable-next-line
       event && isFunction(event.persist) && event.persist();
 
       if (validateOnBlur) {
@@ -501,5 +595,5 @@ const asField = <P extends AsFieldProps>(
 };
 
 export { asField };
-const Composed = composeHOCs<AsFieldProps>(asField, withFormSlideField);
+const Composed = composeHOCs<Props>(asField, withFormSlideField);
 export default Composed;
