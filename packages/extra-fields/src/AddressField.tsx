@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-// import * as PropTypes from 'prop-types';
-import { asField, Field } from '@swan-form/field';
+import { asField, Field, InjectedProps } from '@swan-form/field';
 
 const states = [
   '----',
@@ -67,29 +66,12 @@ export interface AddressProps {
     [key: string]: any;
   };
   className?: string;
-  onChange?(event: React.ChangeEvent<any>): void;
   autoFocus?: boolean;
   label?: React.ReactNode;
-  setValue?(value: any): void;
 }
 
-class AddressField extends Component<AddressProps, any> {
+class AddressField extends Component<AddressProps & InjectedProps, any> {
   static displayName = 'ComposedAddressField';
-
-  // static propTypes = {
-  //   autoFocus: PropTypes.bool,
-  //   value: PropTypes.shape({
-  //     line1: PropTypes.string,
-  //     line2: PropTypes.string,
-  //     city: PropTypes.string,
-  //     state: PropTypes.string,
-  //     zip: PropTypes.string,
-  //   }),
-  //   name: PropTypes.string.isRequired,
-  //   onChange: PropTypes.func.isRequired,
-  //   label: PropTypes.string, // eslint-disable-line
-  //   className: PropTypes.string,
-  // };
 
   static defaultProps = {
     autoFocus: false,
@@ -178,4 +160,4 @@ class AddressField extends Component<AddressProps, any> {
   }
 }
 
-export default asField(AddressField);
+export default asField<AddressProps>(AddressField);

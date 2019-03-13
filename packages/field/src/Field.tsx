@@ -158,8 +158,6 @@ function renderOptions(options: any | any[]): React.ReactNode {
 export class FieldRender extends React.PureComponent<FieldProps & InjectedProps, {}> {
   static displayName = 'Field';
 
-  shouldWrapInLabel = () => !NO_WRAP.includes(this.props.type);
-
   getId = () => this.props.id || this.props.name;
 
   getInput = (appliedClasses = '') => {
@@ -176,6 +174,7 @@ export class FieldRender extends React.PureComponent<FieldProps & InjectedProps,
       hasFormSubmitted,
       ...props
     } = this.props;
+
     const id = this.getId();
 
     /**
@@ -236,11 +235,11 @@ export class FieldRender extends React.PureComponent<FieldProps & InjectedProps,
 
   render() {
     const id = this.getId();
-    const { errors, label, icon, style = emptyObject } = this.props;
+    const { errors, label, type, icon, style = emptyObject } = this.props;
 
     const appliedClasses = getFieldClasses(this.props);
 
-    if (this.shouldWrapInLabel()) {
+    if (!NO_WRAP.includes(type)) {
       return (
         <label htmlFor={id} className={appliedClasses} style={style}>
           <span>
