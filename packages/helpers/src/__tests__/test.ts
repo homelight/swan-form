@@ -87,6 +87,7 @@ describe('Shared helper functions tests', () => {
 
   it('isDefined:: expect is undefined not to be detected', () => {
     const o = {};
+    // @ts-ignore: `not-defined` is not defined, and that's what we're testing for
     expect(isDefined(o.notDefined)).toBe(false);
   });
 
