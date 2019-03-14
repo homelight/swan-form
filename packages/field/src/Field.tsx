@@ -1,7 +1,7 @@
 /* eslint-disable react/button-has-type */
 import * as React from 'react';
 import { classes, hasOwnProperty, isObject, noop, toKey } from '@swan-form/helpers';
-import { asField, InjectedProps } from './asField';
+import asField, { InjectedProps } from './asField';
 
 export interface FieldProps {
   name: string;
@@ -256,5 +256,7 @@ export class FieldRender extends React.PureComponent<FieldProps & InjectedProps,
   }
 }
 
-export const Field = asField<FieldProps>(FieldRender);
+// @TODO fix typings
+export const Field = asField(FieldRender);
+// export const Field = asField<FieldProps>(FieldRender);
 export default Field;

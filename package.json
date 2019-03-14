@@ -73,6 +73,11 @@
     "typescript": "~3.3.3333",
     "typescript-eslint-parser": "^21.0.1"
   },
+  "resolutions": {
+    "@types/react": "^16.8.6",
+    "@types/react-dom": "^16.8.2",
+    "event-stream": "3.3.4"
+  },
   "browserslist": {
     "development": [
       "last 2 chrome versions",
@@ -91,9 +96,6 @@
       "yarn run format",
       "git add"
     ]
-  },
-  "resolutions": {
-    "event-stream": "3.3.4"
   },
   "prettier": {
     "printWidth": 120,
