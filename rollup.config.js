@@ -83,8 +83,17 @@ const config = (pkg, format) => {
         typescript: require('typescript'), // eslint-disable-line
       }),
 
-      // babel(babelConfig()),
-      format === 'es' && terser(),
+      format === 'es' &&
+        terser({
+          compress: {
+            module: true,
+            ecma: 6,
+            unsafe_arrows: true,
+            unsafe_undefined: true,
+            unsafe_proto: true,
+            warnings: true,
+          },
+        }),
       format === 'cjs' &&
         uglify({
           output: { comments: false },

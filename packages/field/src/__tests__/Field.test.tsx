@@ -4,15 +4,14 @@ import React from 'react';
 import Adapter from 'enzyme-adapter-react-16';
 import { configure, shallow, mount, render } from 'enzyme';
 
-import { asField } from '../asField';
-import { Field } from '../Field';
-import { getInitialValue } from '../asField';
+import { asField, getInitialValue } from '../asField';
+import { FieldRender } from '../Field';
 
 // This is crappy, but it tests the integration between the asField wrapper and the Field component
 // without all the context things in between. I need to figure out a new way to test state with the
 // context HOCs in the way.
 // @ts-ignore
-const ShallowField = asField(Field);
+const ShallowField = asField(FieldRender);
 
 configure({ adapter: new Adapter() });
 
@@ -86,13 +85,13 @@ describe('Text Field Input Suite', () => {
 
 describe('Checkbox Field Input Suite', () => {
   it('should have checkboxes go to value based on defaultChecked', () => {
-    expect(shallow(<ShallowField name="test" type="checkbox" defaultChecked={true} />).state().value).toBe(true);
+    expect(shallow(<ShallowField name="test" type="checkbox" defaultChecked />).state().value).toBe(true);
   });
 
   it('should have checkboxes go to value based on checked over defaultChecked', () => {
-    expect(
-      shallow(<ShallowField name="test" type="checkbox" checked={false} defaultChecked={true} />).state().value,
-    ).toBe(false);
+    expect(shallow(<ShallowField name="test" type="checkbox" checked={false} defaultChecked />).state().value).toBe(
+      false,
+    );
   });
 });
 
