@@ -179,7 +179,7 @@ export class Form extends React.PureComponent<FormProps, FormState> {
     const formErrors = alwaysFilteredArray<React.ReactNode>(errors);
     // Persist the errors
     if (this.mounted) {
-      this.setState({ formErrors });
+      this.setState({ formErrors, isSubmitting: false });
     }
     // Call the supplied error handler
     execIfFunc(onError, ...formErrors);
