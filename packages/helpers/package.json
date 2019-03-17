@@ -1,6 +1,6 @@
 {
   "name": "@swan-form/helpers",
-  "version": "0.3.7",
+  "version": "0.4.0-alpha.0",
   "description": "Helpers functions for swan-form",
   "license": "Apache-2.0",
   "contributors": [
@@ -32,7 +32,6 @@
     "test:watch": "yarn run test --watch",
     "type": "tsc -p ./tsconfig.json"
   },
-  "dependencies": {},
   "peerDependencies": {
     "react": "^16.3.0"
   },
