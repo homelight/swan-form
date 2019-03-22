@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.3.15
+## 0.4.0--alpha.0
 
 - [helpers] add some lodash-esque functions
 - [helpers] fix types after upgrading typescript
