@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unused-prop-types */
 import * as React from 'react';
 import * as PropTypes from 'prop-types';
 
@@ -18,10 +19,25 @@ const emptyObject = {};
 const alwaysTrue = () => true;
 
 export interface InjectedProps {
+  /**
+   * Sets a ref on the slide itself
+   */
   setRef?(el: any): void;
+  /**
+   * Gets all registered form values
+   */
   getFormValues?(): { [key: string]: any };
+  /**
+   * Moves to the next eligible slide
+   */
   nextSlide?(): void;
+  /**
+   * Moves to the previous eligible slide
+   */
   prevSlide?(): void;
+  /**
+   * Other props can be injected into each slide
+   */
   [key: string]: any;
 }
 
@@ -38,7 +54,10 @@ export interface SlideProps extends InjectedProps {
   beforeExitToNext?(props: SlideProps): Promise<any>;
   render?(slideProps: any): React.ReactNode;
   style?: React.CSSProperties;
-  validate?(values: { [key: string]: any }): React.ReactNode | React.ReactNode[];
+  /**
+   * Validates all the fields on the slide
+   */
+  validate?(values: { [key: string]: any }): boolean | React.ReactNode | React.ReactNode[];
 }
 
 export interface SlideState {
@@ -51,6 +70,9 @@ export interface RegisterPayload {
   getValue(): any;
   reset(): void;
   setValue(value: any): void;
+  /**
+   * Focuses the first focusable element
+   */
   focus(): void;
   getRef(): any;
 }
@@ -75,17 +97,23 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
     didEnterAsNext: PropTypes.func,
     render: PropTypes.func,
     shouldShowIf: PropTypes.func,
-    style: PropTypes.object,
+    style: PropTypes.shape({}),
     validate: PropTypes.func,
   };
 
   static defaultProps = {
-    // @ts-ignore
-    validate: values => [],
+    validate: (_: { [key: string]: any }) => [] as React.ReactNode[],
     className: '',
     autoFocus: true,
     shouldShowIf: alwaysTrue,
     style: emptyObject,
+    beforeExitToNext: undefined,
+    beforeExitToPrev: undefined,
+    beforeExit: undefined,
+    didEnter: undefined,
+    didEnterAsNext: undefined,
+    didEnterAsPrev: undefined,
+    render: undefined,
   };
 
   static displayName = 'Slide';
@@ -99,9 +127,7 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
     this.mounted = false;
   }
 
-  fields: {
-    [key: string]: RegisterPayload;
-  } = {};
+  fields: { [key: string]: RegisterPayload } = {};
 
   mounted: boolean;
 
@@ -111,7 +137,7 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
   maybeAutoFocus = () => {
     const { autoFocus } = this.props;
 
-    const name = Object.keys(this.fields)[0];
+    const [name] = Object.keys(this.fields);
     const field = this.fields[name];
 
     if (autoFocus && field && isFunction(field.focus)) {
@@ -148,15 +174,16 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
    * Advances to the next field or slide
    */
   advance = (event: React.KeyboardEvent<any>) => {
+    const { nextSlide } = this.props;
     const fields = Object.keys(this.fields);
-    const field = fields.filter(name => this.fields[name].getRef() === event.target)[0];
+    const [field] = fields.filter(name => this.fields[name].getRef() === event.target);
     if (field) {
       const fieldIndex = fields.indexOf(field);
       const nextField = fields[fieldIndex + 1];
       if (nextField) {
         this.fields[nextField].focus();
       } else {
-        execIfFunc(this.props.nextSlide);
+        execIfFunc(nextSlide);
       }
     }
   };
@@ -166,7 +193,7 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
    */
   retreat = (event: React.KeyboardEvent<any>) => {
     const fields = Object.keys(this.fields);
-    const field = fields.filter(name => this.fields[name].getRef() === event.target)[0];
+    const [field] = fields.filter(name => this.fields[name].getRef() === event.target);
 
     if (field) {
       const fieldIndex = fields.indexOf(field);

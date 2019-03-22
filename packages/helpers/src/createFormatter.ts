@@ -1,20 +1,20 @@
 /**
  *  functionally equivalent to String.repeat(int);
  */
-function repeat(str: string, count: number) {
+const repeat = (str: string, count: number) => {
   const out = new Array(count);
   for (let i = 0; i < count; i++) {
     out[i] = str;
   }
   return out.join('');
-}
+};
 
 /**
  * functionally equivalent to String.padStart(length, str);
  *
  * Keeps us from shipping a polyfill
  */
-function padStart(str: string, targetLength: number, padStr: string) {
+const padStart = (str: string, targetLength: number, padStr: string) => {
   if (str.length > targetLength) {
     return str;
   }
@@ -24,22 +24,19 @@ function padStart(str: string, targetLength: number, padStr: string) {
     padStr += repeat(padStr, Math.floor(targetLen / padStr.length));
   }
   return padStr.slice(0, targetLen) + str;
-}
+};
 
 /**
  * Creates a reusable transformer function
  */
-function createTransformer(transformer: (value: string) => string) {
-  return function transform(value: string, cursor: number): { value: string; cursor: number } {
-    const leftValue = value.slice(0, cursor);
-    const leftTransform = transformer(leftValue);
-    const delta = leftTransform.length - leftValue.length;
-    return {
-      value: transformer(value),
-      cursor: cursor + delta,
-    };
+const createTransformer = (transformer: (value: string) => string) => {
+  const transform = (value: string, cursor: number): { value: string; cursor: number } => {
+    const left = value.slice(0, cursor);
+    const delta = transformer(left).length - left.length;
+    return { value: transformer(value), cursor: cursor + delta };
   };
-}
+  return transform;
+};
 
 /**
  * Gets a patterns for an unbounded mask
