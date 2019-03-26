@@ -594,6 +594,7 @@ const asField = <P extends Props>(
   };
 };
 
-export { asField, AsFieldContext };
+// export { asField, AsFieldContext };
 const Composed = composeHOCs<Props>(asField, withFormSlideField);
+export { Composed as asField, AsFieldContext };
 export default Composed;

@@ -160,4 +160,4 @@ class AddressField extends Component<AddressProps & InjectedProps, any> {
   }
 }
 
-export default asField<AddressProps>(AddressField);
+export default asField(AddressField);
