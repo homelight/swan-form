@@ -161,6 +161,7 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
   /**
    * Gets the children as an array
    */
+  // @ts-ignore: the typings for children don't allow this to work, but it does
   getChildren = () => React.Children.toArray<React.ReactElement<SlideProps>>(this.props.children);
 
   /**

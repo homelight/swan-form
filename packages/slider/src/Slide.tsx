@@ -248,5 +248,5 @@ class Slide extends React.PureComponent<SlideProps, SlideState> {
   }
 }
 
-export { Slide };
+export { Slide, SlideContext };
 export default Slide;
