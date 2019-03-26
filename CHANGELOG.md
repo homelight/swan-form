@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.0--alpha.1
+
+- [helpers] use generics when typing `filterKeysFromObj`
+- [slider] delete exported css
+- [slider] better document props
+- [slider] re-export slide context
+- [field] re-export field context
+- [form] re-export form context
+
 ## 0.4.0--alpha.0
 
 - [helpers] add some lodash-esque functions
