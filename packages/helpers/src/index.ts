@@ -150,10 +150,10 @@ export const findValue = (...args: any[]) => {
 /**
  * Returns an object sans keys
  */
-export const filterKeysFromObj = (obj: { [key: string]: any }, keys: string[]) =>
+export const filterKeysFromObj = <T = any, K = ''>(obj: { [key: string]: any }, keys: string[]) =>
   Object.keys(obj)
     .filter(key => !keys.includes(key))
-    .reduce((newObj, key) => ({ ...newObj, [key]: obj[key] }), {});
+    .reduce((newObj, key) => ({ ...newObj, [key]: obj[key] }), {} as Pick<T, Exclude<keyof T, K>>);
 
 /**
  * Does nothing

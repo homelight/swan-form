@@ -40,6 +40,7 @@ export interface IFormContext {
   hasFormSubmitted: boolean;
   defaultFormValues: { [key: string]: any };
   formErrors: React.ReactNode[];
+  getFormValues: () => { [key: string]: any };
 }
 
 export const FormContext = React.createContext<IFormContext>({
@@ -50,6 +51,7 @@ export const FormContext = React.createContext<IFormContext>({
   formAutoComplete: true,
   isFormSubmitting: false,
   hasFormSubmitted: false,
+  getFormValues: () => ({}),
   defaultFormValues: {},
   formErrors: [],
 });

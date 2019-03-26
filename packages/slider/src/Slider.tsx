@@ -3,19 +3,34 @@ import { Form } from '@swan-form/form';
 import { classes, clamp, isFunction, execIfFunc, filterKeysFromObj } from '@swan-form/helpers';
 import { SlideProps } from './Slide';
 
+export type GenericObject = { [key: string]: any };
+
 export interface SliderProps extends React.HTMLAttributes<HTMLDivElement> {
-  onSubmit(values: { [key: string]: any } | Promise<{ [key: string]: any }>): Promise<{ [key: string]: any }>;
-  afterSubmit?(values: { [key: string]: any } | Promise<{ [key: string]: any }>): Promise<{ [key: string]: any }>;
-  beforeSubmit?(values: { [key: string]: any } | Promise<{ [key: string]: any }>): Promise<{ [key: string]: any }>;
+  onSubmit(values: GenericObject | Promise<GenericObject>): Promise<GenericObject> | GenericObject;
+  afterSubmit?(values: GenericObject | Promise<GenericObject>): Promise<GenericObject> | GenericObject;
+  beforeSubmit?(values: GenericObject | Promise<GenericObject>): Promise<GenericObject> | GenericObject;
   afterSlideChange?(): void;
   autoComplete?: boolean;
-  common?: { [key: string]: any };
+  common?: GenericObject;
   current?: number;
-  defaultValues?: { [key: string]: any };
-  FinishButton?: React.ReactNode;
+  defaultValues?: GenericObject;
+
   formName?: string;
-  NextButton?: React.ReactNode;
+  /**
+   * Text for Prev Button (can be any React Node)
+   * default: `←`
+   */
   PrevButton?: React.ReactNode;
+  /**
+   * Text for Next Button (can be any React Node)
+   * default: `→`
+   */
+  NextButton?: React.ReactNode;
+  /**
+   * Text for Finish Button (can be any React Node)
+   * default: `→`
+   */
+  FinishButton?: React.ReactNode;
   /**
    * This will set a ref on the slider container
    */
@@ -39,15 +54,15 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     commonProps: {},
     current: 0,
     defaultValues: {},
-    FinishButton: '→',
+
     formName: 'slider-form',
-    NextButton: '→',
     PrevButton: '←',
+    NextButton: '→',
+    FinishButton: '→',
   };
 
   constructor(props: SliderProps) {
     super(props);
-    // this.form = {};
     this.state = {
       current: clamp(props.current || 0, 0, React.Children.count(props.children)) || 0,
     };
@@ -80,7 +95,9 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
   // This is actually an instantiated slide
   currentSlide: any;
 
-  // This is a ref to the form
+  /**
+   * Ref to the form object
+   */
   form: any;
 
   mounted: boolean;
@@ -90,7 +107,13 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
   }
 
   componentDidUpdate(_: SliderProps, prevState: SliderState) {
-    // Run any didEnter* slide hooks here
+    // Currently, we only do things here if the slide changed
+    if (this.state.current === prevState.current) {
+      return;
+    }
+    /**
+     * Call any didEnter hooks on the individual slide
+     */
     const { didEnter, didEnterAsPrev, didEnterAsNext } = this.currentSlide.props;
     if (prevState.current > this.state.current && didEnterAsPrev) {
       execIfFunc(didEnterAsPrev, this.injectSlideProps);
@@ -128,10 +151,9 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
   /**
    * Runs validation on the current slide
    */
-  isCurrentSlideValid = async () => {
-    const { currentSlide } = this;
-    if (currentSlide && isFunction(currentSlide.isSlideValid)) {
-      return await currentSlide.isSlideValid();
+  isCurrentSlideValid = async (): Promise<boolean> => {
+    if (this.currentSlide && isFunction(this.currentSlide.isSlideValid)) {
+      return this.currentSlide.isSlideValid();
     }
     return true;
   };
@@ -139,7 +161,8 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
   /**
    * Gets the children as an array
    */
-  getChildren = (): any => React.Children.toArray(this.props.children);
+  // @ts-ignore: the typings for children don't allow this to work, but it does
+  getChildren = () => React.Children.toArray<React.ReactElement<SlideProps>>(this.props.children);
 
   /**
    * Gets the form values from the form
@@ -153,8 +176,7 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     const { afterSlideChange } = this.props;
 
     if (this.mounted) {
-      this.setState({ current: slide });
-      execIfFunc(afterSlideChange);
+      this.setState({ current: slide }, () => execIfFunc(afterSlideChange));
     }
   };
 
@@ -175,7 +197,6 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
       // Call the submit handler on the form
       if (this.form && isFunction(this.form.handleOnSubmit)) {
         execIfFunc(this.form.doSubmit);
-        return;
       }
       return;
     }
@@ -183,6 +204,7 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     // Run any beforeExit* slide hooks that we find on the current slide slide
     // Slide hooks should be promises, and so we call the moveTo in the resolution
     const { beforeExit, beforeExitToNext } = this.currentSlide.props;
+
     if (isFunction(beforeExitToNext)) {
       beforeExitToNext(this.injectSlideProps).then(() => this.moveTo(nextSlideIndex));
       return;
@@ -203,6 +225,7 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
   prev = () => {
     // Find the previous slide
     const prevSlideIndex = this.findPrev();
+
     // If it's the same, do nothing
     if (prevSlideIndex === this.state.current) {
       return;
@@ -210,6 +233,7 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
 
     // Call any beforeExit* slide hooks
     const { beforeExit, beforeExitToPrev } = this.currentSlide.props;
+
     if (isFunction(beforeExitToPrev)) {
       beforeExitToPrev(this.injectSlideProps).then(() => this.moveTo(prevSlideIndex));
       return;
@@ -231,12 +255,12 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     const { current } = this.state;
     const children = this.getChildren();
     const formValues = this.form && isFunction(this.form.getValues) ? this.form.getValues() : {};
-    const length = children.length - 1; // eslint-disable-line
-    for (let i = current + 1; i <= length; i++) {
-      const slide = children[i];
+    const length = children.length - 1;
+    for (let index = current + 1; index <= length; index++) {
+      const slide = children[index];
       const { shouldShowIf = alwaysTrue } = slide.props;
-      if (shouldShowIf!(formValues)) {
-        return i;
+      if (shouldShowIf(formValues)) {
+        return index;
       }
       // No valid candidate for next slide, so we test the next
     }
@@ -253,12 +277,12 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     const { current } = this.state;
     const children = this.getChildren();
     const formValues = this.form && isFunction(this.form.getValues) ? this.form.getValues() : {};
-    for (let i = current - 1; i >= 0; i--) {
-      const slide = children[i];
+    for (let index = current - 1; index >= 0; index--) {
+      const slide = children[index];
       const { shouldShowIf = alwaysTrue } = slide.props;
 
-      if (shouldShowIf!(formValues)) {
-        return i;
+      if (shouldShowIf(formValues)) {
+        return index;
       }
       // No valid candidate for next slide, so we test the next
     }
@@ -306,21 +330,21 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     const nextFn = isAtEnd ? this.handleEnd : this.next;
 
     const removeProps = [
-      'afterSlideChange',
-      'defaultFormValues',
-      'formAutoComplete',
-      'commonProps',
-      'defaultValues',
-      'setRef',
+      'afterSlideChange' as 'afterSlideChange',
+      'defaultFormValues' as 'defaultFormValues',
+      'formAutoComplete' as 'formAutoComplete',
+      'commonProps' as 'commonProps',
+      'defaultValues' as 'defaultValues',
+      'setRef' as 'setRef',
     ];
 
     const props = {
-      ...filterKeysFromObj(rest, removeProps),
-      ...(typeof this.props.setRef === 'function' ? { ref: this.props.setRef } : {}),
+      ...filterKeysFromObj<typeof rest, typeof removeProps>(rest, removeProps),
+      ...(isFunction(this.props.setRef) ? { ref: this.props.setRef } : {}),
     };
 
     return (
-      <div {...props} className={classes(['sf--slider', className])}>
+      <div {...props} className={classes('sf--slider', className)}>
         <button type="button" className={leftClasses} disabled={current === 0} onClick={this.prev}>
           {PrevButton}
         </button>
@@ -334,10 +358,9 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
           afterSubmit={afterSubmit!}
           autoComplete={autoComplete}
           persist
-          ref={this.setFormRef}
           defaultValues={defaultValues}
         >
-          {React.cloneElement(slide as React.ReactElement<SlideProps>, this.injectSlideProps)}
+          {React.cloneElement(slide, this.injectSlideProps)}
         </Form>
       </div>
     );

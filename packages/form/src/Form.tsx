@@ -307,4 +307,6 @@ export class Form extends React.PureComponent<FormProps, FormState> {
   }
 }
 
+export { FormContext };
+
 export default Form;
