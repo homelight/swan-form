@@ -29,8 +29,14 @@ export type Omit<T, K> = Pick<T, Exclude<keyof T, K>>;
  */
 export type Subtract<T, K> = Omit<T, keyof K>;
 
+/**
+ * Gets the tag of the object
+ */
 export const tag = (obj: any) => Object.prototype.toString.call(obj);
 
+/**
+ * Checks if an arg is an object
+ */
 export const isObject = (arg: any) => tag(arg) === '[object Object]';
 
 /**
@@ -43,9 +49,15 @@ export const isFunction = (arg: any): arg is Function => typeof arg === 'functio
  */
 export const isDefined = (arg: any) => typeof arg !== 'undefined';
 
+/**
+ * Sends back a number bounded optional min / max
+ */
 export const clamp = (value: number, min: number = -Infinity, max: number = Infinity) =>
   Math.max(min, Math.min(max, value));
 
+/**
+ * Checks if two arrays are equal
+ */
 export const arraysAreEqual = (arr1: any[], arr2: any[]) => {
   if (arr1.length !== arr2.length) {
     return false;
