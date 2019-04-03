@@ -1,6 +1,6 @@
 import * as React from 'react';
 import asField from './asField';
-import { Field, getFieldClasses, getErrors } from './Field';
+import { FieldRender as Field, getFieldClasses, getErrors } from './Field';
 
 export interface Option {
   label: string;
