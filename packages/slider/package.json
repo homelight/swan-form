@@ -1,6 +1,6 @@
 {
   "name": "@swan-form/slider",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Decompose forms into sliders",
   "license": "Apache-2.0",
   "files": [
