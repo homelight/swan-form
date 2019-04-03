@@ -1,6 +1,12 @@
 # Changelog
 
-## 0.4.0--alpha.1
+## 0.4.1
+
+- [slider] fix regression with losing track of form
+- [slider] add `totalSlides` and `currentSlideIndex` to injected slide props
+- [field] fix regression with `<Radios>` component in remounting slide
+
+## 0.4.0
 
 - [helpers] use generics when typing `filterKeysFromObj`
 - [slider] delete exported css

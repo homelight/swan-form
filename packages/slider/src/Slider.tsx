@@ -66,30 +66,21 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     this.state = {
       current: clamp(props.current || 0, 0, React.Children.count(props.children)) || 0,
     };
+  }
 
-    /**
-     * These are the "Props" that get passed to each slide.
-     *
-     * We're holding this as a class property so it's reused across renders, allowing for
-     * PureComponents to rerender less often.
-     */
-    this.injectSlideProps = {
+  /**
+   * These are the "Props" that get passed to each slide.
+   */
+  injectSlideProps = () => {
+    return {
+      common: this.props.common || {},
       getFormValues: this.getFormValues,
       nextSlide: this.next,
       prevSlide: this.prev,
       setRef: this.setCurrentSlideRef,
-      common: this.props.common!,
+      currentSlideIndex: this.state.current,
+      totalSlides: React.Children.count(this.props.children) || 0,
     };
-
-    this.mounted = false;
-  }
-
-  injectSlideProps: {
-    common: { [key: string]: any };
-    getFormValues(): { [key: string]: any };
-    nextSlide(): void;
-    prevSlide(): void;
-    setRef(el: any): void;
   };
 
   // This is actually an instantiated slide
@@ -116,17 +107,17 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
      */
     const { didEnter, didEnterAsPrev, didEnterAsNext } = this.currentSlide.props;
     if (prevState.current > this.state.current && didEnterAsPrev) {
-      execIfFunc(didEnterAsPrev, this.injectSlideProps);
+      execIfFunc(didEnterAsPrev, this.injectSlideProps());
       return;
     }
 
     if (prevState.current < this.state.current && didEnterAsNext) {
-      execIfFunc(didEnterAsNext, this.injectSlideProps);
+      execIfFunc(didEnterAsNext, this.injectSlideProps());
       return;
     }
 
     if (didEnter) {
-      execIfFunc(didEnter, this.injectSlideProps);
+      execIfFunc(didEnter, this.injectSlideProps());
     }
   }
 
@@ -206,12 +197,12 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     const { beforeExit, beforeExitToNext } = this.currentSlide.props;
 
     if (isFunction(beforeExitToNext)) {
-      beforeExitToNext(this.injectSlideProps).then(() => this.moveTo(nextSlideIndex));
+      beforeExitToNext(this.injectSlideProps()).then(() => this.moveTo(nextSlideIndex));
       return;
     }
 
     if (isFunction(beforeExit)) {
-      beforeExit(this.injectSlideProps).then(() => this.moveTo(nextSlideIndex));
+      beforeExit(this.injectSlideProps()).then(() => this.moveTo(nextSlideIndex));
       return;
     }
 
@@ -235,12 +226,12 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     const { beforeExit, beforeExitToPrev } = this.currentSlide.props;
 
     if (isFunction(beforeExitToPrev)) {
-      beforeExitToPrev(this.injectSlideProps).then(() => this.moveTo(prevSlideIndex));
+      beforeExitToPrev(this.injectSlideProps()).then(() => this.moveTo(prevSlideIndex));
       return;
     }
 
     if (isFunction(beforeExit)) {
-      beforeExit(this.injectSlideProps).then(() => this.moveTo(prevSlideIndex));
+      beforeExit(this.injectSlideProps()).then(() => this.moveTo(prevSlideIndex));
       return;
     }
 
@@ -359,8 +350,9 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
           autoComplete={autoComplete}
           persist
           defaultValues={defaultValues}
+          ref={this.setFormRef}
         >
-          {React.cloneElement(slide, this.injectSlideProps)}
+          {React.cloneElement(slide, this.injectSlideProps())}
         </Form>
       </div>
     );
