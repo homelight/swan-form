@@ -196,6 +196,11 @@ export class FieldRender extends React.PureComponent<FieldProps & InjectedProps,
       props.checked = props.value;
     }
 
+    if (type === 'file') {
+      // For browser security reasons, we can't set the value for file field types
+      delete props.value;
+    }
+
     const submitResetClasses = classes(
       appliedClasses,
       isFormSubmitting && 'sf--form-submitting',

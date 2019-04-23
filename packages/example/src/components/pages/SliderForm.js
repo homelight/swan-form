@@ -17,7 +17,12 @@ const onSubmit = values => {
   return values;
 };
 const beforeSubmit = values =>
-  Promise.resolve(Object.keys(values).reduce((acc, key) => ({ ...acc, [key]: values[key].toUpperCase() }), {}));
+  Promise.resolve(
+    Object.keys(values).reduce(
+      (acc, key) => ({ ...acc, [key]: typeof values[key] === 'string' ? values[key].toUpperCase() : values[key] }),
+      {},
+    ),
+  );
 
 class SliderForm extends Component {
   scrollToTop = () => {
@@ -101,6 +106,15 @@ class SliderForm extends Component {
             <div>
               <h2>You skipped the last slide.</h2>
               <p>(This is a static message, in case you&apos;re wondering).</p>
+            </div>
+          </Slide>
+          <Slide>
+            <div>
+              <h2>File fields in slides are different</h2>
+              <p>
+                We cannot rehydrate the value when the field gets remounted because of browser security restrictions.
+              </p>
+              <Field type="file" name="file-field" />
             </div>
           </Slide>
           <Slide>
