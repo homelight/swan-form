@@ -5,6 +5,7 @@
 - [slider] fix regression with losing track of form
 - [slider] add `totalSlides` and `currentSlideIndex` to injected slide props
 - [field] fix regression with `<Radios>` component in remounting slide
+- [field] fix file fields
 
 ## 0.4.0
 
