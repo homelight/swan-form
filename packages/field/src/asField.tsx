@@ -424,7 +424,7 @@ const asField = <P extends Props>(
     handleOnChange = (event: React.ChangeEvent<any>) => {
       // eslint-disable-next-line
       event && isFunction(event.persist) && event.persist();
-      const { checked, options, value } = event.target;
+      const { checked, options, value, files } = event.target;
       const { validateOnChange, validateDebounceTimeout, type, onChange } = this.props;
 
       // Handle checkboxes and radio buttons early and exit
@@ -436,6 +436,20 @@ const asField = <P extends Props>(
         if (validateOnChange) {
           this.validate(checked, true);
         }
+
+        return;
+      }
+
+      if (type === 'file') {
+        this.setState({ value: files });
+
+        // Call any user supplied callbacks
+        execIfFunc(onChange, event);
+
+        if (validateOnChange) {
+          this.validate(checked, true);
+        }
+
         return;
       }
 
