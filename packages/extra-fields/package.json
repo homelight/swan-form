@@ -1,6 +1,6 @@
 {
   "name": "@swan-form/extra-fields",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "license": "Apache-2.0",
   "files": [
     "dist",
@@ -26,7 +26,7 @@
     "test:watch": "yarn run test -- --watch"
   },
   "dependencies": {
-    "@swan-form/field": "^0.4.1",
+    "@swan-form/field": "^0.4.2",
     "@swan-form/helpers": "^0.4.0",
     "lodash": "^4.0.0"
   },
