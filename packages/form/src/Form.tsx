@@ -154,7 +154,7 @@ export class Form extends React.PureComponent<FormProps, FormState> {
     const { [name]: fieldInterface, ...rest } = this.fields;
     this.fields = rest;
     // Save the value if we have the persist prop
-    if (this.props.persist) {
+    if (this.props.persist && fieldInterface && isFunction(fieldInterface.getValue)) {
       this.persistedValues[name] = fieldInterface.getValue();
     }
   };
