@@ -95,6 +95,20 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
 
   componentDidMount() {
     this.mounted = true;
+
+    /**
+     * Call any didEnter hooks on the first slide
+     */
+    const { didEnter, didEnterAsNext } = this.currentSlide.props;
+
+    if (didEnterAsNext) {
+      execIfFunc(didEnterAsNext, this.injectSlideProps());
+      return;
+    }
+
+    if (didEnter) {
+      execIfFunc(didEnter, this.injectSlideProps());
+    }
   }
 
   componentDidUpdate(_: SliderProps, prevState: SliderState) {
