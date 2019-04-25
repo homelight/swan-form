@@ -27,7 +27,7 @@ export interface FormProps {
   name: string;
   onSubmit(values: { [key: string]: any }): { [key: string]: any } | Promise<{ [key: string]: any }>;
   beforeSubmit?(values: { [key: string]: any }): { [key: string]: any } | Promise<{ [key: string]: any }>;
-  afterSubmit?(values: { [key: string]: any }): { [key: string]: any } | Promise<{ [key: string]: any }>;
+  afterSubmit?(values: { [key: string]: any }): any;
   onError?(error: string | Error | React.ReactNode | React.ReactNode[]): void;
   autoComplete?: boolean;
   persist?: boolean;
@@ -154,7 +154,7 @@ export class Form extends React.PureComponent<FormProps, FormState> {
     const { [name]: fieldInterface, ...rest } = this.fields;
     this.fields = rest;
     // Save the value if we have the persist prop
-    if (this.props.persist) {
+    if (this.props.persist && fieldInterface && isFunction(fieldInterface.getValue)) {
       this.persistedValues[name] = fieldInterface.getValue();
     }
   };

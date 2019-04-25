@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.4.3
+
+- [field] fix attempt to unregister when not registered
+- [slider] fix attempt to unregister when not registered
+- [slider] call didEnterAsNext and didEnter onMount for first slide
+
 ## 0.4.1
 
 - [slider] fix regression with losing track of form

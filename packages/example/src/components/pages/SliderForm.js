@@ -42,6 +42,7 @@ class SliderForm extends Component {
         <Slider afterSlideChange={this.scrollToTop} beforeSubmit={beforeSubmit} onSubmit={onSubmit}>
           <Slide
             validate={values => Promise.resolve(values['first-question'] === 'test' ? false : 'Make the value `test`')}
+            didEnterAsNext={() => console.log('First slide entered')}
           >
             <div>
               <h1>A first question</h1>

@@ -287,14 +287,14 @@ const asField = <P extends Props>(
       const { registerWithForm, name, registerWithSlide, registerWithField, autoFocus, type, register } = this.props;
       const { getValue, setValue, reset, validate, focus, getRef } = this;
 
+      const fieldInterface = { name, getValue, setValue, reset, validate, focus, getRef };
       // If the `register` prop is set to false (defaults to true), then we register with any form or slide above
       // (i.e. we can halt a passthrough)
       if (register) {
-        execIfFunc(registerWithForm, { name, getValue, setValue, reset, validate, focus, getRef });
-        execIfFunc(registerWithSlide, { name, getValue, setValue, reset, validate, focus, getRef });
+        execOrMapFn([registerWithForm, registerWithSlide], fieldInterface);
       }
       // Always register with fields that are above (i.e. there is always passthrough)
-      execIfFunc(registerWithField, { name, getValue, setValue, reset, validate, focus, getRef });
+      execIfFunc(registerWithField, fieldInterface);
 
       // Emulate the browser autoFocus if (1) requested and (2) possible
       if (!autoFocus || !this.innerRef) {
@@ -324,8 +324,15 @@ const asField = <P extends Props>(
     }
 
     componentWillUnmount() {
-      const { name, unregisterFromForm, unregisterFromSlide, unregisterFromField } = this.props;
-      execOrMapFn([unregisterFromForm, unregisterFromSlide, unregisterFromField], name);
+      const { name, register, unregisterFromForm, unregisterFromSlide, unregisterFromField } = this.props;
+
+      // If we didn't register, then don't unregister
+      if (register) {
+        execOrMapFn([unregisterFromForm, unregisterFromSlide], name);
+      }
+
+      // We always register with fields, so always unregister
+      execIfFunc(unregisterFromField, name);
     }
 
     /**
