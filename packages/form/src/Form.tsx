@@ -27,7 +27,7 @@ export interface FormProps {
   name: string;
   onSubmit(values: { [key: string]: any }): { [key: string]: any } | Promise<{ [key: string]: any }>;
   beforeSubmit?(values: { [key: string]: any }): { [key: string]: any } | Promise<{ [key: string]: any }>;
-  afterSubmit?(values: { [key: string]: any }): { [key: string]: any } | Promise<{ [key: string]: any }>;
+  afterSubmit?(values: { [key: string]: any }): any;
   onError?(error: string | Error | React.ReactNode | React.ReactNode[]): void;
   autoComplete?: boolean;
   persist?: boolean;

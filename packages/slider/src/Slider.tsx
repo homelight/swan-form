@@ -7,7 +7,7 @@ export type GenericObject = { [key: string]: any };
 
 export interface SliderProps extends React.HTMLAttributes<HTMLDivElement> {
   onSubmit(values: GenericObject | Promise<GenericObject>): Promise<GenericObject> | GenericObject;
-  afterSubmit?(values: GenericObject | Promise<GenericObject>): Promise<GenericObject> | GenericObject;
+  afterSubmit?(values: GenericObject | Promise<GenericObject>): any;
   beforeSubmit?(values: GenericObject | Promise<GenericObject>): Promise<GenericObject> | GenericObject;
   afterSlideChange?(): void;
   autoComplete?: boolean;
