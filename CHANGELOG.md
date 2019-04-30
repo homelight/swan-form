@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.5.0
+
+- [helpers] add `getCursor` and `hasSelectionStart`
+- [field] by passing a `value` prop, you can now control a field
+
 ## 0.4.3
 
 - [field] fix attempt to unregister when not registered
