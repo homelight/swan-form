@@ -149,7 +149,7 @@ export function withFormSlideField<P extends ISlideContext & IFormContext & IAsF
           <SlideContext.Consumer>
             {slide => (
               <AsFieldContext.Consumer>
-                {field => <Component {...{ ...combine(props, form, slide, field) }} />}
+                {field => <Component {...combine(props, form, slide, field)} />}
               </AsFieldContext.Consumer>
             )}
           </SlideContext.Consumer>
