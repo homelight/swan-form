@@ -50,7 +50,7 @@ class EditableDisplay extends Component {
         <Field
           type={type || 'text'}
           name={name}
-          value={this.state.value}
+          defaultValue={this.state.value}
           onKeyDown={this.onKeyDown}
           onBlur={this.onBlur}
           autoFocus
@@ -68,18 +68,14 @@ class EditableDisplay extends Component {
 const style = { padding: '.25em', border: '1px solid black', margin: '.25em', maxWidth: '300px' };
 
 class DynamicField extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { field1: 'HiHi', field2: 'What', field3: 'Something Else', field4: '' };
-    this.update = this.update.bind(this);
-  }
+  state = { field1: 'HiHi', field2: 'What', field3: 'Something Else', field4: '' };
 
-  update({ name, value }) {
+  update = ({ name, value }) => {
     this.setState(prevState => ({
       ...prevState,
       [name]: value,
     }));
-  }
+  };
 
   render() {
     const { field1, field2, field3, field4 } = this.state;
