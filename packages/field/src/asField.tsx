@@ -8,11 +8,11 @@ import {
   execOrMapFn,
   filterKeysFromObj,
   findValue,
-  hasOwnProperty,
   identity,
   isDefined,
   isNull,
   maybeApply,
+  getCursor,
   moveCursor,
   withFormSlideField,
   alwaysFilteredArray,
@@ -310,12 +310,22 @@ const asField = <P extends Props>(
       }
     }
 
-    componentDidUpdate(_: any, prevState: AsFieldState) {
-      // @ts-ignore
+    componentDidUpdate(prevProps: any, prevState: AsFieldState) {
+      const { value } = prevProps;
+
+      // First, if this component is being controlled by another component, then update the
+      // internal state when the `value` prop changes.
+      if (value !== this.props.value && value !== this.state.value) {
+        this.setValue(this.props.value);
+        return;
+      }
+
+      // Check if we can access selection start to move the cursor
       if (!this.innerRef || !canAccessSelectionStart(this.props.type)) {
         return;
       }
 
+      // Move the cursor
       const { cursor } = this.state;
       if (cursor !== prevState.cursor && isDefined(cursor) && !isNull(cursor)) {
         // eslint-disable-next-line no-multi-assign
@@ -373,8 +383,7 @@ const asField = <P extends Props>(
      * Sets the value internally
      */
     setValue = (rawValue: any) => {
-      const rawCursor = rawValue && hasOwnProperty(rawValue, 'length') ? rawValue.length : null;
-      const [value, cursor] = this.format(rawValue, rawCursor);
+      const [value, cursor] = this.format(rawValue, getCursor(this.innerRef));
       this.setState({ value, cursor });
     };
 
@@ -529,13 +538,18 @@ const asField = <P extends Props>(
     /**
      * Formats a value according to prop-supplied function
      */
-    format = (value: any, cursor: number | null = null): [any, number | null] =>
-      maybeApply(this.props.format, value, cursor);
+    format = (value: any, cursor: number | null = null): [any, number | null] => {
+      const { format } = this.props;
+      return maybeApply(format, value, cursor);
+    };
 
     /**
      * Removes formatting from value with a prop-supplied function
      */
-    unformat = (value: any): any => maybeApply(this.props.unformat, value);
+    unformat = (value: any): any => {
+      const { unformat } = this.props;
+      return maybeApply(unformat, value);
+    };
 
     /**
      * Validates a field based on prop-supplied function
@@ -587,8 +601,10 @@ const asField = <P extends Props>(
 
     render() {
       const props = filterKeysFromObj(this.props, removeProps) as P & InjectedProps;
-      const { autoComplete, formAutoComplete } = this.props;
+      const { autoComplete, formAutoComplete, value: propValue } = this.props;
       const { value } = this.state;
+
+      const inputValue = isDefined(propValue) ? propValue : isDefined(value) && !isNull(value) ? value : '';
 
       const autoCompleteValue = findValue(
         autoComplete,
@@ -607,7 +623,7 @@ const asField = <P extends Props>(
             onKeyDown={this.handleOnKeyDown}
             setRef={this.setRef}
             setValue={this.setValue}
-            value={isDefined(value) && !isNull(value) ? value : ''}
+            value={inputValue}
           />
         </AsFieldContext.Provider>
       );
