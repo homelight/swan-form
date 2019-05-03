@@ -62,7 +62,7 @@ class RegularForm extends Component {
                 validateOnBlur
                 validateOnChange
                 placeholder="test"
-                value="testing12345"
+                defaultValue="testing12345"
                 required
                 autoFocus
               />
@@ -89,7 +89,7 @@ class RegularForm extends Component {
                 required
                 placeholder="Type '323' in this box"
                 className="fancy-field"
-                value="Type '323' in this box"
+                defaultValue="Type '323' in this box"
               />
             </div>
 
@@ -106,7 +106,7 @@ class RegularForm extends Component {
                 name="radioset"
                 label="Radio Set"
                 options={[{ label: 'first', value: 'first' }, { label: 'second', value: 'second' }]}
-                value="second"
+                defaultValue="second"
               />
             </div>
 
@@ -117,7 +117,7 @@ class RegularForm extends Component {
                 className="remove-fieldset-styling"
                 label="Radio Set"
                 options={[{ label: 'first', value: 'first' }, { label: 'second', value: 'second' }]}
-                value="first"
+                defaultValue="first"
               />
               <pre>{fieldSetStyling}</pre>
             </div>
@@ -136,23 +136,23 @@ class RegularForm extends Component {
                 pattern="[\d]{3}"
                 validateOnBlur
                 placeholder="test2"
-                value={323}
+                defaultValue={323}
                 label="field with pattern"
               />
             </div>
 
             <div>
-              <Field type="number" label="Number Field" name="number-field" value="4" />
+              <Field type="number" label="Number Field" name="number-field" defaultValue="4" />
             </div>
             <div>
               <Field name="date" type="date" label="Date Field" placeholder="MM/YYYY" />
             </div>
             <div>
-              <Field name="button" type="button" label="Button" onClick={() => alert('Hi')} value="What?" />
+              <Field name="button" type="button" label="Button" onClick={() => alert('Hi')} defaultValue="What?" />
             </div>
             <div>
               The color picker doesn't work quite right
-              <Field name="color" type="color" label="Native Color Picker: " value="#ff0000" />
+              <Field name="color" type="color" label="Native Color Picker: " defaultValue="#ff0000" />
             </div>
             <div>
               <Field name="datetime-local" type="datetime-local" label="DateTime Local" />
@@ -164,7 +164,7 @@ class RegularForm extends Component {
               <Field name="file" type="file" accept="dmg" />
             </div>
             <div>
-              <Field name="month" type="month" value="2018-01" label="month" />
+              <Field name="month" type="month" defaultValue="2018-01" label="month" />
             </div>
             <div>
               <Field name="notapassword" type="password" />
@@ -195,7 +195,15 @@ class RegularForm extends Component {
             <br />
             <br />
             <div>
-              <Field type="textarea" name="freeform" label="Please Explain" value="test" rows={5} cols={40} required />
+              <Field
+                type="textarea"
+                name="freeform"
+                label="Please Explain"
+                defaultValue="test"
+                rows={5}
+                cols={40}
+                required
+              />
             </div>
             <div>
               <Field
