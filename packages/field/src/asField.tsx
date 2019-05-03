@@ -1,7 +1,6 @@
 import * as React from 'react';
 
 import {
-  AsFieldContext,
   canAccessSelectionStart,
   composeHOCs,
   execIfFunc,
@@ -14,7 +13,7 @@ import {
   maybeApply,
   getCursor,
   moveCursor,
-  withFormSlideField,
+  withFormSlide,
   alwaysFilteredArray,
   arraysAreEqual,
   isFunction,
@@ -153,10 +152,6 @@ export interface ContextProps {
   unregisterFromSlide?: (name: string) => void;
   advance?: (event: React.KeyboardEvent<any>) => void;
   retreat?: (event: React.KeyboardEvent<any>) => void;
-
-  // From AsFieldContext
-  registerWithField?: (payload: RegisterType) => void;
-  unregisterFromField?: (name: string) => void;
 }
 
 export interface AsFieldState {
@@ -219,8 +214,6 @@ const removeProps = [
   'formErrors',
   'registerWithSlide',
   'unregisterFromSlide',
-  'registerWithField',
-  'unregisterFromField',
   'defaultFormValues',
   'register',
   'advance',
@@ -276,15 +269,10 @@ const asField = <P extends Props>(
       this.autoComplete = rando();
 
       this.state = { value: this.initialValue, errors: [] };
-
-      this.fieldInterface = {
-        registerWithField: this.registerWithField,
-        unregisterFromField: this.unregisterFromField,
-      };
     }
 
     componentDidMount() {
-      const { registerWithForm, name, registerWithSlide, registerWithField, autoFocus, type, register } = this.props;
+      const { registerWithForm, name, registerWithSlide, autoFocus, type, register } = this.props;
       const { getValue, setValue, reset, validate, focus, getRef } = this;
 
       const fieldInterface = { name, getValue, setValue, reset, validate, focus, getRef };
@@ -293,8 +281,6 @@ const asField = <P extends Props>(
       if (register) {
         execOrMapFn([registerWithForm, registerWithSlide], fieldInterface);
       }
-      // Always register with fields that are above (i.e. there is always passthrough)
-      execIfFunc(registerWithField, fieldInterface);
 
       // Emulate the browser autoFocus if (1) requested and (2) possible
       if (!autoFocus || !this.innerRef) {
@@ -334,15 +320,12 @@ const asField = <P extends Props>(
     }
 
     componentWillUnmount() {
-      const { name, register, unregisterFromForm, unregisterFromSlide, unregisterFromField } = this.props;
+      const { name, register, unregisterFromForm, unregisterFromSlide } = this.props;
 
       // If we didn't register, then don't unregister
       if (register) {
         execOrMapFn([unregisterFromForm, unregisterFromSlide], name);
       }
-
-      // We always register with fields, so always unregister
-      execIfFunc(unregisterFromField, name);
     }
 
     /**
@@ -357,21 +340,6 @@ const asField = <P extends Props>(
       }
 
       return out;
-    };
-
-    /**
-     * Registers sub-fields, passed as a prop through context
-     */
-    registerWithField = (payload: any) => {
-      this.fields[payload.name] = { ...payload };
-    };
-
-    /**
-     * Unregisters sub-fields, passed as a prop through context
-     */
-    unregisterFromField = (name: string) => {
-      const { [name]: _, ...rest } = this.fields;
-      this.fields = rest;
     };
 
     /**
@@ -587,8 +555,6 @@ const asField = <P extends Props>(
 
     autoComplete: string;
 
-    fieldInterface: { registerWithField: (payload: any) => void; unregisterFromField: (name: string) => void };
-
     initialErrors: string[];
 
     initialValue: any;
@@ -612,26 +578,24 @@ const asField = <P extends Props>(
       );
 
       return (
-        <AsFieldContext.Provider value={this.fieldInterface}>
-          <WrappedComponent
-            {...props}
-            {...this.getMaybeProps()}
-            {...this.dynamicHandlers}
-            {...(autoComplete ? { autoComplete: autoCompleteValue } : {})}
-            errors={this.state.errors}
-            onChange={this.handleOnChange}
-            onKeyDown={this.handleOnKeyDown}
-            setRef={this.setRef}
-            setValue={this.setValue}
-            value={inputValue}
-          />
-        </AsFieldContext.Provider>
+        <WrappedComponent
+          {...props}
+          {...this.getMaybeProps()}
+          {...this.dynamicHandlers}
+          {...(autoComplete ? { autoComplete: autoCompleteValue } : {})}
+          errors={this.state.errors}
+          onChange={this.handleOnChange}
+          onKeyDown={this.handleOnKeyDown}
+          setRef={this.setRef}
+          setValue={this.setValue}
+          value={inputValue}
+        />
       );
     }
   };
 };
 
 // export { asField, AsFieldContext };
-const Composed = composeHOCs<Props>(asField, withFormSlideField);
-export { Composed as asField, AsFieldContext };
+const Composed = composeHOCs<Props>(asField, withFormSlide);
+export { Composed as asField };
 export default Composed;
