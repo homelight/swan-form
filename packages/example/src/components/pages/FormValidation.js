@@ -3,15 +3,9 @@ import Form from '@swan-form/form';
 import Field, { Submit } from '@swan-form/field';
 import { FormContext, required } from '@swan-form/helpers';
 
-const onSubmit = values => Promise.resolve(values);
+const onSubmit = values => console.log(values) || Promise.resolve(values);
 
-const validateForm = values => {
-  console.log(values, !values.textField2);
-  if (!values.textField2) {
-    return 'Fill out textField2';
-  }
-  return false;
-};
+const validateForm = values => (!values.textField2 ? 'Fill out textField2' : false);
 
 const beforeSubmit = values => Promise.resolve(values); //Promise.reject('This is not right');
 
@@ -29,7 +23,7 @@ export default class FormValidation extends Component {
         </div>
         <FormContext.Consumer>
           {({ formErrors }) => {
-            console.log(formErrors);
+            console.log('Form errors', formErrors);
             return (
               <div>
                 {formErrors.map((err, index) => (

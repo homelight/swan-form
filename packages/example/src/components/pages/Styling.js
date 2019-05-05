@@ -1,16 +1,18 @@
 /* eslint-disable react/prefer-stateless-function */
 import React, { Component } from 'react';
 import { Field } from '@swan-form/field';
-import SyntaxHighlighter, { registerLanguage } from 'react-syntax-highlighter/prism-light';
-import jsx from 'react-syntax-highlighter/languages/prism/jsx';
-import css from 'react-syntax-highlighter/languages/prism/css';
-import prism from 'react-syntax-highlighter/styles/prism/prism';
+// import { PrismLight as SyntaxHighlighter, registerLanguage } from 'react-syntax-highlighter/dist/esm/prism-light';
+import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/prism-light';
+import prism from 'react-syntax-highlighter/dist/esm/styles/prism/prism';
+// import jsx from 'react-syntax-highlighter/dist/esm/languages/prism/jsx';
+// import css from 'react-syntax-highlighter/dist/esm/languages/prism/css';
+
 import { hot } from 'react-hot-loader';
 
 import './Styling.css';
 
-registerLanguage('jsx', jsx);
-registerLanguage('css', css);
+// registerLanguage('jsx', jsx);
+// registerLanguage('css', css);
 
 const minLenTen = value => (value.length > 9 ? false : 'Min len 10');
 const alphaNumeric = value => (/^[a-zA-Z0-9]{1,}$/.test(value) ? false : 'Alpha Numeric');
