@@ -5,7 +5,7 @@ const createProject = name => ({
   },
   transformIgnorePatterns: ['<rootDir>/dist/', '<rootDir>/node_modules/', 'node_modules', 'packages/.+/dist'],
   testURL: 'http://localhost/',
-  setupTestFrameworkScriptFile: './node_modules/jest-enzyme/lib/index.js',
+  setupFilesAfterEnv: ['<rootDir>/jest-setup.js'],
   unmockedModulePathPatterns: ['react', 'enzyme', 'jest-enzyme'],
   testMatch: ['*.test.(js|ts)?(x)', `<rootDir>/packages/${name}/**/?(*.)(spec|test).(js|ts)?(x)`],
   moduleNameMapper: {
