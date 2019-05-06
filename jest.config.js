@@ -3,6 +3,7 @@ const createProject = name => ({
   transform: {
     '^.+\\.(ts|js)x?$': './babel-jest.transformer.js',
   },
+  transformIgnorePatterns: ['<rootDir>/dist/', '<rootDir>/node_modules/', 'node_modules', 'packages/.+/dist'],
   testURL: 'http://localhost/',
   setupTestFrameworkScriptFile: './node_modules/jest-enzyme/lib/index.js',
   unmockedModulePathPatterns: ['react', 'enzyme', 'jest-enzyme'],
