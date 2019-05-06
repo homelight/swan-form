@@ -8,7 +8,8 @@ class TestComponent extends Component {
   static displayName = 'TestComponent';
 
   componentDidUpdate(prevProps, prevState) {
-    // console.log(prevProps, prevState);
+    /* eslint-disable no-console */
+    console.group('Updating the <TestComponent />');
     Object.keys(prevProps).forEach(key => {
       if (prevProps[key] !== this.props[key]) {
         console.log(`Props[${key}]: ${valueOrTag(prevProps[key])} => ${valueOrTag(this.props[key])}`);
@@ -18,10 +19,13 @@ class TestComponent extends Component {
     if (prevState) {
       Object.keys(prevState).forEach(key => {
         if (prevState[key] !== this.state[key]) {
+          // eslint-disable-next-line
           console.log(`State[${key}]: ${valueOrTag(prevState[key])} => ${valueOrTag(this.state[key])}`);
         }
       });
     }
+    console.groupEnd();
+    /* eslint-enable no-console */
   }
 
   render() {
@@ -37,8 +41,9 @@ class TestWrapper extends Component {
   static displaName = 'TestWrapper';
 
   componentDidUpdate(prevProps, prevState) {
-    console.log('Updating the <TestWrapper />');
-    // console.log(prevProps, prevState);
+    /* eslint-disable no-console */
+    console.group('Updating the <TestWrapper />');
+
     Object.keys(prevProps).forEach(key => {
       if (prevProps[key] !== this.props[key]) {
         console.log(`Props[${key}]: ${valueOrTag(prevProps[key])} => ${valueOrTag(this.props[key])}`);
@@ -52,6 +57,8 @@ class TestWrapper extends Component {
         }
       });
     }
+    console.groupEnd();
+    /* eslint-enable no-console */
   }
 
   render() {

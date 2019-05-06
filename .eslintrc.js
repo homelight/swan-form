@@ -3,13 +3,14 @@ const { resolve } = require('path');
 module.exports = {
   extends: ['airbnb', 'prettier'],
   // parser: 'babel-eslint',
-  parser: 'typescript-eslint-parser',
+  parser: '@typescript-eslint/parser',
   root: true,
   plugins: ['monorepo'],
   parserOptions: {
     ecmaVersion: 9,
     sourceType: 'module',
     allowImportExportEverywhere: true,
+    jsx: true,
   },
   env: {
     browser: true,
@@ -35,6 +36,9 @@ module.exports = {
     'react/button-has-type': 0, // we're dynamically passing these types in a way they're always set
     'jsx-a11y/label-has-for': 0, // rule is deprecated
     'jsx-a11y/label-has-associated-control': 'error',
+    // So, for now, we're just turning off prop types. We might turn this back on and add them
+    'react/prop-types': 0,
+    'react/no-multi-comp': 0,
   },
   settings: {
     'import/resolver': {
