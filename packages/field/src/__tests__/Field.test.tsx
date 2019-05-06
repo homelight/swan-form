@@ -1,9 +1,12 @@
 /* global describe, it, expect */
 /* eslint-disable import/no-extraneous-dependencies */
 import React from 'react';
+import { render, cleanup } from 'react-testing-library';
 
 import { asField, getInitialValue } from '../asField';
-import { FieldRender } from '../Field';
+import { Field, FieldRender } from '../Field';
+
+afterEach(cleanup);
 
 describe('Determine Initial Value', () => {
   it('value should take precedence over default value', () => {
@@ -27,51 +30,57 @@ describe('Determine Initial Value', () => {
   });
 });
 
-// describe('Text Field Input Suite', () => {
-//   it('should shallow render with no error', () => {
-//     shallow(<ShallowField name="test" type="text" />);
-//   });
+describe('Text Field Input Suite', () => {
+  it('changing defaultValue does not change stored value', () => {
+    expect.assertions(2);
+    const { getByDisplayValue, rerender } = render(<Field type="text" name="test" defaultValue="one" />);
 
-//   it('should mount with no error', () => {
-//     mount(<ShallowField name="test" type="text" />);
-//   });
+    expect(getByDisplayValue('one').value).toBe('one');
+    rerender(<Field type="text" name="test" defaultValue="two" />);
+    expect(getByDisplayValue('one').value).toBe('one');
+  });
 
-//   it('should render with no error', () => {
-//     render(<ShallowField name="test" type="text" />);
-//   });
+  it('changing the value props changes stored value', () => {
+    expect.assertions(2);
+    const { getByDisplayValue, rerender } = render(<Field type="text" name="test" value="one" />);
 
-//   it('should have a state value as empty string', () => {
-//     expect(shallow(<ShallowField name="test" type="text" />).state().value).toBe('');
-//   });
+    expect(getByDisplayValue('one').value).toBe('one');
+    rerender(<Field type="text" name="test" value="two" />);
+    expect(getByDisplayValue('two').value).toBe('two');
+  });
 
-//   it('should have a state value equal to defaultValue', () => {
-//     expect(shallow(<ShallowField name="test" type="text" defaultValue="123" />).state().value).toBe('123');
-//   });
+  //   it('should have a state value as empty string', () => {
+  //     expect(shallow(<ShallowField name="test" type="text" />).state().value).toBe('');
+  //   });
 
-//   it('should have a state value equal to value', () => {
-//     expect(shallow(<ShallowField name="test" type="text" value="456" defaultValue="123" />).state().value).toBe('456');
-//   });
+  //   it('should have a state value equal to defaultValue', () => {
+  //     expect(shallow(<ShallowField name="test" type="text" defaultValue="123" />).state().value).toBe('123');
+  //   });
 
-//   const testTextField = render(<ShallowField name="test" type="text" />);
-//   it('should have an input field with the name of "test"', () => {
-//     expect(testTextField.find('input').attr('name')).toBe('test');
-//   });
+  //   it('should have a state value equal to value', () => {
+  //     expect(shallow(<ShallowField name="test" type="text" value="456" defaultValue="123" />).state().value).toBe('456');
+  //   });
 
-//   it('should have an input field with the tpye of "text"', () => {
-//     expect(testTextField.find('input').attr('type')).toBe('text');
-//   });
+  //   const testTextField = render(<ShallowField name="test" type="text" />);
+  //   it('should have an input field with the name of "test"', () => {
+  //     expect(testTextField.find('input').attr('name')).toBe('test');
+  //   });
 
-//   it('should have an input field with the value of ""', () => {
-//     expect(testTextField.find('input').attr('value')).toBe('');
-//   });
+  //   it('should have an input field with the tpye of "text"', () => {
+  //     expect(testTextField.find('input').attr('type')).toBe('text');
+  //   });
 
-//   it('should format the initial value if a formatter and a value is supplied', () => {
-//     expect(
-//       shallow(<ShallowField name="test" type="text" value="testing" format={v => [v.toUpperCase(), null]} />).state()
-//         .value,
-//     ).toBe('TESTING');
-//   });
-// });
+  //   it('should have an input field with the value of ""', () => {
+  //     expect(testTextField.find('input').attr('value')).toBe('');
+  //   });
+
+  //   it('should format the initial value if a formatter and a value is supplied', () => {
+  //     expect(
+  //       shallow(<ShallowField name="test" type="text" value="testing" format={v => [v.toUpperCase(), null]} />).state()
+  //         .value,
+  //     ).toBe('TESTING');
+  //   });
+});
 
 // describe('Checkbox Field Input Suite', () => {
 //   it('should have checkboxes go to value based on defaultChecked', () => {
