@@ -7,7 +7,6 @@
     "clean": "rm -fR packages/slider/dist; rm -fR packages/field/dist; rm -fR packages/form/dist; rm -fR packages/helpers/dist; rm -fR packages/extra-fields/dist; rm -fR packages/example/dist",
     "build:docs": "mv docs/404.html . && rm -fR docs/* && cd packages/example && yarn run build && cp -fR ./dist/ ../../docs && mv ../../404.html ../../docs/",
     "postinstall": "yarn run build",
-    "precommit": "lint-staged",
     "publish": "lerna publish",
     "prepublish": "yarn build",
     "dev": "nps dev.all",
@@ -104,5 +103,10 @@
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
+  }
 }
