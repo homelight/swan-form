@@ -4,6 +4,8 @@
 
 - [helpers] add `getCursor` and `hasSelectionStart`
 - [field] by passing a `value` prop, you can now control a field
+- [all] upgrade devDeps
+- [all] convert to react-testing-library instead of enzyeme
 
 ## 0.4.3
 
