@@ -1,6 +1,6 @@
 {
   "name": "@swan-form/slider",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "description": "Decompose forms into sliders",
   "license": "Apache-2.0",
   "files": [
@@ -28,8 +28,8 @@
     "type": "tsc -p ./tsconfig.json"
   },
   "dependencies": {
-    "@swan-form/form": "^0.4.3",
-    "@swan-form/helpers": "^0.4.0",
+    "@swan-form/form": "^0.5.0",
+    "@swan-form/helpers": "^0.5.0",
     "prop-types": "^15.7.2"
   },
   "peerDependencies": {
