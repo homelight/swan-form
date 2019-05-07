@@ -1,5 +1,5 @@
 import React from 'react';
-import createBrowserHistory from 'history/createBrowserHistory';
+import { createBrowserHistory } from 'history';
 import Loader from './Loader';
 
 const Routes = Loader(() => import(/* webpackChunkName: "routes" */ './routes'), null);

@@ -21,6 +21,8 @@ const Formatters = Loader(
   Loading,
 );
 
+const Nested = Loader(() => import(/* webpackChunkName: "nested-example" */ './components/pages/Nested'), Loading);
+
 const DependentField = Loader(
   () => import(/* webpackChunkName: "dependent-field" */ './components/pages/DependentField'),
   Loading,
@@ -67,6 +69,7 @@ export const pages = [
   ['/regular', 'Regular Form', RegularForm],
   ['/slider-form', 'Slider', SliderForm],
   ['/styling', 'Styling', Styling],
+  ['/nested', 'Nested', Nested],
   ['/with-redux', 'With Redux', Dummy],
   ['/with-react-router', 'With React Router', Dummy],
   ['/asfield-hoc', 'asField HOC', AsFieldHoc],

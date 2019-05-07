@@ -122,7 +122,6 @@ export const classes = (...args: any[]): string =>
         return [
           ...c,
           ...Object.keys(obj)
-            // @ts-ignore: this is an object
             .map(k => Boolean(obj[k]) && k)
             .filter(Boolean),
         ];
@@ -240,12 +239,37 @@ export const toKey = (arg: React.ReactNode): string | number => {
   return String(arg);
 };
 
+/**
+ * Selection start is available on input elements with specific types
+ * @see https://html.spec.whatwg.org/multipage/input.html#do-not-apply
+ */
 const typesWithSelectionStart = ['text', 'search', 'password', 'tel', 'url'];
 /**
  * Checks a whitelist of input types to see if you can access selectionStart on the input node
  * (otherwise, Safari errors)
  */
 export const canAccessSelectionStart = (type: string): boolean => typesWithSelectionStart.includes(type);
+
+export const hasSelectionStart = (el: any) => {
+  if (!(el instanceof HTMLInputElement)) {
+    return false;
+  }
+
+  const type = el.getAttribute('type');
+
+  if (!type) {
+    return false;
+  }
+
+  return typesWithSelectionStart.includes(type);
+};
+
+export const getCursor = (el: any) => {
+  if (hasSelectionStart(el)) {
+    return el.selectionStart;
+  }
+  return null;
+};
 
 /**
  * Moves the cursor on fields
@@ -256,7 +280,7 @@ export const canAccessSelectionStart = (type: string): boolean => typesWithSelec
 export function moveCursor(el: any, position = -1) {
   /* eslint-disable no-param-reassign */
   // @ts-ignore
-  if (canAccessSelectionStart(el.type)) {
+  if (hasSelectionStart(el)) {
     const pos = position > -1 ? position : el.value.length;
     // eslint-disable-next-line no-multi-assign
     el.selectionStart = el.selectionEnd = pos;

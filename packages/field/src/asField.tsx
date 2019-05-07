@@ -1,20 +1,19 @@
 import * as React from 'react';
 
 import {
-  AsFieldContext,
   canAccessSelectionStart,
   composeHOCs,
   execIfFunc,
   execOrMapFn,
   filterKeysFromObj,
   findValue,
-  hasOwnProperty,
   identity,
   isDefined,
   isNull,
   maybeApply,
+  getCursor,
   moveCursor,
-  withFormSlideField,
+  withFormSlide,
   alwaysFilteredArray,
   arraysAreEqual,
   isFunction,
@@ -153,10 +152,6 @@ export interface ContextProps {
   unregisterFromSlide?: (name: string) => void;
   advance?: (event: React.KeyboardEvent<any>) => void;
   retreat?: (event: React.KeyboardEvent<any>) => void;
-
-  // From AsFieldContext
-  registerWithField?: (payload: RegisterType) => void;
-  unregisterFromField?: (name: string) => void;
 }
 
 export interface AsFieldState {
@@ -219,8 +214,6 @@ const removeProps = [
   'formErrors',
   'registerWithSlide',
   'unregisterFromSlide',
-  'registerWithField',
-  'unregisterFromField',
   'defaultFormValues',
   'register',
   'advance',
@@ -276,15 +269,10 @@ const asField = <P extends Props>(
       this.autoComplete = rando();
 
       this.state = { value: this.initialValue, errors: [] };
-
-      this.fieldInterface = {
-        registerWithField: this.registerWithField,
-        unregisterFromField: this.unregisterFromField,
-      };
     }
 
     componentDidMount() {
-      const { registerWithForm, name, registerWithSlide, registerWithField, autoFocus, type, register } = this.props;
+      const { registerWithForm, name, registerWithSlide, autoFocus, type, register } = this.props;
       const { getValue, setValue, reset, validate, focus, getRef } = this;
 
       const fieldInterface = { name, getValue, setValue, reset, validate, focus, getRef };
@@ -293,8 +281,6 @@ const asField = <P extends Props>(
       if (register) {
         execOrMapFn([registerWithForm, registerWithSlide], fieldInterface);
       }
-      // Always register with fields that are above (i.e. there is always passthrough)
-      execIfFunc(registerWithField, fieldInterface);
 
       // Emulate the browser autoFocus if (1) requested and (2) possible
       if (!autoFocus || !this.innerRef) {
@@ -310,12 +296,22 @@ const asField = <P extends Props>(
       }
     }
 
-    componentDidUpdate(_: any, prevState: AsFieldState) {
-      // @ts-ignore
+    componentDidUpdate(prevProps: any, prevState: AsFieldState) {
+      const { value } = prevProps;
+
+      // First, if this component is being controlled by another component, then update the
+      // internal state when the `value` prop changes.
+      if (value !== this.props.value && value !== this.state.value) {
+        this.setValue(this.props.value);
+        return;
+      }
+
+      // Check if we can access selection start to move the cursor
       if (!this.innerRef || !canAccessSelectionStart(this.props.type)) {
         return;
       }
 
+      // Move the cursor
       const { cursor } = this.state;
       if (cursor !== prevState.cursor && isDefined(cursor) && !isNull(cursor)) {
         // eslint-disable-next-line no-multi-assign
@@ -324,15 +320,12 @@ const asField = <P extends Props>(
     }
 
     componentWillUnmount() {
-      const { name, register, unregisterFromForm, unregisterFromSlide, unregisterFromField } = this.props;
+      const { name, register, unregisterFromForm, unregisterFromSlide } = this.props;
 
       // If we didn't register, then don't unregister
       if (register) {
         execOrMapFn([unregisterFromForm, unregisterFromSlide], name);
       }
-
-      // We always register with fields, so always unregister
-      execIfFunc(unregisterFromField, name);
     }
 
     /**
@@ -350,21 +343,6 @@ const asField = <P extends Props>(
     };
 
     /**
-     * Registers sub-fields, passed as a prop through context
-     */
-    registerWithField = (payload: any) => {
-      this.fields[payload.name] = { ...payload };
-    };
-
-    /**
-     * Unregisters sub-fields, passed as a prop through context
-     */
-    unregisterFromField = (name: string) => {
-      const { [name]: _, ...rest } = this.fields;
-      this.fields = rest;
-    };
-
-    /**
      * Gets the unformatted value of the field
      */
     getValue = (): any => this.unformat(this.state.value);
@@ -373,8 +351,7 @@ const asField = <P extends Props>(
      * Sets the value internally
      */
     setValue = (rawValue: any) => {
-      const rawCursor = rawValue && hasOwnProperty(rawValue, 'length') ? rawValue.length : null;
-      const [value, cursor] = this.format(rawValue, rawCursor);
+      const [value, cursor] = this.format(rawValue, getCursor(this.innerRef));
       this.setState({ value, cursor });
     };
 
@@ -529,13 +506,18 @@ const asField = <P extends Props>(
     /**
      * Formats a value according to prop-supplied function
      */
-    format = (value: any, cursor: number | null = null): [any, number | null] =>
-      maybeApply(this.props.format, value, cursor);
+    format = (value: any, cursor: number | null = null): [any, number | null] => {
+      const { format } = this.props;
+      return maybeApply(format, value, cursor);
+    };
 
     /**
      * Removes formatting from value with a prop-supplied function
      */
-    unformat = (value: any): any => maybeApply(this.props.unformat, value);
+    unformat = (value: any): any => {
+      const { unformat } = this.props;
+      return maybeApply(unformat, value);
+    };
 
     /**
      * Validates a field based on prop-supplied function
@@ -573,8 +555,6 @@ const asField = <P extends Props>(
 
     autoComplete: string;
 
-    fieldInterface: { registerWithField: (payload: any) => void; unregisterFromField: (name: string) => void };
-
     initialErrors: string[];
 
     initialValue: any;
@@ -587,8 +567,10 @@ const asField = <P extends Props>(
 
     render() {
       const props = filterKeysFromObj(this.props, removeProps) as P & InjectedProps;
-      const { autoComplete, formAutoComplete } = this.props;
+      const { autoComplete, formAutoComplete, value: propValue } = this.props;
       const { value } = this.state;
+
+      const inputValue = isDefined(propValue) ? propValue : isDefined(value) && !isNull(value) ? value : '';
 
       const autoCompleteValue = findValue(
         autoComplete,
@@ -596,26 +578,24 @@ const asField = <P extends Props>(
       );
 
       return (
-        <AsFieldContext.Provider value={this.fieldInterface}>
-          <WrappedComponent
-            {...props}
-            {...this.getMaybeProps()}
-            {...this.dynamicHandlers}
-            {...(autoComplete ? { autoComplete: autoCompleteValue } : {})}
-            errors={this.state.errors}
-            onChange={this.handleOnChange}
-            onKeyDown={this.handleOnKeyDown}
-            setRef={this.setRef}
-            setValue={this.setValue}
-            value={isDefined(value) && !isNull(value) ? value : ''}
-          />
-        </AsFieldContext.Provider>
+        <WrappedComponent
+          {...props}
+          {...this.getMaybeProps()}
+          {...this.dynamicHandlers}
+          {...(autoComplete ? { autoComplete: autoCompleteValue } : {})}
+          errors={this.state.errors}
+          onChange={this.handleOnChange}
+          onKeyDown={this.handleOnKeyDown}
+          setRef={this.setRef}
+          setValue={this.setValue}
+          value={inputValue}
+        />
       );
     }
   };
 };
 
 // export { asField, AsFieldContext };
-const Composed = composeHOCs<Props>(asField, withFormSlideField);
-export { Composed as asField, AsFieldContext };
+const Composed = composeHOCs<Props>(asField, withFormSlide);
+export { Composed as asField };
 export default Composed;

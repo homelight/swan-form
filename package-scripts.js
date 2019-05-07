@@ -12,25 +12,6 @@ const getDevCmd = project => `NODE_ENV="development" babel \
 
 const getTypeCmd = project => `cd ${__dirname}/packages/${project} && yarn run type`;
 const getDevTypeCmd = project => `cd ${__dirname}/packages/${project} && yarn run type --watch`;
-
-// Old commands
-// -----------
-// const getBuildCmd = project => `NODE_ENV="production" babel \
-// "packages/${project}/src" \
-// --config-file="packages/${project}/.babelrc.js"
-// --src-type module \
-// --out-dir "packages/${project}/dist" \
-// --ignore "packages/${project}/src/**/*.test.js" \
-// --watch`;
-
-// const getBuildCmd = project => `NODE_ENV="production" babel \
-// "packages/${project}/src" \
-// --config-file="packages/${project}/.babelrc.js"
-// --src-type module \
-// --out-dir "packages/${project}/dist/cjs" \
-// --ignore "packages/${project}/src/**/*.test.js" \
-// --watch`;
-
 const getLintCmd = project => `eslint --ext .js,.jsx,.ts,.tsx --config .eslintrc.js packages/${project}/src`;
 
 module.exports = {
@@ -46,18 +27,7 @@ module.exports = {
       'extra-fields': getLintCmd('extra-fields'),
     },
     dev: {
-      all: npsUtils.concurrent.nps(
-        // 'dev.helpers',
-        // 'dev.form',
-        // 'dev.field',
-        // 'dev.extra-fields',
-        // 'dev.slider',
-        'dev.rollup',
-        'type.dev.all',
-        'dev.example',
-        // 'type.dev.helpers',
-        // 'type.dev.field',
-      ),
+      all: npsUtils.concurrent.nps('dev.rollup', 'type.dev.all', 'dev.example'),
       helpers: getDevCmd('helpers'),
       form: getDevCmd('form'),
       field: getDevCmd('field'),
@@ -67,13 +37,7 @@ module.exports = {
       example: 'cd packages/example && yarn run dev',
     },
     type: {
-      // prettier-ignore
-      all: npsUtils.concurrent.nps(...[
-        'type.helpers', 
-        'type.field', 
-        'type.form', 
-        'type.slider',
-      ]),
+      all: npsUtils.concurrent.nps('type.helpers', 'type.field', 'type.form', 'type.slider'),
       dev: {
         all: npsUtils.concurrent.nps('type.dev.helpers', 'type.dev.field', 'type.dev.form', 'type.dev.slider'),
         helpers: getDevTypeCmd('helpers'),

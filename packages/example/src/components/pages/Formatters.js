@@ -1,13 +1,9 @@
 import React, { Component } from 'react';
 import { Field } from '@swan-form/field';
-import { AsYouType } from 'libphonenumber-js';
 import { createFormatter } from '@swan-form/helpers';
-import SyntaxHighlighter, { registerLanguage } from 'react-syntax-highlighter/prism-light';
-import jsx from 'react-syntax-highlighter/languages/prism/jsx';
-import prism from 'react-syntax-highlighter/styles/prism/prism';
+import SyntaxHighlighter from 'react-syntax-highlighter/dist/esm/prism-light';
+import prism from 'react-syntax-highlighter/dist/esm/styles/prism/prism';
 import { hot } from 'react-hot-loader';
-
-registerLanguage('jsx', jsx);
 
 const stripNonNumeric = value => {
   let str = '';
@@ -24,11 +20,11 @@ const stripNonNumeric = value => {
   return str;
 };
 
-const formatPhone = value => new AsYouType('US').input(value);
-const toUpperCase = value => value.replace(/[_-]{1,}/g, '').toUpperCase();
-const upCase = createFormatter(toUpperCase, '___-', true);
-
 const numbersOnly = value => value.replace(/[^0-9]{1,}/g, '');
+const toUpperCase = value => value.replace(/[_-]{1,}/g, '').toUpperCase();
+
+const upCase = createFormatter(toUpperCase, '___-', true);
+const formatPhone = createFormatter(numbersOnly, '(___) ___-____');
 const fmtMoney = createFormatter(numbersOnly, '___,', true);
 const moneyFormatter = (val, cur) => {
   const [value, cursor] = fmtMoney(val, cur);
@@ -76,9 +72,6 @@ class Formatters extends Component {
 
         <h2>Phone Number Formatting</h2>
         <p>
-          This field is a US formatted phone number using <code>libphonenumber-js</code>.
-        </p>
-        <p>
           <Field
             label="US Formatted Phone:&nbsp;"
             type="text"
@@ -103,23 +96,11 @@ class Formatters extends Component {
         <p>The code is pretty simple:</p>
         <SyntaxHighlighter language="javascript" style={prism}>
           {`
-import { AsYouType } from 'libphonenumber-js';
+import Field from '@swan-form/field';
+import { createFormatter } from '@swan-form/helpers';
 
-const formatPhone = (value) => {
-  return new AsYouType('US').input(value);
-};
-
-const stripNonNumeric = value => {
-  let str = '';
-  for (let i = 0; i < value.length; i++) {
-    const code = value.charCodeAt(i);
-
-    if ((code > 47 && code < 58) || code === 43) {
-      str += value[i];
-    }
-  }
-  return str;
-};
+const numbersOnly = value => value.replace(/[^0-9]{1,}/g, '');
+const formatPhone = createFormatter(numbersOnly, '(___) ___-____');
 
 /* Eventually, render the component */
 

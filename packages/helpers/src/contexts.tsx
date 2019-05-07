@@ -6,31 +6,7 @@ const noop = () => {};
 export type registerType = (payload: object) => void;
 export type unregisterType = (name: string) => void;
 
-export interface IAsFieldContext {
-  registerWithField: registerType;
-  unregisterFromField: unregisterType;
-}
-
 type Omit<T, K extends string> = Pick<T, Exclude<keyof T, K>>;
-
-export const AsFieldContext = React.createContext<IAsFieldContext>({
-  // @ts-ignore
-  registerWithField: noop,
-  // @ts-ignore
-  unregisterFromField: noop,
-});
-// @ts-ignore
-AsFieldContext.displayName = 'AsFieldContext';
-
-export function withAsField<P extends IAsFieldContext>(Component: React.ComponentType<P>) {
-  // eslint-disable-next-line no-param-reassign
-  Component.displayName = 'withAsField';
-  return function AsFieldComponent(props: P) {
-    return (
-      <AsFieldContext.Consumer>{asFieldProps => <Component {...props} {...asFieldProps} />}</AsFieldContext.Consumer>
-    );
-  };
-}
 
 export interface IFormContext {
   registerWithForm: registerType;
@@ -137,22 +113,14 @@ export function withSlide<P extends ISlideContext>(Component: React.ComponentTyp
 
 const combine = (...objs: { [key: string]: any }[]) => Object.assign({}, ...objs);
 
-export function withFormSlideField<P extends ISlideContext & IFormContext & IAsFieldContext>(
-  Component: React.ComponentType<P>,
-) {
+export function withFormSlide<P extends ISlideContext & IFormContext>(Component: React.ComponentType<P>) {
   // eslint-disable-next-line no-param-reassign
-  Component.displayName = 'withFormSlideAsField';
+  Component.displayName = `withFormAndSlide${Component.displayName || 'Component'}`;
   return function Wrapper(props: P) {
     return (
       <FormContext.Consumer>
         {form => (
-          <SlideContext.Consumer>
-            {slide => (
-              <AsFieldContext.Consumer>
-                {field => <Component {...{ ...combine(props, form, slide, field) }} />}
-              </AsFieldContext.Consumer>
-            )}
-          </SlideContext.Consumer>
+          <SlideContext.Consumer>{slide => <Component {...combine(props, form, slide)} />}</SlideContext.Consumer>
         )}
       </FormContext.Consumer>
     );

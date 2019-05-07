@@ -55,8 +55,6 @@ const config = (pkg, format) => {
     ].filter(Boolean),
     plugins: [
       resolve({
-        browser: true,
-        main: true,
         extensions: ['.js', '.jsx', '.ts', '.tsx', '.json'],
       }),
       commonjs({
