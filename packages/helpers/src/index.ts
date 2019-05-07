@@ -122,7 +122,6 @@ export const classes = (...args: any[]): string =>
         return [
           ...c,
           ...Object.keys(obj)
-            // @ts-ignore: this is an object
             .map(k => Boolean(obj[k]) && k)
             .filter(Boolean),
         ];

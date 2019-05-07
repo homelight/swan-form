@@ -19,7 +19,7 @@ const toWrap = ({ name, onChange, value, placeholder, setRef }) => (
 
 class toWrapClass extends Component {
   render() {
-    const { isValid, setRef, getValue, setValue, ...spreadProps } = this.props;
+    const { isValid, setRef, getValue, setValue, isFormSubmitting, hasFormSubmitted, ...spreadProps } = this.props;
     return <input ref={setRef} {...spreadProps} />;
   }
 }
