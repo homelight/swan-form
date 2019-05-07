@@ -1,7 +1,7 @@
 /* global describe, it, expect */
 /* eslint-disable import/no-extraneous-dependencies */
 import React from 'react';
-import { render, cleanup } from 'react-testing-library';
+import { fireEvent, render, cleanup } from 'react-testing-library';
 
 import { asField, getInitialValue } from '../asField';
 import { Field, FieldRender } from '../Field';
@@ -30,6 +30,20 @@ describe('Determine Initial Value', () => {
   });
 });
 
+const debug = false;
+/* eslint-disable no-console */
+const handle = {
+  onClick: event => debug && console.log(event),
+  onChange: event => debug && console.log(event),
+  onInput: event => debug && console.log(event),
+  onFocus: event => debug && console.log(event),
+  onBlur: event => debug && console.log(event),
+  onReset: event => debug && console.log(event),
+  onSubmit: event => debug && console.log(event),
+  onKeyDown: event => debug && console.log(event),
+};
+/* eslint-enable no-console */
+
 describe('Text Field Input Suite', () => {
   it('changing defaultValue does not change stored value', () => {
     expect.assertions(2);
@@ -49,92 +63,95 @@ describe('Text Field Input Suite', () => {
     expect(getByDisplayValue('two').value).toBe('two');
   });
 
-  //   it('should have a state value as empty string', () => {
-  //     expect(shallow(<ShallowField name="test" type="text" />).state().value).toBe('');
-  //   });
+  it('sending no id results in the id being the name', () => {
+    const { getByDisplayValue } = render(<Field type="text" name="testing123" value="something unique" />);
+    expect(getByDisplayValue('something unique').id).toBe('testing123');
+  });
 
-  //   it('should have a state value equal to defaultValue', () => {
-  //     expect(shallow(<ShallowField name="test" type="text" defaultValue="123" />).state().value).toBe('123');
-  //   });
+  it('sending any id uses that instead of the name', () => {
+    const { getByDisplayValue } = render(<Field type="text" id="bob" name="testing123" value="something unique" />);
+    expect(getByDisplayValue('something unique').id).toBe('bob');
+  });
 
-  //   it('should have a state value equal to value', () => {
-  //     expect(shallow(<ShallowField name="test" type="text" value="456" defaultValue="123" />).state().value).toBe('456');
-  //   });
+  it('onFocus is called when passed', () => {
+    const spy = jest.spyOn(handle, 'onFocus');
+    const { container } = render(<Field type="text" name="test" onFocus={spy} />);
+    const [input] = container.querySelectorAll('input');
+    fireEvent.focus(input);
+    expect(spy).toHaveBeenCalledTimes(1);
+    spy.mockRestore();
+  });
 
-  //   const testTextField = render(<ShallowField name="test" type="text" />);
-  //   it('should have an input field with the name of "test"', () => {
-  //     expect(testTextField.find('input').attr('name')).toBe('test');
-  //   });
+  it('onBlur is called when passed', () => {
+    const spy = jest.spyOn(handle, 'onBlur');
+    const { container } = render(<Field type="text" name="test" onBlur={spy} />);
+    const [input] = container.querySelectorAll('input');
+    fireEvent.focus(input);
+    fireEvent.blur(input);
+    expect(spy).toHaveBeenCalledTimes(1);
+    spy.mockRestore();
+  });
 
-  //   it('should have an input field with the tpye of "text"', () => {
-  //     expect(testTextField.find('input').attr('type')).toBe('text');
-  //   });
-
-  //   it('should have an input field with the value of ""', () => {
-  //     expect(testTextField.find('input').attr('value')).toBe('');
-  //   });
-
-  //   it('should format the initial value if a formatter and a value is supplied', () => {
-  //     expect(
-  //       shallow(<ShallowField name="test" type="text" value="testing" format={v => [v.toUpperCase(), null]} />).state()
-  //         .value,
-  //     ).toBe('TESTING');
-  //   });
+  it('calling the input event changes the value', () => {
+    const { container } = render(<Field type="text" name="test" />);
+    const [input] = container.querySelectorAll('input');
+    fireEvent.input(input, { target: { value: 'one two three' } });
+    expect(input.value).toBe('one two three');
+  });
 });
 
-// describe('Checkbox Field Input Suite', () => {
-//   it('should have checkboxes go to value based on defaultChecked', () => {
-//     expect(shallow(<ShallowField name="test" type="checkbox" defaultChecked />).state().value).toBe(true);
-//   });
+describe('Checkbox Field Input Suite', () => {
+  it('should have checkboxes go to value based on defaultChecked', () => {
+    const { container } = render(<Field name="test" type="checkbox" defaultChecked />);
+    const [input] = container.querySelectorAll('input');
+    expect(input.checked).toBe(true);
+  });
 
-//   it('should have checkboxes go to value based on checked over defaultChecked', () => {
-//     expect(shallow(<ShallowField name="test" type="checkbox" checked={false} defaultChecked />).state().value).toBe(
-//       false,
-//     );
-//   });
-// });
+  it('should have checkboxes go to value based on checked over defaultChecked', () => {
+    const { container } = render(<Field name="test" type="checkbox" checked={false} defaultChecked />);
+    const [input] = container.querySelectorAll('input');
+    expect(input.checked).toBe(false);
+  });
+});
 
-// describe('Button Field Input Suite', () => {
-//   it('should render with child props and no value', () => {
-//     expect(
-//       shallow(
-//         <ShallowField name="test" type="button">
-//           Test
-//         </ShallowField>,
-//       ),
-//     );
-//   });
+describe('Button Field Input Suite', () => {
+  it('should render with child props and no value', () => {
+    const { container } = render(
+      <Field name="test" type="button">
+        Test
+      </Field>,
+    );
+    const [button] = container.querySelectorAll('button');
+    expect(button.name).toBe('test');
+  });
 
-//   it('should render with no children and a value', () => {
-//     expect(shallow(<ShallowField name="test" type="button" value="Test" />));
-//   });
-// });
+  it('should render with no children and a value', () => {
+    expect(render(<Field name="test" type="button" value="Test" />));
+  });
+});
 
-// describe('Select Field Input Suite', () => {
-//   const multipleSelect = render(
-//     <ShallowField
-//       name="selectField"
-//       type="select"
-//       multiple
-//       options={['one', 'two', 'three', { label: 'four', value: 'four' }, { OptGroup: ['abc', 'def', 'hij'] }]}
-//     />,
-//   );
-//   it('renders weird multiple select correctly', () => {
-//     expect(multipleSelect.find('select').attr('multiple')).toBe('multiple');
-//     // @todo add more tests on this select
-//   });
-// });
+describe('Select Field Input Suite', () => {
+  const options = ['one', 'two', 'three', { label: 'four', value: 'four' }, { OptGroup: ['abc', 'def', 'hij'] }];
 
-// describe('Textarea Field Input Suite', () => {
-//   it('renders textareas correctly', () => {
-//     const node = render(<ShallowField type="textarea" name="test" value="abc" />);
-//     expect(node.find('textarea')[0].children[0].data).toBe('abc');
-//   });
-// });
+  it('renders weird multiple select correctly', () => {
+    const { container } = render(<Field name="selectField" type="select" multiple options={options} />);
+    const [multipleSelect] = container.querySelectorAll('select');
+    expect(multipleSelect.multiple).toBe(true);
+  });
+});
 
-// describe('Hidden Field Input Suite', () => {
-//   it('renders hidden fields', () => {
-//     const hidden = render(<ShallowField type="hidden" name="test" value="1" />);
-//     expect(hidden[0].attribs.type).toBe('hidden');
-//   });
-// });
+describe('Textarea Field Input Suite', () => {
+  it('renders textareas correctly', () => {
+    const { container } = render(<Field type="textarea" name="test" value="abc" />);
+    const [textarea] = container.querySelectorAll('textarea');
+    expect(textarea.value).toBe('abc');
+  });
+});
+
+describe('Hidden Field Input Suite', () => {
+  it('renders hidden fields', () => {
+    const { container } = render(<Field type="hidden" name="test" value="1" />);
+    const [hidden] = container.querySelectorAll('input');
+    expect(hidden.type).toBe('hidden');
+  });
+});

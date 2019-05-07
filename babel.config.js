@@ -1,7 +1,11 @@
 /* eslint-disable */
 const env = (modules, browsers) => [
   '@babel/preset-env',
-  { targets: { browsers: browsers || ['ie 11', '>1%'] }, modules, useBuiltIns: 'entry' },
+  {
+    targets: { browsers: browsers || ['ie 11', '>1%'] },
+    modules,
+    // useBuiltIns: 'entry',
+  },
 ];
 
 module.exports = function(api) {
@@ -24,8 +28,8 @@ module.exports = function(api) {
 
   // prettier-ignore
   const ignore = [
-    isProd && '**/*.test.*', 
-    isProd && '**/__tests__/**/*', 
+    isProd && '**/*.test.*',
+    isProd && '**/__tests__/**/*',
     '**/dist/**/*',
   ].filter(Boolean);
 
