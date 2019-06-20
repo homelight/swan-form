@@ -3,6 +3,19 @@
   "version": "0.5.0",
   "description": "Helpers functions for swan-form",
   "license": "Apache-2.0",
+  "author": "Shawn Patrick Rice",
+  "contributors": [
+    {
+      "name": "Christopher Belsole",
+      "email": "chris@helloeave.com",
+      "url": "https://github.com/cbelsole"
+    },
+    {
+      "name": "Shawn Patrick Rice",
+      "email": "rice@shawnrice.org",
+      "url": "https://github.com/shawnrice"
+    }
+  ],
   "contributors": [
     {
       "name": "Shawn Patrick Rice",

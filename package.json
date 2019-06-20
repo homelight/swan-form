@@ -1,6 +1,19 @@
 {
   "private": true,
   "license": "Apache-2.0",
+  "author": "Shawn Patrick Rice",
+  "contributors": [
+    {
+      "name": "Christopher Belsole",
+      "email": "chris@helloeave.com",
+      "url": "https://github.com/cbelsole"
+    },
+    {
+      "name": "Shawn Patrick Rice",
+      "email": "rice@shawnrice.org",
+      "url": "https://github.com/shawnrice"
+    }
+  ],
   "scripts": {
     "bootstrap": "lerna bootstrap",
     "build": "NODE_ENV=production yarn run clean && rollup -c && cd packages/example && yarn run build",
