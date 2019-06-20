@@ -4,6 +4,19 @@
   "description": "An Example for Swan Form",
   "main": "index.js",
   "license": "Apache-2.0",
+  "author": "Shawn Patrick Rice",
+  "contributors": [
+    {
+      "name": "Christopher Belsole",
+      "email": "chris@helloeave.com",
+      "url": "https://github.com/cbelsole"
+    },
+    {
+      "name": "Shawn Patrick Rice",
+      "email": "rice@shawnrice.org",
+      "url": "https://github.com/shawnrice"
+    }
+  ],
   "private": true,
   "scripts": {
     "build": "NODE_ENV=production webpack --config ./webpack.config.js --mode production",

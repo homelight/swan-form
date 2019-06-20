@@ -3,6 +3,19 @@
   "version": "0.5.0",
   "description": "Elegant form handling for React -- contains forms",
   "license": "Apache-2.0",
+  "author": "Shawn Patrick Rice",
+  "contributors": [
+    {
+      "name": "Christopher Belsole",
+      "email": "chris@helloeave.com",
+      "url": "https://github.com/cbelsole"
+    },
+    {
+      "name": "Shawn Patrick Rice",
+      "email": "rice@shawnrice.org",
+      "url": "https://github.com/shawnrice"
+    }
+  ],
   "main": "dist/index.cjs.js",
   "module": "dist/index.es.js",
   "typings": "dist/index.d.ts",

@@ -2,6 +2,19 @@
   "name": "@swan-form/extra-fields",
   "version": "0.5.0",
   "license": "Apache-2.0",
+  "author": "Shawn Patrick Rice",
+  "contributors": [
+    {
+      "name": "Christopher Belsole",
+      "email": "chris@helloeave.com",
+      "url": "https://github.com/cbelsole"
+    },
+    {
+      "name": "Shawn Patrick Rice",
+      "email": "rice@shawnrice.org",
+      "url": "https://github.com/shawnrice"
+    }
+  ],
   "files": [
     "dist",
     "src"
