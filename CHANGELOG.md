@@ -1,5 +1,14 @@
 # Changelog
 
+## master
+
+- [all] Added `Publishing` section to the readme.
+
+## 0.5.1
+
+- [all] Added collaborators to all packages
+- [all] Added shawn as the author to all packages
+
 ## 0.5.0
 
 - [helpers] add `getCursor` and `hasSelectionStart`
