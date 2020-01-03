@@ -99,7 +99,15 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     /**
      * Call any didEnter hooks on the first slide
      */
-    const { didEnter, didEnterAsNext } = this.currentSlide.props;
+    const { didEnter, didEnterAsNext, shouldShowIf = alwaysTrue } = this.currentSlide.props;
+
+    const formValues = this.form && isFunction(this.form.getValues) ? this.form.getValues() : {};
+
+    // If your fist slide is non showable go to the next one.
+    if (!shouldShowIf(formValues)) {
+      this.moveTo(this.findNext());
+      return;
+    }
 
     if (didEnterAsNext) {
       execIfFunc(didEnterAsNext, this.injectSlideProps());
@@ -292,8 +300,9 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
       // No valid candidate for next slide, so we test the next
     }
 
-    // If we're here, it means that we need to show the first
-    return 0;
+    // If we're here, it means that we need to stay on the current slide
+    // as it's likely the first non-skipped slide.
+    return current;
   };
 
   /**
@@ -348,9 +357,15 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
       ...(isFunction(this.props.setRef) ? { ref: this.props.setRef } : {}),
     };
 
+    const formValues = this.form && isFunction(this.form.getValues) ? this.form.getValues() : {};
+
+    const firstShowable = children.findIndex((child: React.ReactElement<SlideProps, any>) =>
+      child.props.shouldShowIf ? child.props.shouldShowIf(formValues) : true,
+    );
+
     return (
       <div {...props} className={classes('sf--slider', className)}>
-        <button type="button" className={leftClasses} disabled={current === 0} onClick={this.prev}>
+        <button type="button" className={leftClasses} disabled={current === firstShowable} onClick={this.prev}>
           {PrevButton}
         </button>
         <button type="button" className={rightClasses} onClick={nextFn}>
