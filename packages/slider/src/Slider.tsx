@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Form } from '@swan-form/form';
 import { classes, clamp, isFunction, execIfFunc, filterKeysFromObj } from '@swan-form/helpers';
-import { SlideProps } from './Slide';
+import Slide, { SlideProps } from './Slide';
 
 export type GenericObject = { [key: string]: any };
 
@@ -97,25 +97,23 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     this.mounted = true;
 
     /**
-     * Call any didEnter hooks on the first slide
+     * In the case where a slider does not contain slides or the slides are
+     * invalid we will not have a current slide.
      */
-    const { didEnter, didEnterAsNext, shouldShowIf = alwaysTrue } = this.currentSlide.props;
+    if (this.currentSlide) {
+      /**
+       * Call any didEnter hooks on the first slide
+       */
+      const { didEnter, didEnterAsNext } = this.currentSlide.props;
 
-    const formValues = this.form && isFunction(this.form.getValues) ? this.form.getValues() : {};
+      if (didEnterAsNext) {
+        execIfFunc(didEnterAsNext, this.injectSlideProps());
+        return;
+      }
 
-    // If your fist slide is non showable go to the next one.
-    if (!shouldShowIf(formValues)) {
-      this.moveTo(this.findNext());
-      return;
-    }
-
-    if (didEnterAsNext) {
-      execIfFunc(didEnterAsNext, this.injectSlideProps());
-      return;
-    }
-
-    if (didEnter) {
-      execIfFunc(didEnter, this.injectSlideProps());
+      if (didEnter) {
+        execIfFunc(didEnter, this.injectSlideProps());
+      }
     }
   }
 
@@ -333,8 +331,6 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     const { current } = this.state;
     // React children as an array
     const children = this.getChildren();
-    // The current slide
-    const slide = children[current];
     // Classes applied to left control
     const leftClasses = classes(['sf--slider-control', 'sf--slider-control-left']);
     // Classes applied to the right control
@@ -363,9 +359,23 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
       child.props.shouldShowIf ? child.props.shouldShowIf(formValues) : true,
     );
 
+    // The current slide
+    let slide;
+
+    if (firstShowable === -1) {
+      slide = <Slide />;
+    } else {
+      slide = children[firstShowable];
+    }
+
     return (
       <div {...props} className={classes('sf--slider', className)}>
-        <button type="button" className={leftClasses} disabled={current === firstShowable} onClick={this.prev}>
+        <button
+          type="button"
+          className={leftClasses}
+          disabled={firstShowable === current || firstShowable === -1}
+          onClick={this.prev}
+        >
           {PrevButton}
         </button>
         <button type="button" className={rightClasses} onClick={nextFn}>
