@@ -98,7 +98,7 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
 
     /**
      * In the case where a slider does not contain slides or the slides are
-     * invalid we will not have a current slide.
+     * not showable we will not have a current slide.
      */
     if (this.currentSlide) {
       /**
