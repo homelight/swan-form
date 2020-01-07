@@ -63,8 +63,19 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
 
   constructor(props: SliderProps) {
     super(props);
+
+    const firstShowable = (React.Children.toArray(props.children) || []).findIndex(
+      (child: React.ReactElement<SlideProps, any>) =>
+        child.props.shouldShowIf ? child.props.shouldShowIf(props.defaultValues || {}) : true,
+    );
+
+    let current = firstShowable;
+    if (current === -1) {
+      current = 0;
+    }
+
     this.state = {
-      current: clamp(props.current || 0, 0, React.Children.count(props.children)) || 0,
+      current: clamp(props.current || current, 0, React.Children.count(props.children)) || 0,
     };
   }
 
@@ -365,7 +376,7 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     if (firstShowable === -1) {
       slide = <Slide />;
     } else {
-      slide = children[firstShowable];
+      slide = children[current];
     }
 
     return (
