@@ -16,6 +16,19 @@ const Container = Loader(() => import(/* webpackChunkName: "container" */ './com
 
 const SliderForm = Loader(() => import(/* webpackChunkName: "sliderForm" */ './components/pages/SliderForm'), Loading);
 
+const SliderFormWithSkips = Loader(
+  () => import(/* webpackChunkName: "sliderFormWithSkips" */ './components/pages/SliderFormWithSkips'),
+  Loading,
+);
+
+const SliderFormWithoutShowableSlides = Loader(
+  () =>
+    import(
+      /* webpackChunkName: "sliderFormWithoutShowableSlides" */ './components/pages/SliderFormWithoutShowableSlides'
+    ),
+  Loading,
+);
+
 const Formatters = Loader(
   () => import(/* webpackChunkName: "formatters-example" */ './components/pages/Formatters'),
   Loading,
@@ -68,6 +81,8 @@ export const pages = [
   ['/formatters', 'Formatters', Formatters],
   ['/regular', 'Regular Form', RegularForm],
   ['/slider-form', 'Slider', SliderForm],
+  ['/slider-form-with-skips', 'SliderWithSkips', SliderFormWithSkips],
+  ['/slider-form-without-showable-slides', 'SliderWithoutShowableSlides', SliderFormWithoutShowableSlides],
   ['/styling', 'Styling', Styling],
   ['/nested', 'Nested', Nested],
   ['/with-redux', 'With Redux', Dummy],
