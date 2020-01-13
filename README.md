@@ -4,7 +4,7 @@ Swan Form is a toolbox for elegantly creating forms with React.
 
 ## Development Note
 
-These packages are new, so there might be a few bugs to work out.
+These packages are feature-complete but still young, so there might be a few bugs to work out.
 
 ## Install
 
