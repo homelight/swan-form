@@ -129,6 +129,12 @@ export interface AsFieldProps {
    */
   onKeyDown?(event: React.KeyboardEvent<any>): void;
   /**
+   * onKeyDown event handler specifically for the enter key
+   *
+   * This is called BEFORE any kind of internal library handling of keydown events, and will override any onKeyDown functions
+   */
+  onEnterKeyDown?(event: React.KeyboardEvent<any>): void;
+  /**
    * A validate function or array of functions
    */
   validate?:
@@ -380,7 +386,7 @@ const asField = <P extends Props>(
      * `ENTER` is pressed while we're in a slide, so we have looser coupling.
      */
     handleOnKeyDown = (event: React.KeyboardEvent<any>) => {
-      const { advance, onKeyDown, retreat, type } = this.props;
+      const { advance, onKeyDown, onEnterKeyDown, retreat, type } = this.props;
 
       // We need to persist the event if there is a callback handler for onKeyDown
       if (isFunction(onKeyDown)) {
@@ -388,18 +394,24 @@ const asField = <P extends Props>(
         event && isFunction(event.persist) && event.persist();
       }
 
-      // We need to handle onKeyDown for slides to prevent them from submitting. Instead,
-      // we just advance / retreat to the next field / slide.
       if (event.key === 'Enter') {
         // @ts-ignore
         if (!['textarea', 'button', 'submit', 'reset'].includes(type)) {
           event.preventDefault();
         }
-        execIfFunc(event.shiftKey ? retreat : advance, event);
-      }
 
-      // We want to call the event handler only after the slide handling has happened
-      execIfFunc(onKeyDown, event);
+        if (!isDefined(onEnterKeyDown)) {
+          // We need to handle onKeyDown for slides to prevent them from submitting. Instead,
+          // we just advance / retreat to the next field / slide.
+          execIfFunc(event.shiftKey ? retreat : advance, event);
+          // We want to call the event handler only after the slide handling has happened
+          execIfFunc(onKeyDown, event);
+        } else {
+          execIfFunc(onKeyDown, event);
+          // We want to call the event handler only after the slide handling has happened
+          execIfFunc(event.shiftKey ? retreat : advance, event);
+        }
+      }
     };
 
     /**
