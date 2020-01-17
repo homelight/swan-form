@@ -1,8 +1,9 @@
 # Changelog
 
-## master
+## 0.5.2
 
-- [all] Added `Publishing` section to the readme.
+- [all] Added ability to skip first slide
+- [all] Added support for sliders without showable slides
 
 ## 0.5.1
 
