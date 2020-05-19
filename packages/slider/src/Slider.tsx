@@ -211,11 +211,8 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
       return;
     }
 
-    // Grab the next viable slide index
-    const nextSlideIndex = this.findNext();
-
     // If we are at the end, then handle the end state
-    if (nextSlideIndex >= this.getChildren().length) {
+    if (this.findNext() >= this.getChildren().length) {
       // Call the submit handler on the form
       if (this.form && isFunction(this.form.handleOnSubmit)) {
         execIfFunc(this.form.doSubmit);
@@ -228,12 +225,12 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     const { beforeExit, beforeExitToNext } = this.currentSlide.props;
 
     if (isFunction(beforeExitToNext)) {
-      beforeExitToNext(this.injectSlideProps()).then(() => this.moveTo(nextSlideIndex));
+      beforeExitToNext(this.injectSlideProps()).then(() => this.moveTo(this.findNext()));
       return;
     }
 
     if (isFunction(beforeExit)) {
-      beforeExit(this.injectSlideProps()).then(() => this.moveTo(nextSlideIndex));
+      beforeExit(this.injectSlideProps()).then(() => this.moveTo(this.findNext()));
       return;
     }
 
@@ -245,11 +242,8 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
    * Public function to retreat the slide
    */
   prev = () => {
-    // Find the previous slide
-    const prevSlideIndex = this.findPrev();
-
     // If it's the same, do nothing
-    if (prevSlideIndex === this.state.current) {
+    if (this.findPrev() === this.state.current) {
       return;
     }
 
@@ -257,17 +251,17 @@ export class Slider extends React.PureComponent<SliderProps, SliderState> {
     const { beforeExit, beforeExitToPrev } = this.currentSlide.props;
 
     if (isFunction(beforeExitToPrev)) {
-      beforeExitToPrev(this.injectSlideProps()).then(() => this.moveTo(prevSlideIndex));
+      beforeExitToPrev(this.injectSlideProps()).then(() => this.moveTo(this.findPrev()));
       return;
     }
 
     if (isFunction(beforeExit)) {
-      beforeExit(this.injectSlideProps()).then(() => this.moveTo(prevSlideIndex));
+      beforeExit(this.injectSlideProps()).then(() => this.moveTo(this.findPrev()));
       return;
     }
 
     // Just move to the previous slide
-    this.moveTo(prevSlideIndex);
+    this.moveTo(this.findPrev());
   };
 
   /**
