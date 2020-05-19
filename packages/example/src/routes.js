@@ -88,7 +88,7 @@ export const pages = [
   ['/slider-form', 'Slider', SliderForm],
   ['/slider-form-with-skips', 'SliderWithSkips', SliderFormWithSkips],
   ['/slider-form-without-showable-slides', 'SliderWithoutShowableSlides', SliderFormWithoutShowableSlides],
-  ['/slider-form-with-skips-in-hooks', 'AdvancedSliderWithSkips', SliderFormWithSkipsInHooks],
+  ['/slider-form-with-skips-in-hooks', 'SliderFormWithSkipsInHooks', SliderFormWithSkipsInHooks],
   ['/styling', 'Styling', Styling],
   ['/nested', 'Nested', Nested],
   ['/with-redux', 'With Redux', Dummy],
