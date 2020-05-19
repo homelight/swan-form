@@ -29,6 +29,11 @@ const SliderFormWithoutShowableSlides = Loader(
   Loading,
 );
 
+const SliderFormWithSkipsInHooks = Loader(
+  () => import(/* webpackChunkName: "sliderFormWithSkipsInHooks" */ './components/pages/SliderFormWithSkipsInHooks'),
+  Loading,
+);
+
 const Formatters = Loader(
   () => import(/* webpackChunkName: "formatters-example" */ './components/pages/Formatters'),
   Loading,
@@ -83,6 +88,7 @@ export const pages = [
   ['/slider-form', 'Slider', SliderForm],
   ['/slider-form-with-skips', 'SliderWithSkips', SliderFormWithSkips],
   ['/slider-form-without-showable-slides', 'SliderWithoutShowableSlides', SliderFormWithoutShowableSlides],
+  ['/slider-form-with-skips-in-hooks', 'SliderFormWithSkipsInHooks', SliderFormWithSkipsInHooks],
   ['/styling', 'Styling', Styling],
   ['/nested', 'Nested', Nested],
   ['/with-redux', 'With Redux', Dummy],
