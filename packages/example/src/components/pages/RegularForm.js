@@ -208,9 +208,23 @@ class RegularForm extends Component {
             </div>
             <div>
               <Field
-                name="selectField"
+                name="multiSelectField"
                 type="select"
                 multiple
+                options={[
+                  'one',
+                  'two',
+                  'three',
+                  { label: 'four', value: 'four' },
+                  { label: 'five (disabled)', value: 'five', disabled: true },
+                  { OptGroup: ['abc', 'def', 'hij'] },
+                ]}
+              />
+            </div>
+            <div>
+              <Field
+                name="selectField"
+                type="select"
                 options={[
                   'one',
                   'two',
