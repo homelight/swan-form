@@ -1,6 +1,6 @@
 {
   "name": "@swan-form/extra-fields",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "license": "Apache-2.0",
   "author": "Shawn Patrick Rice",
   "contributors": [
@@ -39,8 +39,8 @@
     "test:watch": "yarn run test -- --watch"
   },
   "dependencies": {
-    "@swan-form/field": "^0.5.2",
-    "@swan-form/helpers": "^0.5.2",
+    "@swan-form/field": "^0.6.0",
+    "@swan-form/helpers": "^0.6.0",
     "lodash": "^4.0.0"
   },
   "publishConfig": {
