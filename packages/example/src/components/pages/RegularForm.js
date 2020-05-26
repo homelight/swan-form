@@ -45,6 +45,7 @@ class RegularForm extends Component {
       'You should see a console.error message 👇 about an invalid type. It is a test to make sure that invalid types throw an error message. The field will instead be replaced with an HTML comment.',
     );
   }
+
   render() {
     return (
       <div>
@@ -207,10 +208,31 @@ class RegularForm extends Component {
             </div>
             <div>
               <Field
-                name="selectField"
+                name="multiSelectField"
                 type="select"
                 multiple
-                options={['one', 'two', 'three', { label: 'four', value: 'four' }, { OptGroup: ['abc', 'def', 'hij'] }]}
+                options={[
+                  'one',
+                  'two',
+                  'three',
+                  { label: 'four', value: 'four' },
+                  { label: 'five (disabled)', value: 'five', disabled: true },
+                  { OptGroup: ['abc', 'def', 'hij'] },
+                ]}
+              />
+            </div>
+            <div>
+              <Field
+                name="selectField"
+                type="select"
+                options={[
+                  'one',
+                  'two',
+                  'three',
+                  { label: 'four', value: 'four' },
+                  { label: 'five (disabled)', value: 'five', disabled: true },
+                  { OptGroup: ['abc', 'def', 'hij'] },
+                ]}
               />
             </div>
             <br />

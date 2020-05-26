@@ -1,6 +1,8 @@
 /* eslint-disable react/button-has-type */
 import * as React from 'react';
+
 import { classes, hasOwnProperty, isObject, noop, toKey } from '@swan-form/helpers';
+
 import asField, { InjectedProps } from './asField';
 
 export interface FieldProps {
@@ -100,9 +102,9 @@ function renderOption(option: any): React.ReactNode {
   if (isObject(option)) {
     // If it's a label/value object, the render it appropriately
     if (hasOwnProperty(option, 'label') && hasOwnProperty(option, 'value')) {
-      const { label, value } = option;
+      const { label, value, disabled = false } = option;
       return (
-        <option key={value} value={value}>
+        <option key={value} value={value} disabled={disabled}>
           {label}
         </option>
       );
