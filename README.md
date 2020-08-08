@@ -89,7 +89,7 @@ Publishing will be done by verified publishers. If you are one or have become on
 
 1. Sign up for NPM.
 2. Get added as a collaborator for `@swan-form`
-3. Put out a PR with your change and get it merged into master.
+3. Put out a PR with your change and get it merged into main.
 4. `yarn build`
 5. `npm login`
 6. `yarn login`

@@ -9,7 +9,7 @@
       "exact": true
     },
     "publish": {
-      "allowBranch": "master"
+      "allowBranch": "main"
     }
   }
 }

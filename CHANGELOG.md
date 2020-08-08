@@ -1,6 +1,6 @@
 # Changelog
 
-## master
+## main
 
 - [all] Added `Publishing` section to the readme.
 
